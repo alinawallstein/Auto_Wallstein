@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { motion } from "framer-motion";
+import "./App.css";
+import carImage from "/Users/alinawallstein/Desktop/Auto_Wallstein/auto-wallstein/public/Auto_wallstein_logo.png"; // Du kannst hier später dein echtes Auto-Logo/Bild einfügen
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app">
+      {/* Titeltext */}
+      <motion.h1
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="title"
+      >
+        Willkommen bei Auto Wallstein
+      </motion.h1>
+
+      {/* Auto fährt ins Bild */}
+      <motion.img
+        src={carImage}
+        alt="Auto Wallstein"
+        initial={{ x: "-100vw" }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 60 }}
+        className="car"
+      />
+
+      {/* Button */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        className="cta-button"
+      >
+        Mehr erfahren
+      </motion.button>
+    </div>
+  );
 }
 
-export default App
+export default App;
