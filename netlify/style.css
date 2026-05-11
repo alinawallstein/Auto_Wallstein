@@ -702,7 +702,7 @@ p {
     50% { transform: rotate(45deg) translate(2px, 2px); }
 }
 
-/* Mobile Optimierung */
+/* Mobile Optimierung  vvvvv*/
 @media (max-width: 900px) {
     .history-item, .history-item.reverse {
         flex-direction: column;
@@ -1478,6 +1478,9 @@ p {
     .nav-links li {
         margin: 0;
     }
+
+    
+
 
     .nav-links a,
     .dropdown-content li a,
