@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Wallstein | Mercedes-Benz Jahreswagen</title>
+    <meta name="description" content="Auto Wallstein - Ihr Spezialist für Mercedes-Benz Jahreswagen und erstklassigen Service.">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+    <div class="logo">
+        <a href="index.html" aria-label="Zur Startseite">
+            <img src="pics/logo.png" alt="Auto Wallstein Logo">
+        </a>
+    </div>
+
+    <input type="checkbox" id="nav-toggle" style="display: none;">
+    <label for="nav-toggle" class="hamburger">
+        <span></span>
+    </label>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="fahrzeuge.html">Fahrzeuge</a></li>
+        <li><a href="finanzierung.html">Finanzierung</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropbtn">Über uns ▼</a>
+            <ul class="dropdown-content">
+                <li><a href="ueberuns.html">Historie</a></li>
+                <li><a href="oeffnungzeiten.html">Öffnungszeiten</a></li>
+                <li><a href="impressum.html">Impressum</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
+                <li><a href="kontakt.html">Kontakt & Anfahrt</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-cta-email">
+            <a href="mailto:verkauf@auto-wallstein.de">
+                <span class="full-label">verkauf@auto-wallstein.de</span>
+                <span class="btn-text">E-Mail</span>
+                <span class="btn-icon">✉</span>
+            </a>
+        </li>
+
+        <li class="nav-cta-tel">
+            <a href="tel:+496104406770">
+                <span class="full-label">+49 6104 406770</span>
+                <span class="btn-text">anrufen</span>
+                <span class="btn-icon">📞</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+    </header>
+
+<main>
+    <section class="contact-cards-section">
+        <div class="contact-container">
+            <h1 class="main-title-dark">Kontaktieren Sie uns</h1>
+            <p class="subtitle">Wir beraten Sie gerne persönlich zu Ihrem neuen Mercedes-Benz.</p>
+            
+            <div class="contact-grid">
+                <a href="tel:+496104406770" class="contact-card">
+                    <div class="card-icon">📞</div>
+                    <h3>Telefon</h3>
+                    <p>Rufen Sie uns direkt an</p>
+                    <span class="card-detail">+49 6104 406770</span>
+                </a>
+
+                <a href="mailto:verkauf@auto-wallstein.de" class="contact-card">
+                    <div class="card-icon">✉</div>
+                    <h3>E-Mail</h3>
+                    <p>Schreiben Sie uns Ihr Anliegen</p>
+                    <span class="card-detail">verkauf@auto-wallstein.de</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+   <section class="location-section">
+            <div class="location-header">
+                <h2 class="black-bg-text">Anfahrt</h2>
+                <p>Rudolf-Braas-Straße 27a, 63150 Heusenstamm</p>
+            </div>
+
+            <div class="map-container">
+                <iframe src="https://maps.google.com/maps?q=Rudolf-Braas-Str.%2027a,63150%20Heusenstamm&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+
+            <div class="route-button-container">
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Rudolf-Braas-Straße+27a,63150+Heusenstamm" target="_blank" class="route-btn">
+                    <span class="icon">🚗</span> Route berechnen & Navigation starten
+                </a>
+            </div>
+        </section>
+</main>
+
+     <footer class="main-footer">
+    <div class="footer-container">
+
+        <div class="footer-section">
+            <p class="footer-text">
+                © 2026 <strong>Auto Wallstein</strong> — Rudolf-Braas-Straße 27a, 63150 Heusenstamm
+            </p>
+            <p class="footer-links">
+                <a href="impressum.html">Impressum</a>
+                <span class="divider">|</span>
+                <a href="datenschutz.html">Datenschutz</a>
+            </p>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-dev">
+                Design und Entwicklung by <span>Alina Wallstein</span>
+            </p>
+        </div>
+
+    </div>
+</footer>
+  <div id="acc-plugin" class="acc-button" onclick="toggleAccMenu()" title="Barrierefreiheit">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+        <circle cx="12" cy="5" r="1"></circle>
+        <path d="m9 20 3-6 3 6"></path>
+        <path d="m6 8 6 2 6-2"></path>
+        <path d="M12 10v4"></path>
+    </svg>
+</div>
+
+<div id="acc-menu" class="acc-menu hidden">
+    <div class="acc-header">
+        <span class="acc-header-title">Barrierefreiheit</span>
+        <button onclick="toggleAccMenu()" class="close-acc" aria-label="Schließen">✕</button>
+    </div>
+    
+    <div class="acc-content">
+        <button onclick="changeFontSize('increase')">➕ Text vergrößern</button>
+        <button onclick="changeFontSize('decrease')">➖ Text verkleinern</button>
+        <button onclick="toggleInvert()">🌓 Farben invertieren</button>
+        <button onclick="toggleGrayscale()">🔘 Graustufen</button>
+        <button onclick="highlightLinks()">🔗 Links hervorheben</button>
+        <button onclick="toggleReadableFont()">🔡 Lesbare Schrift</button>
+        <button onclick="resetAcc()" class="reset-btn">🔄 Zurücksetzen</button>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

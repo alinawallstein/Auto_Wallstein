@@ -1,0 +1,1860 @@
+/* 1. VARIABLEN & DESIGN-SYSTEM */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1a1a1a;
+  --nav-bg: #ffffff;
+  --section-alt: #f4f4f4;
+  --card-bg: #ffffff;
+  --accent: #7899c5;
+  --accent-blue: #323c49;
+  --border-color: #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #0b0b0b;
+    --text-color: #ffffff;
+    --nav-bg: #151515;
+    --section-alt: #1a1a1a;
+    --card-bg: #222222;
+    --accent: #4a5766;
+    --border-color: #444;
+  }
+}
+/* --- BARRIEREFREIHEIT FUNKTIONEN --- */
+
+/* Invertiert die gesamte Seite */
+:root.acc-invert {
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Verhindert, dass Bilder und Videos auch invertiert werden (sieht sonst komisch aus) */
+:root.acc-invert img, 
+:root.acc-invert video, 
+:root.acc-invert iframe,
+:root.acc-invert .hero-section {
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Graustufen / Sättigung */
+:root.acc-grayscale {
+    filter: grayscale(100%) !important;
+}
+html {
+    scroll-behavior: smooth;
+}
+
+/* Mobile-Basis: Padding und Breiten sollen keine horizontale Scrollbreite erzeugen. */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+iframe {
+    max-width: 100%;
+}
+
+/* Links hervorheben */
+body.acc-highlight-links a {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    text-decoration: underline !important;
+    outline: 3px solid #000 !important;
+    font-weight: bold !important;
+}
+
+/* 2. BASIS-STYLING */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+h1 {
+  text-align: left;
+  color: var(--text-color);
+  background: linear-gradient(0deg, rgba(101,203,120,1) 0%, rgb(78, 149, 225) 80%);
+  -webkit-background-clip: text;
+}
+
+h2 {
+  color: var(--text-color);
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p {
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.fahrzeuge-section {
+    position: relative;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.subtitle {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.7; /* Dezenter als reines Weiß/Schwarz */
+    line-height: 1.6;
+}
+
+.black-bg-text {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.export-section{
+    text-align: center;
+    background-color: var(--bg-color);
+}
+
+/* 3. NAVIGATION (NAVBAR) & RESPONSIVE LOGIK */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  background-color: var(--nav-bg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.3s;
+}
+
+.logo img {
+  height: 45px;
+  width: auto;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-links .btn-text {
+  display: none !important;
+}
+
+.nav-links li {
+  margin: 0 15px;
+}
+
+.nav-links a {
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2658bb;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: opacity 0.3s;
+}
+
+.fahrzeuge-section iframe {
+    border: none;
+    width: 100%;
+    max-width: 1300px; 
+    display: block;
+    margin: 0 auto;
+    height: 1200px;       
+    min-height: 800px;    
+    border-radius: 20px; 
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); 
+    background-color: #ffffff; /* Iframe-Inhalt von mobile.de ist meist weiß */
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.calculator-section { padding: 60px 5%; background-color: var(--section-alt); }
+.calculator-section .section-title,
+.calculator-section .section-subtitle {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.calculator-section .section-subtitle {
+    max-width: 800px;
+}
+.calc-card { 
+    max-width: 900px; margin: 0 auto; background: var(--card-bg); 
+    padding: 40px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); 
+}
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 8px; color: var(--text-color); }
+.input-group input, .input-group select { 
+    width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; 
+    background: var(--bg-color); color: var(--text-color); font-size: 1rem;
+}
+
+.calc-result-box { 
+    background: var(--accent); color: white; padding: 30px; 
+    border-radius: 15px; display: flex; flex-direction: column; justify-content: center;
+}
+.result-header { font-size: 1rem; opacity: 0.8; text-transform: uppercase; margin-bottom: 10px; }
+.monthly-amount { font-size: 3rem; font-weight: 900; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
+
+.detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+.disclaimer { font-size: 0.7rem; opacity: 0.6; margin-top: 20px; text-align: center; }
+/* 4. HERO SECTION */
+
+
+.hero-section {
+  position: relative;
+  background-image: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(0, 0, 0, 0.2) 50%, 
+    rgba(0, 0, 0, 0.5) 100%
+  ), url('pics/titelbild.jpeg');
+  
+  /* Das bringt das Scroll-Verhalten zurück */
+  background-attachment: fixed; 
+  background-size: cover;
+  background-position: center;
+
+  /* Wir nutzen wieder eine feste Höhe für den Parallax-Effekt */
+  /* 60vh ist schmaler als vorher, aber hoch genug für den Effekt */
+  height: 75vh; 
+  width: 100%;
+  margin-bottom: 0; /* Kein Abstand nach unten */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;    
+  
+  text-align: center;
+  color: white;
+}
+
+/* Die Sektion direkt danach */
+.welcome-section {
+    margin-top: 0;
+    padding-top: 50px; /* Kleiner, sauberer Abstand zum Hero-Bild */
+    background-color: #ffffff; /* Oder deine Hintergrundfarbe */
+}
+
+.welcome-section h2 {
+    margin-top: 0; /* Entfernt den Standard-Browser-Abstand */
+}
+
+.hero-content h1.main-title { 
+  font-family: 'Lato', sans-serif; 
+  font-weight: 500; 
+  font-size: clamp(2rem, 6vw, 4.5rem); 
+  color: #ffffff; 
+  margin-bottom: 5px;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  letter-spacing: -1px;
+}
+
+.hero-content h2.sub-title { 
+  font-family: 'Lato', sans-serif; 
+  font-weight: 300; 
+  text-transform: uppercase; 
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  letter-spacing: 6px; 
+  color: rgba(255, 255, 255, 0.9); 
+  margin-top: 0; 
+}
+.hero-content {
+    width: 100%;
+    max-width: 90%;         /* Verhindert, dass Text am Handy den Rand berührt */
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Zentriert den Inhalt der Div */
+    z-index: 2;
+}
+.main-title {
+    width: 100%;
+    text-align: center !important; /* Erzwingt die Textzentrierung */
+    margin: 0 auto;
+    
+    /* Deine bestehenden Styles */
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+/* 5. IMAGE GRID & ITEMS */
+.image-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+    gap: 15px; 
+    
+    max-width: 1200px;      
+    margin: 40px auto;      /* Abstand nach oben/unten hinzugefügt */
+    padding: 30px 20px;     
+    
+    background-color: var(--accent-blue); 
+
+    /* --- ABRUNDUNG --- */
+    border-radius: 30px;    /* Kanten abrunden */
+    overflow: hidden;       /* WICHTIG: Schneidet den Inhalt an den runden Kanten sauber ab */
+    
+    /* Optional: Ein leichter Schatten lässt das abgerundete Grid edler wirken */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.grid-item { 
+    position: relative; 
+    display: block; 
+    overflow: hidden; 
+    text-decoration: none; 
+    border-radius: 4px;     /* Optional: Eine leichte Abrundung wirkt moderner */
+}
+
+.grid-item img { 
+    width: 100%; 
+    height: 350px;          /* SCHMALLER: Von 500px auf 350px reduziert */
+    object-fit: cover; 
+    transition: transform 0.5s ease; 
+}
+
+.grid-item:hover img { 
+    transform: scale(1.05); 
+}
+
+.grid-label { 
+    position: absolute; 
+    bottom: 20px;           /* Etwas näher am Rand für kompaktere Optik */
+    left: 20px; 
+    color: white; 
+    font-family: 'Lato', sans-serif; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    font-size: 1.1rem;      /* Leicht verkleinert */
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); 
+}
+
+/* Optimierung für mobile Geräte */
+@media (max-width: 480px) {
+    .grid-item img {
+        height: 250px;      /* Noch schmaler auf dem Handy */
+    }
+}
+/* 6. CONTENT SEKTIONEN */
+/* 1. Hero-Section: Sicherstellen, dass nach unten kein Platz ist */
+.hero-section {
+    margin-bottom: 0;
+}
+
+/* 2. Welcome-Section: Abstände reduzieren */
+.welcome-section {
+    padding-top: 40px;    /* Kleiner, eleganter Abstand zum Bild */
+    padding-bottom: 40px; /* Gleicher Abstand nach unten */
+    margin-top: 0;        /* Verhindert Lücken zwischen den Sektionen */
+    text-align: center;
+}
+
+/* 3. Überschrift in der Welcome-Section */
+.welcome-section h2 {
+    margin-top: 0;        /* Verhindert, dass die H2 den Container nach unten drückt */
+    margin-bottom: 15px;  /* Abstand zum Text darunter */
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Optional: Den Container begrenzen, damit der Text nicht zu breit läuft */
+.welcome-section p {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* 8. MAPS & ROUTE */
+.map-container { border: 2px solid #000; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); margin: 0 auto; max-width: 1200px; width: 90%; }
+
+.main-footer {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--nav-bg); /* Nutzt deine Dark-Mode Variable */
+    color: var(--text-color);
+}
+/* --- HISTORIE SEITE STYLING --- */
+
+.history-section {
+    padding: 80px 5%;
+    background-color: var(--bg-color);
+}
+
+/* Timeline Navigation (oben) */
+.timeline-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 80px;
+}
+
+.timeline-nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 40px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.timeline-nav li {
+    padding: 10px 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    color: var(--text-color);
+    opacity: 0.5;
+    transition: 0.3s;
+    position: relative;
+}
+
+.timeline-nav li.active {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.timeline-nav li.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--accent);
+}
+
+/* History Items (Die Blöcke) */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    margin-bottom: -40px;
+    opacity: 0; /* Für einen Einblend-Effekt vorbereitet */
+    animation: fadeInUp 1s forwards;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.history-item.reverse {
+    flex-direction: row-reverse;
+}
+
+.history-text {
+    flex: 1;
+    
+}
+
+.year-label {
+    display: grid;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 5rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: -20px;
+}
+
+.history-text h2 {
+    text-align: left; /* Überschreibt dein allgemeines H2-Zentrum */
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.history-text p {
+    max-width: 500px;
+    font-size: 1.1rem;
+}
+
+/* Bilder & Masken */
+.history-image {
+    flex: 1.2;
+    position: relative;
+    display: grid;
+    gap: 20px;
+}
+
+.history-image img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* Wenn zwei Bilder nebeneinander sind */
+.history-image img:nth-child(2) {
+    margin-top: 50px;
+}
+
+.image-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--accent), transparent);
+    opacity: 0.1;
+    pointer-events: none;
+    border-radius: 15px;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- ACCESSIBILITY MENÜ --- */
+
+.acc-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.acc-button:hover { transform: scale(1.1); }
+
+.acc-menu {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    width: 280px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    z-index: 10000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+.acc-header {
+    background: var(--accent);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acc-header-title {
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Der verkleinerte X-Button */
+.close-acc {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 14px; /* Deutlich kleiner */
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+.close-acc:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.acc-content { padding: 15px; }
+
+.acc-content button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+}
+
+.reset-btn {
+    background: #e74c3c !important;
+    color: white !important;
+    text-align: center !important;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.hidden { display: none; }
+/* --- HERO SCROLL ARROW --- */
+.scroll-down {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    z-index: 10;
+}
+
+.scroll-down span {
+    width: 18px;
+    height: 18px;
+    border-left: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+    transform: rotate(-45deg);
+    animation: bounceDown 2s infinite;
+    opacity: 0.8;
+}
+
+/* Dunkle Variante für helle Sections */
+.scroll-dark span {
+    border-left: 3px solid var(--text-color);
+    border-bottom: 3px solid var(--text-color);
+}
+/* H2 + Pfeil sauber ausrichten */
+.fahrzeuge-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Minimaler Chevron-Pfeil */
+.scroll-hint {
+    width: 14px;
+    height: 14px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(45deg);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Hover-Effekt (edel, ruhig) */
+.scroll-hint:hover {
+    opacity: 1;
+    transform: rotate(45deg) translate(3px, 3px);
+}
+
+/* Sehr dezente Bewegung */
+.scroll-hint {
+    animation: subtleDown 2.5s infinite;
+}
+
+@keyframes subtleDown {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); }
+    50% { transform: rotate(45deg) translate(2px, 2px); }
+}
+
+/* Mobile Optimierung */
+@media (max-width: 900px) {
+    .history-item, .history-item.reverse {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .history-text h2 {
+        text-align: center;
+    }
+
+    .history-text p {
+        margin: 0 auto;
+    }
+
+    .year-label {
+        font-size: 4rem;
+    }
+
+    .history-image img:nth-child(2) {
+        display: none; /* Auf dem Handy nur ein Bild zeigen */
+    }
+}
+/* ================================
+   DATENSCHUTZ / IMPRESSUM / RECHT
+   ================================ */
+
+.legal-page {
+    padding: 80px 10%;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.legal-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Hauptüberschrift */
+.legal-section h1 {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+/* Abschnittsüberschriften */
+.legal-section h2 {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    margin-top: 50px;
+    margin-bottom: 15px;
+    text-align: left;
+    letter-spacing: 1px;
+}
+
+/* Unterüberschriften */
+.legal-section h3 {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.legal-section h4 {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-top: 25px;
+    margin-bottom: 8px;
+}
+
+/* Fließtext */
+.legal-section p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    opacity: 0.85;
+    margin-bottom: 15px;
+}
+
+/* Listen */
+.legal-section ul {
+    margin: 15px 0 20px 20px;
+    padding: 0;
+}
+
+.legal-section li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+/* Links */
+.legal-section a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.legal-section a:hover {
+    text-decoration: underline;
+}
+
+/* Hervorhebungen (z. B. Anbieter) */
+.legal-section strong {
+    font-weight: 700;
+}
+/* --- FINANZIERUNG: Intro links statt mittig --- */
+.finance-intro {
+    text-align: left;
+}
+
+.finance-intro .container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.finance-intro h1 {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.finance-intro p {
+    max-width: 800px;
+    margin: 0 0 16px 0;
+}
+
+.finance-highlights {
+    margin-top: 18px;
+}
+
+/* Grundstyling für den Dropdown-Container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Das eigentliche Untermenü (standardmäßig versteckt) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9; /* Hintergrundfarbe anpassen */
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 4px;
+}
+
+/* Styling der Links im Dropdown */
+.dropdown-content li a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+/* Hover-Effekt für die Links im Dropdown */
+.dropdown-content li a:hover {
+    background-color: #f1f1f1;
+    color: #000;
+}
+
+/* Zeige das Menü beim Hovern über den Listenpunkt an */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Responsive Anpassung für Mobile */
+@media screen and (max-width: 768px) {
+    .dropdown-content {
+        position: static; /* Im Mobile-Menü untereinander anzeigen */
+        display: none;
+        width: 100%;
+        box-shadow: none;
+        background-color: rgba(0,0,0,0.05); /* Leicht abgesetzt */
+    }
+
+    /* Bei Klick im Mobile-Menü (wenn gewünscht) oder dauerhaft offen */
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+}
+
+/* Container-Styling */
+.hours-page {
+    padding: 80px 20px;
+    background-color: #ffffff;
+    color: #333;
+    text-align: center;
+}
+
+.hours-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Die Karten-Struktur */
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.hours-card {
+    background: #ccd9e5;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.hours-card:hover {
+    transform: translateY(-5px);
+}
+
+.hours-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 900;
+}
+
+/* Tabellen-Styling innerhalb der Karten */
+.hours-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.hours-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.05rem;
+}
+
+.hours-table td:first-child {
+    text-align: left;
+    font-weight: 700;
+    color: #555;
+}
+
+.hours-table td:last-child {
+    text-align: right;
+    color: #000;
+}
+
+.hours-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Live-Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #000;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.status-dot {
+    height: 10px;
+    width: 10px;
+    background-color: #00ff00; /* Grün wenn offen */
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px #00ff00;
+}
+
+/* Call to Action Bereich */
+.hours-footer {
+    margin-top: 60px;
+    padding: 40px;
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+}
+
+.hours-footer p {
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.btn-contact {
+    display: inline-block;
+    padding: 15px 35px;
+    background: #fff;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn-contact:hover {
+    background: #ffcc00; /* Akzentfarbe aus deinem Rechner */
+}
+
+.pause-info td {
+    font-size: 0.85rem;
+    color: #888;
+    padding-top: 0 !important;
+    border-bottom: none !important;
+    text-align: left !important;
+}
+/* --- ZENTRIERUNG ANFAHRT SEKTION --- */
+.location-section {
+    text-align: center; /* Zentriert den Text und den Header */
+    padding: 60px 5%;
+}
+
+.location-header {
+    margin-bottom: 30px;
+}
+
+/* Sorgt dafür, dass die Überschrift mittig sitzt */
+.location-header h2 {
+    display: inline-block; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Zentriert den Routen-Button */
+.route-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.route-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    background-color: var(--accent-blue);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.route-btn:hover {
+    background-color: var(--accent);
+}
+/* --- KONTAKT SEITE STYLING --- */
+.contact-cards-section {
+    padding: 80px 5% 40px;
+    text-align: center;
+    background-color: var(--bg-color);
+}
+
+.main-title-dark {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 40px auto 0;
+}
+
+.contact-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--text-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    border-color: var(--accent);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.contact-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contact-card p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 15px;
+}
+
+.card-detail {
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #2658bb; /* Dein Blau aus der Navigation */
+}
+
+/* Anpassung für die Location Section darunter */
+.location-section {
+    padding-top: 40px;
+    background-color: var(--section-alt); /* Leichter Kontrast zur Kartensektion */
+}
+.main-title-dark {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    
+    /* ZENTRIERUNG */
+    text-align: center;
+    width: 100%;
+    display: block;
+    
+    /* Falls ein Background-Gradient wie in deinem h1-Stil aktiv ist, 
+       stellen wir hier sicher, dass er mittig wirkt */
+    background: none; 
+    -webkit-background-clip: initial;
+    color: var(--text-color);
+}
+.hero-section {
+  position: relative;
+  width: 100%;
+  /* WICHTIG: min-height statt fester height für Mobile */
+  min-height: 60vh; 
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;    
+  text-align: center;
+  
+  background-image: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(0, 0, 0, 0.2) 50%, 
+    rgba(0, 0, 0, 0.5) 100%
+  ), url('pics/titelbild.jpeg');
+  
+  background-size: cover;
+  background-position: center;
+  /* Standardmäßig auf scroll setzen für bessere Kompatibilität */
+  background-attachment: scroll; 
+  
+  color: white;
+  overflow: hidden;
+}
+
+/* Der Parallax-Effekt nur für Desktop-Geräte */
+@media (min-width: 1025px) {
+  .hero-section {
+    background-attachment: fixed;
+  }
+}
+
+/* Spezifischer Fix für kleine Bildschirme */
+@media (max-width: 768px) {
+  .hero-section {
+    height: auto;
+    padding: 60px 20px; /* Gibt der Sektion Raum, wenn der Inhalt sie dehnt */
+    min-height: 40vh !important;   /* Garantierte Mindesthöhe auf Handys */
+  }
+
+  .hero-content {
+    max-width: 95%;
+  }
+
+  .main-title {
+    font-size: clamp(1.8rem, 8vw, 2.5rem) !important;
+    line-height: 1.2;
+    text-align: center !important;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .scroll-down {
+    bottom: 15px;
+  }
+}
+.welcome-section {
+    /* Standard für Desktop: Leichte Überlappung */
+    margin-top: -40px; 
+    position: relative;
+    z-index: 10;
+    
+    padding: 60px 5%;
+    background-color: var(--bg-color);
+    
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    
+    box-shadow: 0 -15px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+}
+/* H2 + Pfeil sauber ausrichten */
+.fahrzeuge-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Etwas mehr Platz zum Hüpfen */
+}
+
+/* Der Chevron-Pfeil als hüpfendes Element */
+.scroll-hint {
+    
+    width: 16px;
+    height: 16px;
+    border-right: 3px solid var(--accent); /* Etwas dicker für bessere Sichtbarkeit */
+    border-bottom: 3px solid var(--accent);
+    transform: rotate(45deg);
+    opacity: 0.7;
+    cursor: pointer;
+    
+    /* Die neue Hüpf-Animation */
+    animation: bounceChevron 2s infinite;
+}
+/* Standard-Styling für Desktop */
+.besuch-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.besuch-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.besuch-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #000000;
+    text-align: center;
+     /* Zentriert den Textblock */
+}
+
+/* Optimierung für Mobile (Bildschirme kleiner als 768px) */
+@media (max-width: 768px) {
+    .besuch-title {
+        font-size: 1.8rem; /* Etwas kleiner für das Handy */
+        padding: 0 10px;
+    }
+
+    .besuch-text {
+        font-size: 1rem;
+        padding: 0 15px; /* Verhindert, dass der Text am Rand klebt */
+    }
+}
+
+/* Die Animation: Ein kräftiges Hüpfen */
+@keyframes bounceChevron {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) rotate(45deg);
+    }
+    40% {
+        transform: translateY(-10px) rotate(45deg);
+    }
+    60% {
+        transform: translateY(-5px) rotate(45deg);
+    }
+}
+
+/* Optional: Stoppt das Hüpfen, wenn man mit der Maus drüberfährt */
+.scroll-hint:hover {
+    animation-play-state: paused;
+    opacity: 1;
+    border-color: #2658bb; /* Mercedes-Blau beim Hover */
+}
+
+/* SPEZIFISCHER FIX FÜR MOBILE GERÄTE */
+@media (max-width: 768px) {
+    .welcome-section {
+        /* Wir entfernen die Überlappung auf dem Handy, um Anzeigefehler zu vermeiden */
+        margin-top: 0; 
+        
+        /* Etwas kleinere Rundung für schmale Screens */
+        border-top-left-radius: 25px;
+        border-top-right-radius: 25px;
+        
+        /* Sicherstellen, dass die Sektion den Content nicht abschneidet */
+        padding: 40px 20px;
+        box-shadow: none; /* Schatten auf Mobile oft störend oder unsichtbar */
+    }
+}
+
+/* Optional: Animation für den Status-Punkt, damit er "lebt" */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.status-dot {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+
+/* Dark Mode Anpassung */
+@media (prefers-color-scheme: dark) {
+  .nav-hours-pill {
+    background: rgba(21,21,21,0.75);
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  }
+  .nav-hours-icon {
+    background: rgba(74,87,102,0.35);
+  }
+}
+
+/* Auf kleineren Screens ausblenden, damit Navbar nicht bricht */
+@media (max-width: 1150px) {
+  .nav-hours { display: none; }
+}
+
+/* Mobile Optimierung */
+@media (max-width: 768px) {
+    .legal-page {
+        padding: 60px 6%;
+    }
+
+    .legal-section h1 {
+        font-size: 2rem;
+    }
+
+    .legal-section h2 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .monthly-amount { font-size: 2rem; }
+    .fahrzeuge-section iframe { height: 1800px; }
+}
+
+.nav-links .full-label { display: inline; font-weight: 900; color: #2658bb; margin-right: 5px; }
+.nav-links .btn-text { display: inline; }
+.nav-links .btn-icon { display: none; }
+
+@media (max-width: 1253px) {
+    .nav-links li.nav-cta-email a, .nav-links li.nav-cta-tel a {
+        display: flex; background-color: var(--accent); color: white !important; padding: 8px 12px; border-radius: 5px; text-decoration: none;
+    }
+    .nav-links li.nav-cta-email a > *, .nav-links li.nav-cta-tel a > * { display: none; }
+    .nav-links .btn-text { display: inline !important; }
+}
+
+@media (max-width: 1035px) {
+    .nav-links li.nav-cta-email a, .nav-links li.nav-cta-tel a {
+        display: flex; align-items: center; justify-content: center; background-color: var(--accent); color: white !important; padding: 8px; border-radius: 8px; width: 35px; height: 35px;
+    }
+    .nav-links .btn-text { display: none !important; }
+    .nav-links .btn-icon { display: inline-block !important; font-size: 0.9rem !important; margin: 0 !important; line-height: 1; }
+}
+
+.export-section { padding: 80px 0; background-color: var(--bg-color); }
+.export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; }
+
+.plate {
+    background: #fff; /* Kennzeichen bleiben meist weiß für Realismus */
+    border: 2px solid #333;
+    border-radius: 5px;
+    width: 280px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #000;
+    margin: 0 auto;
+}
+
+.d-mark { background: #003399; color: #fff; width: 30px; height: 100%; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; font-size: 12px; border-radius: 3px 0 0 3px; }
+.city { font-size: 30px; margin-left: 15px; }
+.dots { font-size: 25px; color: #555; margin: 0 10px; }
+.number { font-size: 30px; flex-grow: 1; }
+
+.date-badge { width: 40px; height: 100%; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; border-radius: 0 3px 3px 0; }
+.plate-yellow .date-badge { background: #ffcc00; border-left: 2px solid #333; }
+.plate-red .date-badge { background: #cc0000; color: #fff; border-left: 2px solid #333; }
+
+.export-card { background: var(--card-bg); color: var(--text-color); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.export-info h3 { margin: 20px 0 5px; font-size: 1.2rem; }
+.export-info .price { display: block; margin-top: 10px; font-weight: 900; color: #7a94ba; font-size: 1.3rem; }
+
+.export-details { margin-top: 50px; background: #99a7c8; color: #fff; padding: 40px; border-radius: 20px; }
+.detail-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+.detail-item .icon { font-size: 1.5rem; }
+.shipping-info { margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 30px; text-align: center; }
+.shipping-info h3 { color: #ffcc00; margin-bottom: 15px; }
+
+@media (max-width: 768px) {
+    .export-grid { grid-template-columns: 1fr; }
+}
+
+.hamburger { display: none; cursor: pointer; }
+
+@media (max-width: 887px) {
+    .hamburger { display: block; width: 30px; height: 20px; position: relative; z-index: 1001; }
+    .hamburger span, .hamburger span::before, .hamburger span::after { 
+        content: ''; position: absolute; width: 100%; height: 3px; background: var(--text-color); transition: 0.3s; 
+    }
+    .hamburger span { top: 9px; }
+    .hamburger span::before { top: -9px; }
+    .hamburger span::after { top: 9px; }
+    .navbar {
+        position: relative !important; /* Verhindert das Festkleben auf Mobile */
+        top: auto;
+    }
+
+    .nav-links {
+        position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav-bg); flex-direction: column; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    #nav-toggle:checked ~ .nav-links { max-height: 600px; padding: 20px 0; }
+    .nav-links li { margin: 15px 0; width: 100%; }
+    .nav-links .btn-text { display: inline-block; }
+    .nav-links .full-label { display: none; } 
+    .nav-links .btn-icon { display: inline-block; margin-right: 10px; }
+    .nav-links li.nav-cta-email a, .nav-links li.nav-cta-tel a { background: transparent; color: var(--text-color) !important; width: 100%; justify-content: center; }
+}
+
+/* Mobile Navigation: ab Hamburger-Breakpoint ausreichend grosse Touch-Ziele und scrollbares Menue. */
+@media (max-width: 887px) {
+    .hamburger {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hamburger span {
+        width: 30px;
+        left: 7px;
+    }
+
+    #nav-toggle:checked ~ .nav-links {
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 10px 0 16px;
+    }
+
+    .nav-links li {
+        margin: 0;
+    }
+
+    .nav-links a,
+    .dropdown-content li a,
+    .nav-links li.nav-cta-email a,
+    .nav-links li.nav-cta-tel a {
+        min-height: 44px;
+        padding: 13px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        line-height: 1.2;
+    }
+
+    .dropdown {
+        display: block;
+        width: 100%;
+    }
+
+    .dropdown-content {
+        min-width: 0;
+    }
+
+    .dropdown:hover .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        display: block;
+    }
+}
+
+/* Mobile/Tablet Responsive-Optimierung: Layouts stapeln, Touch-Ziele vergroessern und Ueberbreiten vermeiden. */
+@media (max-width: 768px) {
+    body {
+        min-width: 0;
+    }
+
+    h2,
+    .welcome-section h2,
+    .section-title,
+    .main-title-dark {
+        font-size: clamp(1.55rem, 7vw, 2rem);
+        line-height: 1.2;
+        letter-spacing: 1px;
+    }
+
+    p,
+    .subtitle,
+    .section-subtitle {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+
+    .navbar {
+        padding: 14px 20px;
+    }
+
+    .logo img {
+        height: 38px;
+    }
+
+    .nav-links {
+        z-index: 1000;
+    }
+
+    .hero-section {
+        min-height: 48vh !important;
+        padding: 56px 18px;
+        background-position: center center;
+    }
+
+    .welcome-section,
+    .calculator-section,
+    .export-section,
+    .history-section,
+    .hours-page,
+    .contact-cards-section,
+    .location-section,
+    .legal-page {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .welcome-section {
+        padding-top: 36px;
+        padding-bottom: 36px;
+        width: 100%;
+    }
+
+    .welcome-section p,
+    .finance-intro p,
+    .legal-section p,
+    .legal-section li {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .image-grid,
+    .contact-grid,
+    .hours-grid,
+    .export-grid,
+    .calc-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .image-grid {
+        margin: 28px auto;
+        padding: 14px;
+        gap: 12px;
+        border-radius: 18px;
+        width: min(100%, 1200px);
+    }
+
+    .grid-item img {
+        height: 280px;
+    }
+
+    .grid-label {
+        left: 16px;
+        bottom: 16px;
+        right: 16px;
+        font-size: 1rem;
+    }
+
+    .iframe-container-large,
+    .map-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .fahrzeuge-section iframe {
+        height: 1400px;
+        min-height: 700px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+    }
+
+    .calc-card,
+    .contact-card,
+    .hours-card,
+    .export-card,
+    .export-details,
+    .hours-footer {
+        padding: 24px;
+        border-radius: 14px;
+    }
+
+    .calc-grid {
+        gap: 24px;
+    }
+
+    .input-group input,
+    .input-group select,
+    .submit-btn,
+    .route-btn,
+    .btn-contact,
+    .acc-content button {
+        min-height: 44px;
+    }
+
+    .calc-result-box {
+        padding: 24px;
+    }
+
+    .detail-row {
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .contact-card {
+        overflow-wrap: anywhere;
+    }
+
+    .route-btn {
+        width: 100%;
+        max-width: 420px;
+        justify-content: center;
+        text-align: center;
+        padding: 14px 18px;
+    }
+
+    .timeline-nav {
+        margin-bottom: 44px;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .timeline-nav ul {
+        gap: 12px;
+        min-width: max-content;
+        margin: 0 auto;
+    }
+
+    .history-section {
+        padding-top: 54px;
+        padding-bottom: 54px;
+    }
+
+    .history-item {
+        margin-bottom: 44px;
+        pointer-events: auto;
+    }
+
+    .history-image img {
+        height: 320px;
+    }
+
+    .year-label {
+        margin-bottom: 0;
+    }
+
+    .history-text h2 {
+        font-size: 2rem;
+    }
+
+    .hours-page {
+        padding-top: 54px;
+        padding-bottom: 54px;
+    }
+
+    .hours-table td {
+        font-size: 0.95rem;
+    }
+
+    .footer-container,
+    .footer-section,
+    .footer-bottom,
+    .footer-text,
+    .footer-links {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .acc-menu {
+        right: 12px;
+        width: min(280px, calc(100vw - 24px));
+    }
+}
+
+/* Kleine Smartphones: kompaktere Abstaende und skalierte Sonder-Elemente. */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .logo img {
+        height: 34px;
+    }
+
+    .hero-section {
+        min-height: 44vh !important;
+        padding: 48px 16px;
+    }
+
+    .main-title,
+    .hero-content h1.main-title {
+        font-size: clamp(1.65rem, 9vw, 2.25rem) !important;
+    }
+
+    .welcome-section,
+    .calculator-section,
+    .export-section,
+    .history-section,
+    .hours-page,
+    .contact-cards-section,
+    .location-section,
+    .legal-page {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .image-grid {
+        padding: 10px;
+        border-radius: 14px;
+    }
+
+    .grid-item img {
+        height: 220px;
+    }
+
+    .calc-card,
+    .contact-card,
+    .hours-card,
+    .export-card,
+    .export-details,
+    .hours-footer {
+        padding: 18px;
+    }
+
+    .monthly-amount {
+        font-size: 1.75rem;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .fahrzeuge-section iframe {
+        height: 1200px;
+        min-height: 650px;
+        border-radius: 8px;
+    }
+
+    .plate {
+        width: 100%;
+        max-width: 280px;
+        height: 54px;
+    }
+
+    .city,
+    .number {
+        font-size: 24px;
+    }
+
+    .city {
+        margin-left: 10px;
+    }
+
+    .dots {
+        margin: 0 6px;
+    }
+
+    .date-badge {
+        width: 34px;
+        font-size: 9px;
+    }
+
+    .detail-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .history-image img {
+        height: 240px;
+    }
+
+    .year-label {
+        font-size: 3rem;
+    }
+
+    .history-text h2 {
+        font-size: 1.65rem;
+    }
+
+    .hours-table td {
+        display: block;
+        width: 100%;
+        text-align: left !important;
+        border-bottom: none;
+        padding: 5px 0;
+    }
+
+    .hours-table tr {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .hours-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .legal-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .legal-section h2 {
+        font-size: 1.2rem;
+        letter-spacing: 0.5px;
+    }
+
+    .acc-button {
+        right: 14px;
+        bottom: 14px;
+        width: 46px;
+        height: 46px;
+    }
+}

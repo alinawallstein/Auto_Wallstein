@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzierung | Auto Wallstein</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+       <nav class="navbar">
+    <div class="logo">
+        <a href="index.html" aria-label="Zur Startseite">
+            <img src="pics/logo.png" alt="Auto Wallstein Logo">
+        </a>
+    </div>
+
+    <input type="checkbox" id="nav-toggle" style="display: none;">
+    <label for="nav-toggle" class="hamburger">
+        <span></span>
+    </label>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="fahrzeuge.html">Fahrzeuge</a></li>
+        <li><a href="finanzierung.html">Finanzierung</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropbtn">Über uns ▼</a>
+            <ul class="dropdown-content">
+                <li><a href="ueberuns.html">Historie</a></li>
+                <li><a href="oeffnungzeiten.html">Öffnungszeiten</a></li>
+                <li><a href="impressum.html">Impressum</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
+                <li><a href="kontakt.html">Kontakt & Anfahrt</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-cta-email">
+            <a href="mailto:verkauf@auto-wallstein.de">
+                <span class="full-label">verkauf@auto-wallstein.de</span>
+                <span class="btn-text">E-Mail</span>
+                <span class="btn-icon">✉</span>
+            </a>
+        </li>
+
+        <li class="nav-cta-tel">
+            <a href="tel:+496104406770">
+                <span class="full-label">+49 6104 406770</span>
+                <span class="btn-text">anrufen</span>
+                <span class="btn-icon">📞</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+    <main class="finance-page">
+       <section class="welcome-section finance-intro">
+    <div class="container">
+        <h1>Finanzierung</h1>
+
+        <p>
+            Ein Auto ist eine Investition für viele Jahre – deshalb soll die Finanzierung zu Ihrer Situation passen.
+            Bei Auto Wallstein unterstützen wir Sie dabei, eine passende Rate, Laufzeit und (auf Wunsch) eine Anzahlung
+            zu wählen. Gemeinsam finden wir eine Lösung, die transparent, planbar und fair ist.
+        </p>
+
+        <p>
+            Sprechen Sie uns gerne an – wir erstellen Ihnen ein individuelles Angebot und erklären Ihnen alle Schritte
+            verständlich, damit Sie sicher entscheiden können.
+        </p>
+
+        <p class="finance-highlights">
+            <strong>Ihre Vorteile:</strong> schnelle Rückmeldung, unkomplizierte Abwicklung, Finanzierung auch ohne Anzahlung möglich.
+        </p>
+    </div>
+</section>
+
+        <section class="calculator-section">
+            <div class="container">
+                <h2 class="section-title">Finanzierungsrechner</h2>
+                <p class="section-subtitle">Berechnen Sie Ihre monatliche Rate für Ihren Traum-Mercedes.</p>
+
+                <div class="calc-card">
+                    <div class="calc-grid">
+                        <div class="calc-inputs">
+                            <div class="input-group">
+                                <label>Fahrzeugpreis (€)</label>
+                                <input type="number" id="price" value="45000" oninput="updateCalc()">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Anzahlung (€)</label>
+                                <input type="number" id="downpayment" value="10000" oninput="updateCalc()">
+                            </div>
+
+                            <div class="input-group">
+                                <label>Laufzeit (Monate)</label>
+                                <select id="months" onchange="updateCalc()">
+                                    <option value="12">12 Monate</option>
+                                    <option value="24">24 Monate</option>
+                                    <option value="36" selected>36 Monate</option>
+                                    <option value="48">48 Monate</option>
+                                    <option value="60">60 Monate</option>
+                                    <option value="72">72 Monate</option>
+                                    <option value="84">84 Monate</option>
+                                    <option value="96">96 Monate</option>
+                                </select>
+                            </div>
+
+                            <div id="zins-container">
+                                <div class="input-group">
+                                    <label>EFFEKTIVER JAHRESZINS (%)</label>
+                                    <input type="number" id="eff-interest" placeholder="z. B. 6,9" step="0.01" oninput="updateCalc()">
+                                </div>
+
+                                <div class="input-group">
+                                    <label>SOLLZINSSATZ (GEBUNDEN) P.A. (%)</label>
+                                    <input type="number" id="soll-interest" readonly style="background: #f9f9f9; cursor: not-allowed;">
+                                </div>
+                            </div>
+                            <div class="input-group">
+    <label>Wunsch-Schlussrate (€)</label>
+    <input type="number" id="balloon" value="0" oninput="updateCalc()">
+    <small style="color: #666; font-size: 0.75rem;">(Optional: Betrag am Ende der Laufzeit)</small>
+</div>
+
+                         
+                        </div>
+
+                        <div class="calc-result-box">
+                            <div class="result-header">Ihre geschätzte Rate</div>
+                            <div class="monthly-amount" id="monthly-rate">0,00 €</div>
+                            <div class="result-details">
+                                <div class="detail-row" style="display: flex; justify-content: space-between;">
+                                    <span>Nettokreditbetrag (inkl. Preisvorteils-Anpassung):</span>
+                                    <span id="loan-amount">0,00 €</span>
+                                </div>
+                                <div class="detail-row" style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                    <span>Gesamtrückzahlungsbetrag:</span>
+                                    <span id="total-cost">0,00 €</span>
+                                </div>
+                                <div class="detail-row" style="display: flex; justify-content: space-between; margin-top: 10px; color: #ffcc00; font-weight: bold;">
+                                    <span>Zinskosten gesamt:</span>
+                                    <span id="total-interest">0,00 €</span>
+                                </div>
+                            </div>
+                            <a href="kontakt.html#contact" class="submit-btn" style="text-align:center; display:block; text-decoration:none; margin-top: 20px; background: white; color: black; padding: 15px; border-radius: 8px; font-weight: bold;">Angebot anfordern</a>
+                        </div>
+                    </div>
+                    <p class="disclaimer" style="font-size: 0.9rem; opacity: 0.9; margin-top: 25px; text-align: center; font-weight: 400; color: #555; border-top: 1px solid #eee; padding-top: 15px;">
+                        * Es handelt sich um eine unverbindliche Beispielrechnung. Die finalen Konditionen und die tatsächliche Zinsfestschreibung erhalten Sie nach individueller Prüfung durch unsere Partnerbanken.
+                    </p>
+                </div>
+            </div>
+        </section>
+          <section class="export-section">
+    <div class="container">
+        <h2 class="section-title">EXPORT & ZULASSUNG</h2>
+        <p class="section-subtitle">Wir unterstützen Sie bei allen Formalitäten für den weltweiten Fahrzeugversand.</p>
+
+        <div class="export-grid">
+            <div class="export-card">
+                <div class="plate-box">
+                    <div class="plate plate-yellow">
+                        <span class="d-mark">D</span>
+                        <span class="city">OF</span>
+                        <span class="dots">•</span>
+                        <span class="number">04...</span>
+                        <div class="date-badge">21<br>10<br>19</div>
+                    </div>
+                </div>
+                <div class="export-info">
+                    <h3>5 Tage Kennzeichen</h3>
+                    <p>Inklusive Versicherung</p>
+                    <span class="price">ca. 150,- €</span>
+                </div>
+            </div>
+
+            <div class="export-card">
+                <div class="plate-box">
+                    <div class="plate plate-red">
+                        <span class="d-mark">D</span>
+                        <span class="city">OF</span>
+                        <span class="dots">•</span>
+                        <span class="number">...</span>
+                        <div class="date-badge">21<br>10<br>19</div>
+                    </div>
+                </div>
+                <div class="export-info">
+                    <h3>1 Monat Export Kennzeichen</h3>
+                    <p>Inklusive aller Formalitäten</p>
+                    <span class="price">ca. 290,- €</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-details">
+            <div class="detail-item">
+                <span class="icon">🇪🇺</span>
+                <p><strong>EU-Mitgliedstaaten:</strong> Export mit Steuer-ID Nr. auch ohne MwSt. Kaution möglich.</p>
+            </div>
+            <div class="detail-item">
+                <span class="icon">🌍</span>
+                <p><strong>Drittländer (Nicht-EU):</strong> Erstellung aller notwendigen Papiere für eine reibungslose Ausfuhr.</p>
+            </div>
+            <div class="shipping-info">
+                <h3>Weltweiter Versand & Verschiffung</h3>
+                <p>Wir sind Ihr Partner für die weltweite Logistik. Unser Spektrum umfasst Luftfracht, Containerverladung sowie Stückgut im Im- und Exportbereich.</p>
+            </div>
+        </div>
+    </div>
+</section>
+    </main>
+
+   <footer class="main-footer">
+    <div class="footer-container">
+
+        <div class="footer-section">
+            <p class="footer-text">
+                © 2026 <strong>Auto Wallstein</strong> — Rudolf-Braas-Straße 27a, 63150 Heusenstamm
+            </p>
+            <p class="footer-links">
+                <a href="impressum.html">Impressum</a>
+                <span class="divider">|</span>
+                <a href="datenschutz.html">Datenschutz</a>
+            </p>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-dev">
+                Design und Entwicklung by <span>Alina Wallstein</span>
+            </p>
+        </div>
+
+    </div>
+</footer>
+    <div id="acc-plugin" class="acc-button" onclick="toggleAccMenu()" title="Barrierefreiheit">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+        <circle cx="12" cy="5" r="1"></circle>
+        <path d="m9 20 3-6 3 6"></path>
+        <path d="m6 8 6 2 6-2"></path>
+        <path d="M12 10v4"></path>
+    </svg>
+</div>
+
+<div id="acc-menu" class="acc-menu hidden">
+    <div class="acc-header">
+        <span class="acc-header-title">Barrierefreiheit</span>
+        <button onclick="toggleAccMenu()" class="close-acc" aria-label="Schließen">✕</button>
+    </div>
+    
+    <div class="acc-content">
+        <button onclick="changeFontSize('increase')">➕ Text vergrößern</button>
+        <button onclick="changeFontSize('decrease')">➖ Text verkleinern</button>
+        <button onclick="toggleInvert()">🌓 Farben invertieren</button>
+        <button onclick="toggleGrayscale()">🔘 Graustufen</button>
+        <button onclick="highlightLinks()">🔗 Links hervorheben</button>
+        <button onclick="toggleReadableFont()">🔡 Lesbare Schrift</button>
+        <button onclick="resetAcc()" class="reset-btn">🔄 Zurücksetzen</button>
+    </div>
+</div>
+    <script src="script.js"></script>
+</body>
+</html>
