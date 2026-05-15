@@ -2904,12 +2904,14 @@ h2,
         left: 0;
         right: 0;
         z-index: 9100;
-        background: var(--glass-bg-strong);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(236, 243, 252, 0.90));
         border: 1px solid var(--glass-border);
         border-left: 0;
         border-right: 0;
         border-radius: 0 0 16px 16px;
-        box-shadow: var(--glass-shadow);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.78),
+            0 22px 58px rgba(15, 23, 42, 0.24);
         backdrop-filter: blur(24px) saturate(170%);
         -webkit-backdrop-filter: blur(24px) saturate(170%);
     }
@@ -2933,10 +2935,228 @@ h2,
     }
 }
 
+@media (prefers-color-scheme: dark) and (max-width: 887px) {
+    .liquid-glass-page .nav-links {
+        background: linear-gradient(135deg, rgba(20, 29, 43, 0.96), rgba(10, 16, 25, 0.92));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            0 22px 58px rgba(0, 0, 0, 0.40);
+    }
+}
+
 @media (max-width: 768px) {
     .liquid-glass-page .welcome-section {
         border-left: 0;
         border-right: 0;
         border-radius: 0;
+    }
+}
+
+/* Modern hero slider intro animation. */
+.hero-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none !important;
+    background-color: #111827;
+}
+
+.hero-section::before,
+.hero-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.hero-section::before {
+    z-index: 0;
+    background-image:
+        linear-gradient(90deg, rgba(8, 13, 20, 0.64), rgba(8, 13, 20, 0.18) 54%, rgba(8, 13, 20, 0.48)),
+        url('pics/titelbild.jpeg');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.06);
+    animation: heroImageSettle 1600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+
+.hero-section::after {
+    z-index: 1;
+    background:
+        linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.22) 38%, rgba(255, 255, 255, 0.05) 48%, transparent 60%),
+        radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.18), transparent 18rem);
+    transform: translateX(-120%) skewX(-12deg);
+    animation: heroGlassSweep 1300ms cubic-bezier(0.22, 1, 0.36, 1) 420ms both;
+    mix-blend-mode: screen;
+}
+
+.hero-content,
+.scroll-down {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h1.main-title,
+.main-title {
+    animation: heroTitleReveal 900ms cubic-bezier(0.16, 1, 0.3, 1) 360ms both;
+}
+
+.scroll-down {
+    animation: heroControlReveal 700ms ease 950ms both;
+}
+
+@keyframes heroImageSettle {
+    from {
+        opacity: 0.72;
+        transform: scale(1.08) translateY(14px);
+        filter: saturate(0.85) contrast(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: saturate(1) contrast(1);
+    }
+}
+
+@keyframes heroGlassSweep {
+    from {
+        opacity: 0;
+        transform: translateX(-120%) skewX(-12deg);
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(120%) skewX(-12deg);
+    }
+}
+
+@keyframes heroTitleReveal {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+        filter: blur(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes heroControlReveal {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-section::before,
+    .hero-section::after,
+    .hero-content h1.main-title,
+    .main-title,
+    .scroll-down {
+        animation: none !important;
+        transform: none !important;
+        filter: none !important;
+    }
+
+    .hero-section::after {
+        display: none;
+    }
+}
+
+/* Persistent interface layers. */
+.liquid-glass-page {
+    --nav-fixed-offset: 92px;
+    padding-top: var(--nav-fixed-offset);
+}
+
+.navbar,
+.liquid-glass-page .navbar,
+.liquid-glass-page > nav.navbar {
+    position: fixed !important;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9000;
+}
+
+.liquid-glass-page > .site-header,
+.liquid-glass-page > header:has(.navbar) {
+    position: fixed !important;
+    top: 12px;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+    pointer-events: none;
+}
+
+.liquid-glass-page > .site-header .navbar,
+.liquid-glass-page > header:has(.navbar) .navbar {
+    pointer-events: auto;
+}
+
+.acc-button,
+.liquid-glass-page .acc-button {
+    position: fixed !important;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 10001;
+}
+
+.acc-menu,
+.liquid-glass-page .acc-menu {
+    position: fixed !important;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 66px);
+    z-index: 10000;
+}
+
+@media (max-width: 1024px) {
+    .liquid-glass-page {
+        --nav-fixed-offset: 68px;
+    }
+
+    .navbar,
+    .liquid-glass-page .navbar,
+    .liquid-glass-page > nav.navbar,
+    .liquid-glass-page > .site-header,
+    .liquid-glass-page > header:has(.navbar) {
+        position: fixed !important;
+        top: 0;
+    }
+
+    .navbar,
+    .liquid-glass-page .navbar,
+    .liquid-glass-page > nav.navbar {
+        left: 0;
+        right: 0;
+        transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .acc-button,
+    .liquid-glass-page .acc-button {
+        width: 46px;
+        height: 46px;
+    }
+
+    .acc-menu,
+    .liquid-glass-page .acc-menu {
+        width: min(280px, calc(100vw - 32px));
+        bottom: calc(max(16px, env(safe-area-inset-bottom)) + 60px);
     }
 }
