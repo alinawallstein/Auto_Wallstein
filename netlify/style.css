@@ -365,6 +365,288 @@ p {
         height: 250px;      /* Noch schmaler auf dem Handy */
     }
 }
+
+/* Moderner Website-Style: konsistente Farben, ruhigere Flaechen, hochwertigere Cards und Buttons. */
+:root {
+    --bg-color: #f7f9fc;
+    --text-color: #111827;
+    --nav-bg: rgba(255, 255, 255, 0.88);
+    --section-alt: #eef3f8;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --accent: #6f8fb8;
+    --accent-blue: #223044;
+    --border-color: rgba(34, 48, 68, 0.14);
+    --muted-text: #5b6575;
+    --soft-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
+    --strong-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #0c1118;
+        --text-color: #f8fafc;
+        --nav-bg: rgba(13, 18, 26, 0.88);
+        --section-alt: #121a25;
+        --card-bg: rgba(20, 28, 40, 0.92);
+        --accent: #8ba9ce;
+        --accent-blue: #d9e6f5;
+        --border-color: rgba(255, 255, 255, 0.12);
+        --muted-text: #c5cfdd;
+        --soft-shadow: 0 18px 48px rgba(0, 0, 0, 0.30);
+        --strong-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+    }
+}
+
+body {
+    font-family: 'Lato', Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(111, 143, 184, 0.18), transparent 28rem),
+        linear-gradient(180deg, var(--bg-color), var(--section-alt));
+}
+
+h1,
+h2,
+.main-title-dark,
+.section-title {
+    letter-spacing: 0;
+}
+
+h2,
+.section-title,
+.black-bg-text {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.08;
+}
+
+p,
+.subtitle,
+.section-subtitle {
+    color: var(--muted-text);
+}
+
+.navbar {
+    margin: 14px auto 0;
+    width: min(1180px, calc(100% - 32px));
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.logo img {
+    border-radius: 8px;
+}
+
+.nav-links a {
+    color: var(--accent-blue);
+    border-radius: 8px;
+    padding: 10px 6px;
+}
+
+.nav-links a:hover,
+.dropdown-content li a:hover {
+    background: rgba(111, 143, 184, 0.13);
+    opacity: 1;
+}
+
+.nav-links li.nav-cta-email a,
+.nav-links li.nav-cta-tel a,
+.route-btn,
+.btn-contact,
+.submit-btn {
+    border-radius: 8px !important;
+    box-shadow: 0 12px 28px rgba(34, 48, 68, 0.18);
+}
+
+.hero-section {
+    min-height: 76vh;
+    height: auto;
+    background-image:
+        linear-gradient(90deg, rgba(8, 13, 20, 0.70), rgba(8, 13, 20, 0.22) 48%, rgba(8, 13, 20, 0.58)),
+        url('pics/titelbild.jpeg');
+}
+
+.hero-content {
+    width: min(980px, 92%);
+    align-items: flex-start;
+}
+
+.hero-content h1.main-title,
+.main-title {
+    max-width: 920px;
+    text-align: left !important;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 7vw, 5.7rem);
+    line-height: 0.98;
+    text-shadow: 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+.scroll-down {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.welcome-section {
+    width: min(1180px, calc(100% - 32px));
+    margin: -42px auto 0;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: var(--soft-shadow);
+}
+
+.welcome-section h2,
+.welcome-section p {
+    max-width: 860px;
+}
+
+.image-grid,
+.calc-card,
+.export-card,
+.export-details,
+.contact-card,
+.hours-card,
+.hours-footer,
+.legal-section,
+.history-image img,
+.map-container,
+.fahrzeuge-section iframe {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--soft-shadow);
+}
+
+.image-grid {
+    gap: 18px;
+    padding: 18px;
+    background: linear-gradient(135deg, #1d2a3d, #354c68);
+}
+
+.grid-item {
+    border-radius: 10px;
+}
+
+.grid-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.66));
+    pointer-events: none;
+}
+
+.grid-label {
+    z-index: 1;
+    letter-spacing: 0.04em;
+}
+
+.calculator-section,
+.location-section,
+.export-section,
+.contact-cards-section,
+.history-section,
+.legal-page {
+    background: transparent;
+}
+
+.input-group input,
+.input-group select {
+    min-height: 46px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: var(--accent);
+    outline: 3px solid rgba(111, 143, 184, 0.22);
+}
+
+.calc-result-box,
+.route-btn {
+    background: linear-gradient(135deg, #223044, #496885);
+}
+
+.monthly-amount {
+    letter-spacing: 0;
+}
+
+.contact-card,
+.export-card,
+.hours-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.contact-card:hover,
+.export-card:hover,
+.hours-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(111, 143, 184, 0.42);
+    box-shadow: var(--strong-shadow);
+}
+
+.card-detail,
+.price,
+.year-label {
+    color: #53759f;
+}
+
+.main-footer {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.58);
+}
+
+.acc-button {
+    box-shadow: var(--strong-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+    .input-group input,
+    .input-group select,
+    .main-footer {
+        background: rgba(20, 28, 40, 0.74);
+    }
+
+    .card-detail,
+    .price,
+    .year-label {
+        color: #9db9db;
+    }
+}
+
+@media (max-width: 887px) {
+    .navbar {
+        width: 100%;
+        margin-top: 0;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+    }
+
+    .nav-links {
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        align-items: center;
+    }
+
+    .hero-content h1.main-title,
+    .main-title {
+        text-align: center !important;
+    }
+
+    .welcome-section {
+        width: 100%;
+        margin-top: 0;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+    }
+}
 /* 6. CONTENT SEKTIONEN */
 /* 1. Hero-Section: Sicherstellen, dass nach unten kein Platz ist */
 .hero-section {
@@ -724,6 +1006,261 @@ p {
 
     .history-image img:nth-child(2) {
         display: none; /* Auf dem Handy nur ein Bild zeigen */
+    }
+}
+
+/* --- LIQUID GLASS HISTORIE --- */
+.liquid-glass-page {
+    position: relative;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 18% 8%, rgba(120, 153, 197, 0.34), transparent 22rem),
+        radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.72), transparent 18rem),
+        radial-gradient(circle at 50% 92%, rgba(38, 88, 187, 0.18), transparent 24rem),
+        linear-gradient(135deg, #eef4fb 0%, #f9fbff 45%, #dde8f5 100%);
+    background-attachment: fixed;
+}
+
+.liquid-glass-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(115deg, rgba(255, 255, 255, 0.34), transparent 34%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 18px);
+    opacity: 0.65;
+    z-index: 0;
+}
+
+.liquid-glass-page > * {
+    position: relative;
+    z-index: 1;
+}
+
+.liquid-glass-page .navbar,
+.liquid-glass-page .timeline-nav ul,
+.liquid-glass-page .history-text,
+.liquid-glass-page .main-footer,
+.liquid-glass-page .acc-menu {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28));
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 24px 70px rgba(31, 46, 74, 0.16);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+}
+
+.liquid-glass-page .navbar {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.36));
+}
+
+.liquid-glass-page .dropdown-content {
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    box-shadow: 0 22px 56px rgba(31, 46, 74, 0.18);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+}
+
+.liquid-glass-page .history-section {
+    position: relative;
+    isolation: isolate;
+    padding-top: 96px;
+    background: transparent;
+}
+
+.liquid-glass-page .history-section::before,
+.liquid-glass-page .history-section::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(2px);
+}
+
+.liquid-glass-page .history-section::before {
+    width: 360px;
+    height: 360px;
+    top: 140px;
+    left: -120px;
+    background: radial-gradient(circle, rgba(120, 153, 197, 0.32), transparent 68%);
+}
+
+.liquid-glass-page .history-section::after {
+    width: 420px;
+    height: 420px;
+    right: -140px;
+    bottom: 160px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.78), transparent 62%);
+}
+
+.liquid-glass-page .timeline-nav {
+    margin-bottom: 64px;
+}
+
+.liquid-glass-page .timeline-nav ul {
+    gap: 14px;
+    padding: 8px;
+    border-radius: 999px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.68);
+}
+
+.liquid-glass-page .timeline-nav li {
+    min-width: 96px;
+    border-radius: 999px;
+    text-align: center;
+    color: #223044;
+}
+
+.liquid-glass-page .timeline-nav li.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(38, 88, 187, 0.88), rgba(120, 153, 197, 0.82));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 12px 28px rgba(38, 88, 187, 0.22);
+}
+
+.liquid-glass-page .timeline-nav li.active::after {
+    display: none;
+}
+
+.liquid-glass-page .history-item {
+    width: min(1160px, 100%);
+    margin: 0 auto 54px;
+    gap: clamp(28px, 5vw, 64px);
+    pointer-events: auto;
+}
+
+.liquid-glass-page .history-text {
+    position: relative;
+    padding: clamp(28px, 4vw, 46px);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.liquid-glass-page .history-text::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 23px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.44), transparent 54%);
+    pointer-events: none;
+}
+
+.liquid-glass-page .history-text > * {
+    position: relative;
+}
+
+.liquid-glass-page .year-label {
+    color: rgba(38, 88, 187, 0.82);
+    text-shadow: 0 10px 32px rgba(38, 88, 187, 0.16);
+}
+
+.liquid-glass-page .history-text h2 {
+    color: #172033;
+}
+
+.liquid-glass-page .history-text p {
+    color: #4b586b;
+}
+
+.liquid-glass-page .history-image {
+    gap: 18px;
+}
+
+.liquid-glass-page .history-image img {
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 24px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        0 26px 76px rgba(31, 46, 74, 0.22);
+}
+
+.liquid-glass-page .history-image::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%, rgba(120, 153, 197, 0.18));
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.liquid-glass-page .image-mask {
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 35%),
+        linear-gradient(45deg, rgba(120, 153, 197, 0.30), transparent 66%);
+    opacity: 1;
+    border-radius: 24px;
+}
+
+.liquid-glass-page .main-footer {
+    margin: 22px auto 0;
+    width: min(1180px, calc(100% - 32px));
+    border-radius: 20px 20px 0 0;
+}
+
+.liquid-glass-page .acc-button {
+    background: linear-gradient(135deg, rgba(38, 88, 187, 0.92), rgba(120, 153, 197, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+@media (prefers-color-scheme: dark) {
+    .liquid-glass-page {
+        background:
+            radial-gradient(circle at 18% 8%, rgba(120, 153, 197, 0.22), transparent 22rem),
+            radial-gradient(circle at 82% 20%, rgba(95, 121, 154, 0.18), transparent 18rem),
+            radial-gradient(circle at 50% 92%, rgba(38, 88, 187, 0.24), transparent 24rem),
+            linear-gradient(135deg, #0a111b 0%, #111b28 52%, #0b1320 100%);
+    }
+
+    .liquid-glass-page .navbar,
+    .liquid-glass-page .timeline-nav ul,
+    .liquid-glass-page .history-text,
+    .liquid-glass-page .main-footer,
+    .liquid-glass-page .acc-menu,
+    .liquid-glass-page .dropdown-content {
+        background: linear-gradient(135deg, rgba(22, 31, 45, 0.68), rgba(12, 17, 24, 0.36));
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    .liquid-glass-page .timeline-nav li,
+    .liquid-glass-page .history-text h2 {
+        color: #f8fafc;
+    }
+
+    .liquid-glass-page .history-text p {
+        color: #c8d2df;
+    }
+}
+
+@media (max-width: 900px) {
+    .liquid-glass-page .history-section {
+        padding: 56px 18px;
+    }
+
+    .liquid-glass-page .timeline-nav {
+        margin-bottom: 38px;
+    }
+
+    .liquid-glass-page .history-item {
+        margin-bottom: 34px;
+    }
+
+    .liquid-glass-page .history-text {
+        width: 100%;
+    }
+
+    .liquid-glass-page .history-image img {
+        height: min(70vw, 380px);
     }
 }
 /* ================================
@@ -1859,5 +2396,235 @@ p {
         bottom: 14px;
         width: 46px;
         height: 46px;
+    }
+}
+
+/* Finale moderne Cascade: steht bewusst am Dateiende und ueberschreibt aeltere Detailregeln. */
+.navbar {
+    margin: 14px auto 0;
+    width: min(1180px, calc(100% - 32px));
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.hero-section {
+    min-height: 76vh;
+    height: auto;
+    background-image:
+        linear-gradient(90deg, rgba(8, 13, 20, 0.70), rgba(8, 13, 20, 0.22) 48%, rgba(8, 13, 20, 0.58)),
+        url('pics/titelbild.jpeg');
+}
+
+.hero-content {
+    width: min(980px, 92%);
+    align-items: flex-start;
+}
+
+.hero-content h1.main-title,
+.main-title {
+    max-width: 920px;
+    text-align: left !important;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 7vw, 5.7rem);
+    line-height: 0.98;
+    text-shadow: 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+.welcome-section {
+    width: min(1180px, calc(100% - 32px));
+    margin: -42px auto 0;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--card-bg);
+    box-shadow: var(--soft-shadow);
+}
+
+.image-grid,
+.calc-card,
+.export-card,
+.export-details,
+.contact-card,
+.hours-card,
+.hours-footer,
+.legal-section,
+.history-image img,
+.map-container,
+.fahrzeuge-section iframe {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--soft-shadow);
+}
+
+.calc-result-box,
+.route-btn {
+    background: linear-gradient(135deg, #223044, #496885);
+}
+
+@media (max-width: 887px) {
+    .navbar {
+        width: 100%;
+        margin-top: 0;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+    }
+}
+
+/* Design-Korrektur: Startseite ruhiger, kleinere Typografie und weniger dominante Effekte. */
+.navbar {
+    width: min(1120px, calc(100% - 32px));
+    margin-top: 12px;
+    padding: 14px 4%;
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+}
+
+.nav-links li {
+    margin: 0 9px;
+}
+
+.nav-links a {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+}
+
+.hero-section {
+    min-height: 62vh;
+    background-image:
+        linear-gradient(90deg, rgba(8, 13, 20, 0.62), rgba(8, 13, 20, 0.20) 54%, rgba(8, 13, 20, 0.48)),
+        url('pics/titelbild.jpeg');
+}
+
+.hero-content {
+    width: min(820px, 90%);
+}
+
+.hero-content h1.main-title,
+.main-title {
+    max-width: 760px;
+    font-size: clamp(2rem, 4.8vw, 4.15rem);
+    line-height: 1.06;
+    font-weight: 800;
+    text-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.welcome-section {
+    width: min(1040px, calc(100% - 32px));
+    margin-top: -24px;
+    padding-top: 46px;
+    padding-bottom: 46px;
+    border-radius: 12px;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+}
+
+.welcome-section h2,
+h2,
+.section-title,
+.black-bg-text {
+    font-size: clamp(1.55rem, 3vw, 2.1rem);
+    line-height: 1.18;
+    letter-spacing: 0.04em;
+}
+
+.welcome-section p {
+    max-width: 720px;
+    font-size: 1rem;
+}
+
+.image-grid {
+    width: min(1080px, calc(100% - 32px));
+    margin-top: 32px;
+    margin-bottom: 32px;
+    padding: 14px;
+    gap: 14px;
+    border-radius: 12px;
+    background: #223044;
+    box-shadow: 0 16px 42px rgba(15, 23, 42, 0.10);
+}
+
+.grid-item img {
+    height: 300px;
+}
+
+.grid-label {
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+}
+
+.calc-card,
+.export-card,
+.export-details,
+.contact-card,
+.hours-card,
+.hours-footer,
+.legal-section,
+.map-container,
+.fahrzeuge-section iframe {
+    border-radius: 10px;
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+}
+
+.route-btn,
+.btn-contact,
+.submit-btn {
+    box-shadow: 0 10px 24px rgba(34, 48, 68, 0.14);
+}
+
+@media (max-width: 887px) {
+    .navbar {
+        width: 100%;
+        margin-top: 0;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 46vh !important;
+        padding: 52px 18px;
+    }
+
+    .hero-content h1.main-title,
+    .main-title {
+        max-width: 100%;
+        font-size: clamp(1.8rem, 8vw, 2.65rem) !important;
+        text-align: center !important;
+    }
+
+    .welcome-section {
+        width: 100%;
+        margin-top: 0;
+        padding-top: 36px;
+        padding-bottom: 36px;
+        border-radius: 0;
+    }
+
+    .image-grid {
+        width: calc(100% - 28px);
+    }
+
+    .grid-item img {
+        height: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1.main-title,
+    .main-title {
+        font-size: clamp(1.65rem, 9vw, 2.2rem) !important;
+    }
+
+    .welcome-section h2,
+    h2,
+    .section-title,
+    .black-bg-text {
+        font-size: clamp(1.35rem, 7vw, 1.75rem);
+    }
+
+    .grid-item img {
+        height: 220px;
     }
 }
