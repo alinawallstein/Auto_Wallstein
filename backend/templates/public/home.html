@@ -1,12 +1,13 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}Auto Wallstein | Mercedes-Benz Jahreswagen{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}">{% endblock %}
 {% block content %}
     <header class="hero-section">
         <div class="hero-content">
             <h1 class="main-title">Mercedes Benz Jahres-&amp; Geschäftswagen</h1>
             <p class="hero-subtitle">Entdecke aktuelle Angebote aus unserem Bestand und finde das passende Fahrzeug für dich.</p>
-            <a class="btn btn-primary btn-lg" href="{% url 'public_vehicles' %}">Fahrzeuge ansehen</a>
+            <a class="aw-button" href="{% url 'public_vehicles' %}">Fahrzeuge ansehen</a>
         </div>
         <a href="#welcome" class="scroll-down" aria-label="Zur nächsten Sektion scrollen">
             <span></span>
@@ -25,15 +26,15 @@
 
         <div class="image-grid">
             <a href="{% url 'public_vehicles' %}" class="grid-item">
-                <img src="{% static 'images/Dino.jpeg' %}" alt="Fahrzeugsuche">
+                <img loading="lazy" src="{% static 'images/Dino.jpeg' %}" alt="Fahrzeugsuche">
                 <div class="grid-label">Fahrzeugsuche</div>
             </a>
             <a href="{% url 'about' %}" class="grid-item">
-                <img src="{% static 'images/krass.JPG' %}" alt="Export und Zulassung">
+                <img loading="lazy" src="{% static 'images/krass.JPG' %}" alt="Export und Zulassung">
                 <div class="grid-label">Export &amp; Zulassung</div>
             </a>
             <a href="{% url 'contact' %}" class="grid-item">
-                <img src="{% static 'images/finanzierung.jpg' %}" alt="Finanzierung">
+                <img loading="lazy" src="{% static 'images/finanzierung.jpg' %}" alt="Finanzierung">
                 <div class="grid-label">Finanzieren Sie bequem</div>
             </a>
         </div>
@@ -41,10 +42,10 @@
         <section class="fahrzeuge-section" id="fahrzeuge">
             <h2 class="fahrzeuge-title">
                 Unser Fahrzeugbestand
-                <span class="scroll-hint" aria-hidden="true"></span>
+
             </h2>
             <div class="iframe-container-large">
-                <iframe src="https://auto-wallstein.qualitaetshaendler.de/fahrzeugangebote/" allowfullscreen></iframe>
+                <iframe src="https://auto-wallstein.qualitaetshaendler.de/fahrzeugangebote/" title="Externer Fahrzeugbestand" loading="lazy" allowfullscreen></iframe>
             </div>
         </section>
 
@@ -63,9 +64,9 @@
                     <p>Auto Wallstein wurde mit einer klaren Vision gegründet: Erstklassige Mercedes-Benz Fahrzeuge für Liebhaber zugänglich zu machen.</p>
                 </div>
                 <div class="history-image">
-                    <img src="{% static 'images/1955.jpg' %}" alt="Geschichte">
-                    <img src="{% static 'images/1955.1.JPG' %}" alt="Geschichte">
-                    <div class="image-mask"></div>
+                    <img loading="lazy" src="{% static 'images/1955.jpg' %}" alt="Geschichte">
+                    <img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Geschichte">
+
                 </div>
             </div>
 
@@ -76,7 +77,7 @@
                     <p>Mit Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG finden wir heute für jeden Kunden den perfekten Jahreswagen.</p>
                 </div>
                 <div class="history-image">
-                    <img src="{% static 'images/vonoben.jpg' %}" alt="Showroom">
+                    <img loading="lazy" src="{% static 'images/vonoben.jpg' %}" alt="Showroom">
                 </div>
             </div>
         </section>
@@ -128,14 +129,14 @@
                     <p><strong>Auto Wallstein</strong><br>
                     Rudolf-Braas-Straße 27a<br>
                     63150 Heusenstamm</p>
-                    <p style="margin-top: 15px;">📞 +49 6104 406770</p>
+                    <p><a href="tel:+496104406770">+49 6104 406770</a></p>
                 </div>
             </div>
 
             <div class="hours-footer">
                 <h3>Möchten Sie eine Probefahrt vereinbaren?</h3>
                 <p>Gerne nehmen wir uns Zeit für Sie. Vereinbaren Sie vorab einen Termin.</p>
-                <a href="#kontakt" class="btn-contact">Termin anfragen</a>
+                <a href="#kontakt" class="aw-button">Termin anfragen</a>
             </div>
         </section>
 
@@ -146,14 +147,14 @@
 
                 <div class="contact-grid">
                     <a href="tel:+496104406770" class="contact-card">
-                        <div class="card-icon">📞</div>
+
                         <h3>Telefon</h3>
                         <p>Rufen Sie uns direkt an</p>
                         <span class="card-detail">+49 6104 406770</span>
                     </a>
 
                     <a href="mailto:verkauf@auto-wallstein.de" class="contact-card">
-                        <div class="card-icon">✉</div>
+
                         <h3>E-Mail</h3>
                         <p>Schreiben Sie uns Ihr Anliegen</p>
                         <span class="card-detail">verkauf@auto-wallstein.de</span>
@@ -169,53 +170,27 @@
             </div>
 
             <div class="map-container">
-                <iframe src="https://maps.google.com/maps?q=Rudolf-Braas-Str.%2027a,63150%20Heusenstamm&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://maps.google.com/maps?q=Rudolf-Braas-Str.%2027a,63150%20Heusenstamm&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" title="Anfahrt zu Auto Wallstein" allowfullscreen="" loading="lazy"></iframe>
             </div>
 
             <div class="route-button-container">
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Rudolf-Braas-Straße+27a,63150+Heusenstamm" target="_blank" class="route-btn">
-                    <span class="icon">🚗</span> Route berechnen &amp; Navigation starten
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Rudolf-Braas-Straße+27a,63150+Heusenstamm" target="_blank" class="aw-button">
+                    Route berechnen &amp; Navigation starten
                 </a>
             </div>
         </section>
 
-        <section class="container py-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title h3 mb-0">Aktuelle Angebote</h2>
-                <a href="{% url 'public_vehicles' %}" class="btn btn-outline-primary">Alle Fahrzeuge</a>
+        <section class="page-section">
+            <div class="section-heading">
+                <h2 class="section-title">Aktuelle Angebote</h2>
+                <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Alle Fahrzeuge</a>
             </div>
-            <div class="row g-4">
-                {% if featured_vehicles %}
-                    {% for vehicle in featured_vehicles %}
-                        <div class="col-md-6 col-xl-4">
-                            <article class="card-vehicle">
-                                {% if vehicle.images.first %}
-                                    <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.brand }} {{ vehicle.model }}">
-                                {% else %}
-                                    <div class="d-flex justify-content-center align-items-center bg-light text-muted" style="height: 240px;">Kein Bild</div>
-                                {% endif %}
-                                <div class="p-4">
-                                    <div class="pill mb-3">{{ vehicle.fuel_type }}</div>
-                                    <h3 class="h4 mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h3>
-                                    <div class="meta-row mb-3">
-                                        <span class="meta-item">{{ vehicle.first_registration|date:"m/Y" }}</span>
-                                        <span class="meta-item">{{ vehicle.mileage|floatformat:0 }} km</span>
-                                    </div>
-                                    <div class="meta-row mb-3">
-                                        <span class="meta-item">{{ vehicle.transmission }}</span>
-                                        <span class="meta-item">{{ vehicle.power_kw }} kW</span>
-                                    </div>
-                                    <div class="price mb-3">€ {{ vehicle.sale_price }}</div>
-                                    <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-primary w-100">Details ansehen</a>
-                                </div>
-                            </article>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12">
-                        <div class="alert alert-light border">Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.</div>
-                    </div>
-                {% endif %}
+            <div class="vehicle-grid">
+                {% for vehicle in featured_vehicles %}
+                    {% include 'partials/vehicle_card.html' with vehicle=vehicle heading_level='h3' %}
+                {% empty %}
+                    <p class="notice full-width">Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.</p>
+                {% endfor %}
             </div>
         </section>
     </div>

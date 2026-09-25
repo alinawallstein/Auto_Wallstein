@@ -1,22 +1,22 @@
-{% comment %} Reusable vehicle card. Keep markup minimal; styles inherited from existing CSS. {% endcomment %}
-<article class="card-vehicle">
-    {% if vehicle.images.first %}
-        <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.brand }} {{ vehicle.model }}" loading="lazy" width="800" height="500">
-    {% else %}
-        <div class="no-image">Kein Bild</div>
-    {% endif %}
-    <div class="p-4">
-        <div class="pill mb-3">{{ vehicle.fuel_type }}</div>
-        <h3 class="h4 mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h3>
-        <div class="meta-row mb-3">
-            <span class="meta-item">{{ vehicle.first_registration|date:"m/Y" }}</span>
-            <span class="meta-item">{{ vehicle.mileage|floatformat:0 }} km</span>
-        </div>
-        <div class="meta-row mb-3">
-            <span class="meta-item">{{ vehicle.transmission }}</span>
-            <span class="meta-item">{{ vehicle.power_kw }} kW</span>
-        </div>
-        <div class="price mb-3">€ {{ vehicle.sale_price }}</div>
-        <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-primary w-100">Details ansehen</a>
+<article class="vehicle-card">
+    {% with cover=vehicle.images.first %}
+        {% if cover %}
+            <img class="vehicle-card__image" src="{{ cover.image.url }}" alt="{{ cover.alt_text|default:vehicle.brand }} {{ vehicle.model }}" loading="lazy" width="800" height="500">
+        {% else %}
+            <div class="vehicle-card__placeholder">Kein Bild vorhanden</div>
+        {% endif %}
+    {% endwith %}
+    <div class="vehicle-card__body">
+        {% if heading_level == 'h3' %}<h3 class="vehicle-card__title">{{ vehicle.brand }} {{ vehicle.model }}</h3>{% else %}<h2 class="vehicle-card__title">{{ vehicle.brand }} {{ vehicle.model }}</h2>{% endif %}
+        {% if vehicle.variant %}<p class="vehicle-card__variant">{{ vehicle.variant }}</p>{% endif %}
+        <ul class="vehicle-card__facts">
+            <li>EZ {{ vehicle.first_registration|date:"m/Y" }}</li>
+            <li>{{ vehicle.mileage|floatformat:"0g" }} km</li>
+            <li>{{ vehicle.fuel_type }}</li>
+            <li>{{ vehicle.transmission }}</li>
+            <li>{{ vehicle.power_kw }} kW / {{ vehicle.power_ps }} PS</li>
+        </ul>
+        <p class="price">{{ vehicle.sale_price|floatformat:"2g" }} €</p>
+        <a class="aw-button aw-button--outline" href="{% url 'vehicle_detail' vehicle.pk %}">Details ansehen</a>
     </div>
 </article>

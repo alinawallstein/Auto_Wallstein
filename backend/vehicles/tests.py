@@ -547,7 +547,11 @@ class PublicShellTests(VehicleTestCase):
                 self.assertEqual(html.count('<html '), 1)
                 self.assertEqual(html.count('<main '), 1)
                 self.assertEqual(html.count('<h1'), 1)
-                self.assertEqual(html.count('css/site.css'), 1)
+                self.assertNotIn('css/site.css', html)
+                self.assertNotIn('bootstrap', html)
+                self.assertNotIn('style=', html)
+                for stylesheet in ('tokens', 'base', 'components', 'layout'):
+                    self.assertEqual(html.count(f'css/{stylesheet}.css'), 1)
                 self.assertEqual(html.count('js/nav.js'), 1)
                 self.assertContains(response, 'href="#main-content"')
                 self.assertContains(response, 'aria-controls="site-menu"')
@@ -558,3 +562,31 @@ class PublicShellTests(VehicleTestCase):
                     self.assertNotIn(f'href="{reverse(route)}"', nav)
                     self.assertContains(response, f'href="{reverse(route)}"')
                 self.assertNotIn('Historie', nav)
+
+
+class PublicComponentTests(VehicleTestCase):
+    def test_home_and_inventory_use_shared_vehicle_card(self):
+        for route in ('home', 'public_vehicles'):
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+                self.assertTemplateUsed(response, 'partials/vehicle_card.html')
+                self.assertContains(response, '320d')
+                self.assertContains(response, '140 kW / 190 PS')
+                self.assertContains(response, reverse('vehicle_detail', args=[self.vehicle.pk]))
+
+    def test_contact_errors_for_vehicle_and_inquiry_type_are_visible(self):
+        response = self.client.post(reverse('kontakt'), {
+            'inquiry_type': 'invalid', 'vehicle': 999999,
+            'name': 'Max', 'email': 'max@example.com', 'message': 'Anfrage',
+        })
+        for field in ('vehicle', 'inquiry_type'):
+            for error in response.context['form'].errors[field]:
+                self.assertContains(response, error)
+        self.assertFalse(CustomerInquiry.objects.exists())
+
+    def test_public_stylesheet_files_exist(self):
+        from django.contrib.staticfiles import finders
+        for path in ('tokens.css', 'base.css', 'layout.css', 'components.css',
+                     'pages/home.css', 'pages/vehicles.css', 'pages/contact.css'):
+            with self.subTest(path=path):
+                self.assertIsNotNone(finders.find('css/' + path))

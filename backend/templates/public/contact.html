@@ -1,66 +1,37 @@
 {% extends "public/base.html" %}
-
+{% load static %}
 {% block title %}Kontakt | Auto Wallstein{% endblock %}
-
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/contact.css' %}">{% endblock %}
 {% block content %}
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4 p-lg-5">
-                        {% if success %}
-                            <div class="alert alert-success">
-                                <h1 class="h3 mb-2">Vielen Dank!</h1>
-                                <p class="mb-0">Ihre Anfrage wurde erfolgreich gesendet. Wir melden uns schnellstmöglich bei Ihnen.</p>
-                            </div>
-                        {% else %}
-                            <h1 class="h2 mb-3">Kontakt aufnehmen</h1>
-                        {% endif %}
-
-                        <form method="post" novalidate>
-                            {% csrf_token %}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="id_inquiry_type">Anfrageart</label>
-                                    {{ form.inquiry_type }}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="id_vehicle">Fahrzeug</label>
-                                    {{ form.vehicle }}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="id_name">Name</label>
-                                    {{ form.name }}
-                                    {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="id_email">E-Mail</label>
-                                    {{ form.email }}
-                                    {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="id_phone">Telefon</label>
-                                    {{ form.phone }}
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="id_message">Nachricht</label>
-                                    {{ form.message }}
-                                    {% if form.message.errors %}<div class="text-danger small">{{ form.message.errors }}</div>{% endif %}
-                                </div>
-                            </div>
-
-                            {% if form.non_field_errors %}
-                                <div class="alert alert-danger mt-3 mb-0">{{ form.non_field_errors }}</div>
-                            {% endif %}
-
-                            <div class="d-flex justify-content-between align-items-center mt-4">
-                                <a href="{% url 'public_vehicles' %}" class="btn btn-outline-secondary">Zur Fahrzeugliste</a>
-                                <button type="submit" class="btn btn-primary">Anfrage senden</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+<section class="page-section contact-page">
+    {% if success %}
+        <div class="notice" role="status">
+            <h1>Vielen Dank!</h1>
+            <p>Ihre Anfrage wurde erfolgreich gesendet. Wir melden uns schnellstmöglich bei Ihnen.</p>
         </div>
+    {% else %}<h1>Kontakt aufnehmen</h1>{% endif %}
+    <form method="post" class="contact-form" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="contact-fields">
+            {% for field in form %}
+                <div class="form-field{% if field.name == 'message' %} full-width{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} (Pflichtfeld){% endif %}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="action-row">
+            <button type="submit" class="aw-button">Anfrage senden</button>
+            <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Zur Fahrzeugliste</a>
+        </div>
+    </form>
+    <div class="contact-details">
+        <h2>Persönlich für Sie da</h2>
+        <p>Auto Wallstein · Rudolf-Braas-Straße 27a · 63150 Heusenstamm</p>
+        <p><a href="tel:+496104406770">+49 6104 406770</a><br><a href="mailto:verkauf@auto-wallstein.de">verkauf@auto-wallstein.de</a></p>
+        <a href="{% url 'oeffnungszeiten' %}">Unsere Öffnungszeiten</a>
     </div>
+</section>
 {% endblock %}

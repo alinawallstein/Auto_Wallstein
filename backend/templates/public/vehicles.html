@@ -2,21 +2,21 @@
 
 {% block title %}Fahrzeuge | Auto Wallstein{% endblock %}
 
-{% block extra_head %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-{% endblock %}
+{% load static %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}">{% endblock %}
 
 {% block content %}
-<div class="container vehicle-main py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4 vehicle-heading-wrap">
-            <h1 class="section-title h2 mb-0">Unsere Fahrzeuge</h1>
+<div class="page-section">
+        <div class="section-heading">
+            <h1 class="section-title">Unsere Fahrzeuge</h1>
         </div>
 
-        <div class="card filter-panel border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-                <form method="get" class="row g-3 align-items-end">
+        <details class="filter-panel"{% if filter_form.errors %} open{% endif %}>
+            <summary>Fahrzeuge filtern und sortieren</summary>
+            <div class="filter-body">
+                <form method="get" class="filter-grid">
                     {% if filter_form.errors %}
-                        <div class="col-12" role="alert">
+                        <div class="full-width" role="alert">
                             <p>Bitte korrigieren Sie die Filterangaben.</p>
                             <ul>
                                 {% for field in filter_form %}
@@ -27,106 +27,81 @@
                             </ul>
                         </div>
                     {% endif %}
-                    <div class="col-md-3">
-                        <label class="form-label" for="filter_brand">Marke</label>
-                        <select id="filter_brand" name="brand" class="form-select">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_brand">Marke</label>
+                        <select id="filter_brand" name="brand" class="aw-input">
                             <option value="">Alle</option>
                             {% for option in brands %}
                                 <option value="{{ option }}" {% if active_filters.brand == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label" for="filter_model">Modell</label>
-                        <input type="text" id="filter_model" name="model" value="{{ active_filters.model }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_model">Modell</label>
+                        <input type="text" id="filter_model" name="model" value="{{ active_filters.model }}" class="aw-input">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_price_min">Preis von</label>
-                        <input type="number" id="filter_price_min" name="price_min" value="{{ active_filters.price_min }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_price_min">Preis von</label>
+                        <input type="number" id="filter_price_min" name="price_min" value="{{ active_filters.price_min }}" class="aw-input">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_price_max">Preis bis</label>
-                        <input type="number" id="filter_price_max" name="price_max" value="{{ active_filters.price_max }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_price_max">Preis bis</label>
+                        <input type="number" id="filter_price_max" name="price_max" value="{{ active_filters.price_max }}" class="aw-input">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_sort">Sortierung</label>
-                        <select id="filter_sort" name="sort" class="form-select">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_sort">Sortierung</label>
+                        <select id="filter_sort" name="sort" class="aw-input">
                             <option value="newest" {% if active_filters.sort == 'newest' or not active_filters.sort %}selected{% endif %}>Neueste</option>
                             <option value="price_asc" {% if active_filters.sort == 'price_asc' %}selected{% endif %}>Preis aufsteigend</option>
                             <option value="price_desc" {% if active_filters.sort == 'price_desc' %}selected{% endif %}>Preis absteigend</option>
                             <option value="mileage" {% if active_filters.sort == 'mileage' %}selected{% endif %}>Kilometerstand</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label" for="filter_year_min">Baujahr von</label>
-                        <input type="number" id="filter_year_min" name="year_min" value="{{ active_filters.year_min }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_year_min">Baujahr von</label>
+                        <input type="number" id="filter_year_min" name="year_min" value="{{ active_filters.year_min }}" class="aw-input">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label" for="filter_year_max">Baujahr bis</label>
-                        <input type="number" id="filter_year_max" name="year_max" value="{{ active_filters.year_max }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_year_max">Baujahr bis</label>
+                        <input type="number" id="filter_year_max" name="year_max" value="{{ active_filters.year_max }}" class="aw-input">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_mileage_max">Km bis</label>
-                        <input type="number" id="filter_mileage_max" name="mileage_max" value="{{ active_filters.mileage_max }}" class="form-control">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_mileage_max">Km bis</label>
+                        <input type="number" id="filter_mileage_max" name="mileage_max" value="{{ active_filters.mileage_max }}" class="aw-input">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_fuel_type">Kraftstoff</label>
-                        <select id="filter_fuel_type" name="fuel_type" class="form-select">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_fuel_type">Kraftstoff</label>
+                        <select id="filter_fuel_type" name="fuel_type" class="aw-input">
                             <option value="">Alle</option>
                             {% for option in fuel_types %}
                                 <option value="{{ option }}" {% if active_filters.fuel_type == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label" for="filter_transmission">Getriebe</label>
-                        <select id="filter_transmission" name="transmission" class="form-select">
+                    <div class="form-field">
+                        <label class="field-label" for="filter_transmission">Getriebe</label>
+                        <select id="filter_transmission" name="transmission" class="aw-input">
                             <option value="">Alle</option>
                             {% for option in transmissions %}
                                 <option value="{{ option }}" {% if active_filters.transmission == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Filtern</button>
-                        <a href="{% url 'public_vehicles' %}" class="btn btn-outline-secondary">Zurücksetzen</a>
+                    <div class="full-width action-row">
+                        <button type="submit" class="aw-button">Filtern</button>
+                        <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Zurücksetzen</a>
                     </div>
                 </form>
             </div>
-        </div>
+        </details>
 
-        <div class="row g-4">
-            {% if vehicles %}
-                {% for vehicle in vehicles %}
-                    <div class="col-md-6 col-xl-4">
-                        <article class="card-vehicle">
-                            {% if vehicle.images.first %}
-                                <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.brand }} {{ vehicle.model }}">
-                            {% else %}
-                                <div class="d-flex justify-content-center align-items-center bg-light text-muted" style="height: 240px;">Kein Bild</div>
-                            {% endif %}
-                            <div class="p-4">
-                                <div class="pill mb-3">{{ vehicle.fuel_type }}</div>
-                                <h2 class="h4 mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h2>
-                                <div class="meta-row mb-3">
-                                    <span class="meta-item">Erstzulassung: {{ vehicle.first_registration|date:"m/Y" }}</span>
-                                    <span class="meta-item">{{ vehicle.mileage|floatformat:0 }} km</span>
-                                </div>
-                                <div class="meta-row mb-3">
-                                    <span class="meta-item">{{ vehicle.transmission }}</span>
-                                    <span class="meta-item">{{ vehicle.power_kw }} kW</span>
-                                </div>
-                                <div class="price mb-3">€ {{ vehicle.sale_price }}</div>
-                                <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-primary w-100">Details ansehen</a>
-                            </div>
-                        </article>
-                    </div>
-                {% endfor %}
-            {% elif not filter_form.errors %}
-                <div class="col-12">
-                    <div class="alert alert-light border">Keine Fahrzeuge entsprechen den aktuellen Filtern.</div>
-                </div>
-            {% endif %}
+        {% if not filter_form.errors %}<p>{{ vehicles|length }} Fahrzeuge gefunden</p>{% endif %}
+        <div class="vehicle-grid">
+            {% for vehicle in vehicles %}
+                {% include 'partials/vehicle_card.html' with vehicle=vehicle %}
+            {% empty %}
+                {% if not filter_form.errors %}<p class="notice full-width">Keine Fahrzeuge entsprechen den aktuellen Filtern.</p>{% endif %}
+            {% endfor %}
         </div>
-    </div>
+</div>
 {% endblock %}

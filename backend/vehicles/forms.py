@@ -138,12 +138,12 @@ class CustomerInquiryForm(forms.ModelForm):
         model = CustomerInquiry
         fields = ["inquiry_type", "vehicle", "name", "email", "phone", "message"]
         widgets = {
-            "inquiry_type": forms.Select(attrs={"class": "form-select"}),
-            "vehicle": forms.Select(attrs={"class": "form-select"}),
-            "name": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control"}),
-            "phone": forms.TextInput(attrs={"class": "form-control"}),
-            "message": forms.Textarea(attrs={"class": "form-control", "rows": 5}),
+            "inquiry_type": forms.Select(attrs={"class": "aw-input"}),
+            "vehicle": forms.Select(attrs={"class": "aw-input"}),
+            "name": forms.TextInput(attrs={"class": "aw-input"}),
+            "email": forms.EmailInput(attrs={"class": "aw-input"}),
+            "phone": forms.TextInput(attrs={"class": "aw-input"}),
+            "message": forms.Textarea(attrs={"class": "aw-input", "rows": 5}),
         }
 
     def __init__(self, *args, **kwargs):
