@@ -772,6 +772,117 @@ textarea:focus {
     margin-bottom: 12px;
 }
 
+.vehicle-shell {
+    background:
+        radial-gradient(circle at top, rgba(223, 229, 235, 0.09), transparent 32%),
+        linear-gradient(180deg, #091016 0%, #111a21 30%, #0e1419 100%);
+    color: var(--ink);
+}
+
+.vehicle-navbar {
+    background: rgba(15, 20, 24, 0.8);
+    border: 1px solid var(--line);
+    box-shadow: 0 16px 38px rgba(0,0,0,0.14);
+}
+
+.vehicle-main {
+    padding-top: 42px;
+}
+
+.vehicle-heading-wrap {
+    position: relative;
+    padding-bottom: 16px;
+}
+
+.vehicle-heading-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(223,229,235,0.5), transparent);
+}
+
+.filter-panel,
+.card-vehicle,
+.vehicle-detail-card,
+.vehicle-gallery-card,
+.vehicle-info-card {
+    background: linear-gradient(180deg, rgba(21,27,32,0.98), rgba(15,20,24,0.96));
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.14);
+}
+
+.filter-panel .form-label,
+.vehicle-shell .form-label,
+.vehicle-shell .table th,
+.vehicle-shell .table td,
+.vehicle-shell .card h2,
+.vehicle-shell .card h3,
+.vehicle-shell .card h4,
+.vehicle-shell .display-6,
+.vehicle-shell .h2,
+.vehicle-shell .h4,
+.vehicle-shell .section-title,
+.vehicle-shell .alert,
+.vehicle-shell .nav-link,
+.vehicle-shell .navbar-brand {
+    color: var(--ink);
+}
+
+.vehicle-shell .form-control,
+.vehicle-shell .form-select,
+.vehicle-shell .alert {
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+    color: var(--ink);
+}
+
+.vehicle-shell .btn-primary,
+.vehicle-shell .btn-contact,
+.vehicle-shell .route-btn,
+.vehicle-shell .submit-btn {
+    background: linear-gradient(135deg, rgba(223,229,235,0.96), rgba(185,195,204,0.88));
+    border: none;
+    color: #101820;
+}
+
+.vehicle-shell .btn-outline-primary,
+.vehicle-shell .btn-outline-secondary {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--ink);
+}
+
+.vehicle-shell .meta-item,
+.vehicle-shell .pill {
+    background: rgba(191, 199, 206, 0.10);
+    color: var(--silver);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.vehicle-shell .card-vehicle img {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.vehicle-shell .vehicle-main .display-6 {
+    color: var(--silver);
+}
+
+.vehicle-shell .vehicle-main .list-unstyled li {
+    color: var(--ink-soft);
+}
+
+.vehicle-shell .table {
+    color: var(--ink);
+    background: transparent;
+}
+
+.vehicle-shell .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background: rgba(255,255,255,0.02);
+}
+
 @media (max-width: 900px) {
     .image-grid,
     .history-item,
