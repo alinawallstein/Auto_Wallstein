@@ -46,13 +46,15 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">Auto Wallstein</a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="navbar-text">{{ user.get_full_name|default:user.username }}</span>
-                <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
-            </div>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{% url 'dashboard' %}" aria-label="Zum Dashboard">
+                <img src="{% static 'images/logo.png' %}" alt="Auto Wallstein Logo">
+            </a>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="navbar-text">{{ user.get_full_name|default:user.username }}</span>
+            <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
         </div>
     </nav>
 

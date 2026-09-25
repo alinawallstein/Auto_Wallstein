@@ -24,15 +24,16 @@
         <ul class="nav-links">
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'public_vehicles' %}">Fahrzeuge</a></li>
-            <li><a href="{% url 'about' %}">Finanzierung</a></li>
+            <li><a href="{% url 'finanzierung' %}">Finanzierung</a></li>
             <li class="dropdown">
-                <a href="#" class="dropbtn">Über uns ▼</a>
+                <a href="#" class="dropbtn">Historie ▼</a>
                 <ul class="dropdown-content">
-                    <li><a href="{% url 'about' %}">Historie</a></li>
-                    <li><a href="{% url 'about' %}">Öffnungszeiten</a></li>
-                    <li><a href="{% url 'about' %}">Impressum</a></li>
-                    <li><a href="{% url 'contact' %}">Datenschutz</a></li>
-                    <li><a href="{% url 'contact' %}">Kontakt & Anfahrt</a></li>
+                    <li><a href="{% url 'ueberuns' %}">Über uns</a></li>
+                    <li><a href="{% url 'oeffnungszeiten' %}">Öffnungszeiten</a></li>
+                    <li><a href="{% url 'service' %}">Service</a></li>
+                    <li><a href="{% url 'impressum' %}">Impressum</a></li>
+                    <li><a href="{% url 'datenschutz' %}">Datenschutz</a></li>
+                    <li><a href="{% url 'kontakt' %}">Kontakt &amp; Anfahrt</a></li>
                 </ul>
             </li>
             <li class="nav-cta-email">
