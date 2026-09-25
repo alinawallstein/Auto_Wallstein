@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Auto Wallstein</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+            color: #0f172a;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(15, 23, 42, 0.96) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        }
+        .dashboard-shell {
+            background: rgba(255,255,255,0.45);
+            border: 1px solid rgba(226,232,240,0.8);
+            border-radius: 20px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+            padding: 1.5rem;
+        }
+        .stat-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+            height: 100%;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .display-6 {
+            font-weight: 700;
+        }
+        @media (max-width: 767.98px) {
+            .dashboard-shell {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Auto Wallstein</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text">{{ user.get_full_name|default:user.username }}</span>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="dashboard-shell">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <div>
+                    <p class="text-uppercase text-muted small mb-1">Übersicht</p>
+                    <h1 class="h3 mb-0">Dashboard</h1>
+                </div>
+                <a href="{% url 'vehicle_create' %}" class="btn btn-primary">+ Neues Fahrzeug</a>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-3">
+                    <div class="stat-card card border-0 h-100">
+                        <div class="card-body">
+                            <div class="stat-label">Alle Fahrzeuge</div>
+                            <div class="display-6 fw-semibold mt-2">{{ stats.total }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="stat-card card border-0 h-100">
+                        <div class="card-body">
+                            <div class="stat-label">Verfügbar</div>
+                            <div class="display-6 fw-semibold mt-2">{{ stats.available }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="stat-card card border-0 h-100">
+                        <div class="card-body">
+                            <div class="stat-label">In Vorbereitung</div>
+                            <div class="display-6 fw-semibold mt-2">{{ stats.in_preparation }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="stat-card card border-0 h-100">
+                        <div class="card-body">
+                            <div class="stat-label">Reserviert</div>
+                            <div class="display-6 fw-semibold mt-2">{{ stats.reserved }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="stat-card card border-0 h-100">
+                        <div class="card-body">
+                            <div class="stat-label">Verkauft</div>
+                            <div class="display-6 fw-semibold mt-2">{{ stats.sold }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Zuletzt bearbeitet</h2>
+                    {% if recent_vehicles %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Fahrzeug</th>
+                                        <th>Status</th>
+                                        <th>Preis</th>
+                                        <th>Aktualisiert</th>
+                                        <th class="text-end">Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vehicle in recent_vehicles %}
+                                        <tr>
+                                            <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
+                                            <td>{{ vehicle.get_status_display }}</td>
+                                            <td>€ {{ vehicle.sale_price }}</td>
+                                            <td>{{ vehicle.updated_at|date:"d.m.Y H:i" }}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                                                    <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-outline-danger">Löschen</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Noch keine Fahrzeuge angelegt.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
