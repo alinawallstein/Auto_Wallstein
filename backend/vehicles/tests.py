@@ -1,11 +1,14 @@
 from datetime import date
 from decimal import Decimal
+from io import BytesIO
 
+from PIL import Image
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import CustomerInquiry, Vehicle, VehicleStatus
+from .models import CustomerInquiry, Vehicle, VehicleImage, VehicleStatus
 
 
 class InquiryFlowTests(TestCase):
@@ -54,6 +57,30 @@ class InquiryFlowTests(TestCase):
         inquiry = CustomerInquiry.objects.get(email="max@example.com")
         self.assertEqual(inquiry.vehicle, self.vehicle)
         self.assertEqual(inquiry.inquiry_type, "vehicle_request")
+
+    @override_settings(DEBUG=True)
+    def test_image_upload_and_media_access_work_for_admin(self):
+        user = get_user_model().objects.create_superuser("admin", "admin@example.com", "admin123")
+        self.client.force_login(user)
+
+        image_buffer = BytesIO()
+        Image.new("RGB", (10, 10), color="blue").save(image_buffer, format="PNG")
+        image = SimpleUploadedFile("car.png", image_buffer.getvalue(), content_type="image/png")
+
+        response = self.client.post(
+            reverse("vehicle_images", args=[self.vehicle.pk]),
+            {"images": [image]},
+            follow=True,
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VehicleImage.objects.filter(vehicle=self.vehicle).count(), 1)
+
+        uploaded = VehicleImage.objects.filter(vehicle=self.vehicle).first()
+        self.assertTrue(uploaded.image.name.startswith("vehicles/"))
+        self.assertTrue(uploaded.image.url.startswith("/media/"))
+        self.assertTrue(uploaded.image.storage.exists(uploaded.image.name))
 
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse("dashboard"))

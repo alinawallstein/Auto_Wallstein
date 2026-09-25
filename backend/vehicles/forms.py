@@ -75,9 +75,27 @@ class VehicleForm(forms.ModelForm):
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+    def value_from_datadict(self, data, files, name):
+        if not files.getlist(name):
+            return []
+        return files.getlist(name)
+
+
+class MultipleFileField(forms.FileField):
+    def clean(self, data, initial=None):
+        if not isinstance(data, (list, tuple)):
+            return super().clean(data, initial)
+
+        cleaned_files = []
+        for file_data in data:
+            if file_data in (None, ""):
+                continue
+            cleaned_files.append(super().clean(file_data, initial))
+        return cleaned_files
+
 
 class VehicleImageUploadForm(forms.Form):
-    images = forms.FileField(
+    images = MultipleFileField(
         widget=MultipleFileInput(attrs={"multiple": True, "class": "form-control"}),
         required=True,
         label="Bilder hochladen",
