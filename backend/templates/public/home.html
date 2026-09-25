@@ -39,6 +39,7 @@
             </a>
         </div>
 
+
         <section class="fahrzeuge-section" id="fahrzeuge">
             <h2 class="fahrzeuge-title">
                 Unser Fahrzeugbestand
@@ -49,6 +50,19 @@
             </div>
         </section>
 
+        <section class="page-section">
+            <div class="section-heading">
+                <h2 class="section-title">Aktuelle Angebote</h2>
+                <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Alle Fahrzeuge</a>
+            </div>
+            <div class="vehicle-grid">
+                {% for vehicle in featured_vehicles %}
+                    {% include 'partials/vehicle_card.html' with vehicle=vehicle heading_level='h3' %}
+                {% empty %}
+                    <p class="notice full-width">Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.</p>
+                {% endfor %}
+            </div>
+        </section>
 
         <section class="welcome-section finance-intro">
             <div class="container">
@@ -148,19 +162,6 @@
             </div>
         </section>
 
-        <section class="page-section">
-            <div class="section-heading">
-                <h2 class="section-title">Aktuelle Angebote</h2>
-                <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Alle Fahrzeuge</a>
-            </div>
-            <div class="vehicle-grid">
-                {% for vehicle in featured_vehicles %}
-                    {% include 'partials/vehicle_card.html' with vehicle=vehicle heading_level='h3' %}
-                {% empty %}
-                    <p class="notice full-width">Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.</p>
-                {% endfor %}
-            </div>
-        </section>
     </div>
 
 {% endblock %}

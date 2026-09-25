@@ -18,12 +18,17 @@
         }
         .login-shell {
             width: min(460px, calc(100% - 24px));
+            padding: 18px;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 18px 40px rgba(0,0,0,0.35);
         }
         .login-card {
-            background: rgba(12, 18, 22, 0.96);
-            border: 1px solid rgba(189, 205, 220, 0.22);
+            background: rgba(17, 24, 29, 0.98);
+            border: 1px solid rgba(214, 224, 233, 0.28);
             border-radius: 20px;
-            box-shadow: 0 20px 55px rgba(0,0,0,0.32), 0 0 0 1px rgba(255,255,255,0.03);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 22px 60px rgba(0,0,0,0.4);
             backdrop-filter: blur(10px);
         }
         .login-brand {
@@ -35,6 +40,7 @@
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            color: #ffffff;
         }
         .login-brand img {
             width: 48px;
@@ -45,8 +51,10 @@
         .login-card .form-label,
         .login-card label,
         .login-card p,
-        .login-card .helptext {
-            color: #edf3f8;
+        .login-card .helptext,
+        .login-card h1,
+        .login-brand span {
+            color: #ffffff;
         }
         .login-card input {
             background: rgba(255,255,255,0.02);
