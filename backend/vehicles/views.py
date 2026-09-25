@@ -91,6 +91,30 @@ def about_page(request):
     return render(request, "public/about.html")
 
 
+def ueberuns_page(request):
+    return render(request, "public/about.html")
+
+
+def financing_page(request):
+    return render(request, "public/finanzierung.html")
+
+
+def openings_page(request):
+    return render(request, "public/oeffnungszeiten.html")
+
+
+def service_page(request):
+    return render(request, "public/service.html")
+
+
+def impressum_page(request):
+    return render(request, "public/impressum.html")
+
+
+def datenschutz_page(request):
+    return render(request, "public/datenschutz.html")
+
+
 def contact_page(request):
     inquiry_type = request.GET.get("inquiry_type", "vehicle_request")
     vehicle_id = request.GET.get("vehicle")

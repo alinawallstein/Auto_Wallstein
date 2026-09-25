@@ -14,6 +14,13 @@ urlpatterns = [
     path("fahrzeuge/<int:pk>/bilder/", views.vehicle_images, name="vehicle_images"),
     path("fahrzeuge/<int:pk>/loeschen/", views.vehicle_delete, name="vehicle_delete"),
     path("vehicles/", views.public_vehicles, name="public_vehicles_legacy"),
+    path("ueberuns/", views.ueberuns_page, name="ueberuns"),
+    path("finanzierung/", views.financing_page, name="finanzierung"),
+    path("oeffnungszeiten/", views.openings_page, name="oeffnungszeiten"),
+    path("service/", views.service_page, name="service"),
+    path("kontakt/", views.contact_page, name="kontakt"),
+    path("impressum/", views.impressum_page, name="impressum"),
+    path("datenschutz/", views.datenschutz_page, name="datenschutz"),
     path("contact/", views.contact_page, name="contact"),
     path("about/", views.about_page, name="about"),
 ]

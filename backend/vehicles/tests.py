@@ -95,6 +95,29 @@ class InquiryFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_public_pages_share_consistent_nav_and_footer_links(self):
+        response = self.client.get("/ueberuns/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "/finanzierung/")
+        self.assertContains(response, "/oeffnungszeiten/")
+        self.assertContains(response, "/kontakt/")
+
+    def test_public_pages_are_available(self):
+        for url in [
+            "/",
+            "/fahrzeuge/",
+            "/ueberuns/",
+            "/finanzierung/",
+            "/oeffnungszeiten/",
+            "/service/",
+            "/kontakt/",
+            "/impressum/",
+            "/datenschutz/",
+        ]:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, msg=f"Expected 200 for {url}")
+
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse("dashboard"))
 

@@ -1,0 +1,27 @@
+{% extends "public/base.html" %}
+
+{% block title %}Öffnungszeiten | Auto Wallstein{% endblock %}
+
+{% block content %}
+<main class="hours-page">
+    <div class="besuch-container">
+        <h1 class="besuch-title">Besuchen Sie uns in Heusenstamm</h1>
+        <p class="besuch-text">Wir freuen uns auf Ihren Besuch. Beratung, Öffnungszeiten und Verkauf zu folgenden Zeiten:</p>
+    </div>
+    <div class="hours-grid">
+        <div class="hours-card">
+            <h3>Öffnungszeiten</h3>
+            <table class="hours-table">
+                <tr><td>Montag – Freitag</td><td>09:00 – 13:00<br>14:30 – 18:00</td></tr>
+                <tr><td>Samstag</td><td>10:00 – 14:00</td></tr>
+                <tr><td>Sonntag</td><td>Geschlossen</td></tr>
+            </table>
+        </div>
+        <div class="hours-card">
+            <h3>Anfahrt &amp; Kontakt</h3>
+            <p><strong>Auto Wallstein</strong><br>Rudolf-Braas-Straße 27a<br>63150 Heusenstamm</p>
+            <p style="margin-top: 15px;">📞 +49 6104 406770</p>
+        </div>
+    </div>
+</main>
+{% endblock %}

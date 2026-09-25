@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Auto Wallstein{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="liquid-glass-page">
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{% url 'home' %}" aria-label="Zur Startseite">
+                <img src="{% static 'images/logo.png' %}" alt="Auto Wallstein Logo">
+            </a>
+        </div>
+
+        <input type="checkbox" id="nav-toggle" style="display: none;">
+        <label for="nav-toggle" class="hamburger"><span></span></label>
+
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'public_vehicles' %}">Fahrzeuge</a></li>
+            <li><a href="{% url 'finanzierung' %}">Finanzierung</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Über uns ▼</a>
+                <ul class="dropdown-content">
+                    <li><a href="{% url 'ueberuns' %}">Historie</a></li>
+                    <li><a href="{% url 'oeffnungszeiten' %}">Öffnungszeiten</a></li>
+                    <li><a href="{% url 'service' %}">Service</a></li>
+                    <li><a href="{% url 'impressum' %}">Impressum</a></li>
+                    <li><a href="{% url 'datenschutz' %}">Datenschutz</a></li>
+                    <li><a href="{% url 'kontakt' %}">Kontakt &amp; Anfahrt</a></li>
+                </ul>
+            </li>
+            <li class="nav-cta-email">
+                <a href="mailto:verkauf@auto-wallstein.de">
+                    <span class="full-label">verkauf@auto-wallstein.de</span>
+                    <span class="btn-text">E-Mail</span>
+                    <span class="btn-icon">✉</span>
+                </a>
+            </li>
+            <li class="nav-cta-tel">
+                <a href="tel:+496104406770">
+                    <span class="full-label">+49 6104 406770</span>
+                    <span class="btn-text">anrufen</span>
+                    <span class="btn-icon">📞</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <p class="footer-text">
+                    © 2026 <strong>Auto Wallstein</strong> — Rudolf-Braas-Straße 27a, 63150 Heusenstamm
+                </p>
+                <p class="footer-links">
+                    <a href="{% url 'impressum' %}">Impressum</a>
+                    <span class="divider">|</span>
+                    <a href="{% url 'datenschutz' %}">Datenschutz</a>
+                    <span class="divider">|</span>
+                    <a href="{% url 'kontakt' %}">Kontakt</a>
+                </p>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev">
+                    Design und Entwicklung by <span>Alina Wallstein</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
