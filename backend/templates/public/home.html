@@ -1,56 +1,236 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Wallstein | Fahrzeugbörse</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/public.css">
+    <title>Auto Wallstein | Mercedes-Benz Jahreswagen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/public.css' %}">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home' %}">Auto Wallstein</a>
-            <div class="ms-auto d-flex gap-3 align-items-center">
-                <a class="nav-link" href="{% url 'home' %}">Startseite</a>
-                <a class="nav-link" href="{% url 'public_vehicles' %}">Fahrzeuge</a>
-                <a class="nav-link" href="{% url 'about' %}">Über uns</a>
-                <a class="nav-link" href="{% url 'contact' %}">Kontakt</a>
-            </div>
+<body class="liquid-glass-page">
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{% url 'home' %}" aria-label="Zur Startseite">
+                <img src="{% static 'images/logo.png' %}" alt="Auto Wallstein Logo">
+            </a>
         </div>
+
+        <input type="checkbox" id="nav-toggle" style="display: none;">
+        <label for="nav-toggle" class="hamburger">
+            <span></span>
+        </label>
+
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'public_vehicles' %}">Fahrzeuge</a></li>
+            <li><a href="{% url 'about' %}">Finanzierung</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Über uns ▼</a>
+                <ul class="dropdown-content">
+                    <li><a href="{% url 'about' %}">Historie</a></li>
+                    <li><a href="{% url 'about' %}">Öffnungszeiten</a></li>
+                    <li><a href="{% url 'about' %}">Impressum</a></li>
+                    <li><a href="{% url 'contact' %}">Datenschutz</a></li>
+                    <li><a href="{% url 'contact' %}">Kontakt & Anfahrt</a></li>
+                </ul>
+            </li>
+            <li class="nav-cta-email">
+                <a href="mailto:verkauf@auto-wallstein.de">
+                    <span class="full-label">verkauf@auto-wallstein.de</span>
+                    <span class="btn-text">E-Mail</span>
+                    <span class="btn-icon">✉</span>
+                </a>
+            </li>
+            <li class="nav-cta-tel">
+                <a href="tel:+496104406770">
+                    <span class="full-label">+49 6104 406770</span>
+                    <span class="btn-text">anrufen</span>
+                    <span class="btn-icon">📞</span>
+                </a>
+            </li>
+        </ul>
     </nav>
 
-    <main class="container py-5">
-        <section class="hero p-4 p-lg-5 mb-5">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-6">
-                    <p class="text-uppercase fw-semibold text-light-emphasis mb-3">Qualität & Vertrauen</p>
-                    <h1 class="fw-bold mb-3">Fahrzeuge mit Charakter und Verlässlichkeit.</h1>
-                    <p class="text-light-emphasis mb-4">Entdecke aktuelle Angebote aus unserem Bestand.</p>
-                    <a class="btn btn-primary btn-lg" href="{% url 'public_vehicles' %}">Fahrzeuge ansehen</a>
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="main-title">Mercedes Benz Jahres-&amp; Geschäftswagen</h1>
+            <p class="hero-subtitle">Entdecke aktuelle Angebote aus unserem Bestand und finde das passende Fahrzeug für dich.</p>
+            <a class="btn btn-primary btn-lg" href="{% url 'public_vehicles' %}">Fahrzeuge ansehen</a>
+        </div>
+        <a href="#welcome" class="scroll-down" aria-label="Zur nächsten Sektion scrollen">
+            <span></span>
+        </a>
+    </header>
+
+    <main>
+        <section id="welcome" class="welcome-section">
+            <h2>FINDEN SIE IHREN NÄCHSTEN MERCEDES.</h2>
+            <p>
+                Willkommen bei Auto Wallstein. Entdecken Sie erstklassige Jahres- und Geschäftswagen von Mercedes-Benz.
+                Profitieren Sie von unserer Kompetenz und exklusivem Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG.
+                Ihr Traumwagen wartet auf Sie – besuchen Sie uns in Heusenstamm.
+            </p>
+        </section>
+
+        <div class="image-grid">
+            <a href="{% url 'public_vehicles' %}" class="grid-item">
+                <img src="{% static 'images/Dino.jpeg' %}" alt="Fahrzeugsuche">
+                <div class="grid-label">Fahrzeugsuche</div>
+            </a>
+            <a href="{% url 'about' %}" class="grid-item">
+                <img src="{% static 'images/krass.JPG' %}" alt="Export und Zulassung">
+                <div class="grid-label">Export &amp; Zulassung</div>
+            </a>
+            <a href="{% url 'contact' %}" class="grid-item">
+                <img src="{% static 'images/finanzierung.jpg' %}" alt="Finanzierung">
+                <div class="grid-label">Finanzieren Sie bequem</div>
+            </a>
+        </div>
+
+        <section class="fahrzeuge-section" id="fahrzeuge">
+            <h2 class="fahrzeuge-title">
+                Unser Fahrzeugbestand
+                <span class="scroll-hint" aria-hidden="true"></span>
+            </h2>
+            <div class="iframe-container-large">
+                <iframe src="https://auto-wallstein.qualitaetshaendler.de/fahrzeugangebote/" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <section class="history-section">
+            <div class="timeline-nav">
+                <ul>
+                    <li class="active">1955</li>
+                    <li>Heute</li>
+                </ul>
+            </div>
+
+            <div class="history-item">
+                <div class="history-text">
+                    <span class="year-label">1955</span>
+                    <h2>Der Grundstein <br>für Leidenschaft.</h2>
+                    <p>Auto Wallstein wurde mit einer klaren Vision gegründet: Erstklassige Mercedes-Benz Fahrzeuge für Liebhaber zugänglich zu machen.</p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-4 p-4">
-                        <h2 class="h4 text-white mb-3">Aktuell im Angebot</h2>
-                        {% if featured_vehicles %}
-                            {% for vehicle in featured_vehicles %}
-                                <div class="d-flex justify-content-between align-items-center border-bottom border-light border-opacity-10 py-3">
-                                    <div>
-                                        <strong class="text-white d-block">{{ vehicle.brand }} {{ vehicle.model }}</strong>
-                                        <small class="text-light-emphasis">{{ vehicle.year }} · {{ vehicle.fuel_type }}</small>
-                                    </div>
-                                    <span class="fw-bold text-white">€ {{ vehicle.sale_price }}</span>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-light-emphasis mb-0">Derzeit sind keine Fahrzeuge veröffentlicht.</p>
-                        {% endif %}
-                    </div>
+                <div class="history-image">
+                    <img src="{% static 'images/1955.jpg' %}" alt="Geschichte">
+                    <img src="{% static 'images/1955.1.JPG' %}" alt="Geschichte">
+                    <div class="image-mask"></div>
+                </div>
+            </div>
+
+            <div class="history-item reverse">
+                <div class="history-text">
+                    <span class="year-label">Heute</span>
+                    <h2>Ihr Partner für <br>Premium-Automobile.</h2>
+                    <p>Mit Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG finden wir heute für jeden Kunden den perfekten Jahreswagen.</p>
+                </div>
+                <div class="history-image">
+                    <img src="{% static 'images/vonoben.jpg' %}" alt="Showroom">
                 </div>
             </div>
         </section>
 
-        <section>
+        <section class="welcome-section finance-intro">
+            <div class="container">
+                <h2>Finanzierung</h2>
+                <p>
+                    Ein Auto ist eine Investition für viele Jahre – deshalb soll die Finanzierung zu Ihrer Situation passen.
+                    Bei Auto Wallstein unterstützen wir Sie dabei, eine passende Rate, Laufzeit und (auf Wunsch) eine Anzahlung
+                    zu wählen. Gemeinsam finden wir eine Lösung, die transparent, planbar und fair ist.
+                </p>
+                <p>
+                    Sprechen Sie uns gerne an – wir erstellen Ihnen ein individuelles Angebot und erklären Ihnen alle Schritte
+                    verständlich, damit Sie sicher entscheiden können.
+                </p>
+                <p class="finance-highlights">
+                    <strong>Ihre Vorteile:</strong> schnelle Rückmeldung, unkomplizierte Abwicklung, Finanzierung auch ohne Anzahlung möglich.
+                </p>
+            </div>
+        </section>
+
+        <section class="hours-page">
+            <div class="besuch-container">
+                <h1 class="besuch-title">Besuchen Sie uns in Heusenstamm</h1>
+                <p class="besuch-text">Wir freuen uns auf Ihren Besuch. Beratung, Öffnungszeiten und Verkauf zu folgenden Zeiten:</p>
+            </div>
+            <div class="hours-grid">
+                <div class="hours-card">
+                    <h3>Öffnungszeiten</h3>
+                    <table class="hours-table">
+                        <tr>
+                            <td>Montag – Freitag</td>
+                            <td>09:00 – 13:00<br>14:30 – 18:00</td>
+                        </tr>
+                        <tr>
+                            <td>Samstag</td>
+                            <td>10:00 – 14:00</td>
+                        </tr>
+                        <tr>
+                            <td>Sonntag</td>
+                            <td>Geschlossen</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="hours-card">
+                    <h3>Anfahrt &amp; Kontakt</h3>
+                    <p><strong>Auto Wallstein</strong><br>
+                    Rudolf-Braas-Straße 27a<br>
+                    63150 Heusenstamm</p>
+                    <p style="margin-top: 15px;">📞 +49 6104 406770</p>
+                </div>
+            </div>
+
+            <div class="hours-footer">
+                <h3>Möchten Sie eine Probefahrt vereinbaren?</h3>
+                <p>Gerne nehmen wir uns Zeit für Sie. Vereinbaren Sie vorab einen Termin.</p>
+                <a href="#kontakt" class="btn-contact">Termin anfragen</a>
+            </div>
+        </section>
+
+        <section class="contact-cards-section" id="kontakt">
+            <div class="contact-container">
+                <h1 class="main-title-dark">Kontaktieren Sie uns</h1>
+                <p class="subtitle">Wir beraten Sie gerne persönlich zu Ihrem neuen Mercedes-Benz.</p>
+
+                <div class="contact-grid">
+                    <a href="tel:+496104406770" class="contact-card">
+                        <div class="card-icon">📞</div>
+                        <h3>Telefon</h3>
+                        <p>Rufen Sie uns direkt an</p>
+                        <span class="card-detail">+49 6104 406770</span>
+                    </a>
+
+                    <a href="mailto:verkauf@auto-wallstein.de" class="contact-card">
+                        <div class="card-icon">✉</div>
+                        <h3>E-Mail</h3>
+                        <p>Schreiben Sie uns Ihr Anliegen</p>
+                        <span class="card-detail">verkauf@auto-wallstein.de</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="location-section">
+            <div class="location-header">
+                <h2 class="black-bg-text">Anfahrt</h2>
+                <p>Rudolf-Braas-Straße 27a, 63150 Heusenstamm</p>
+            </div>
+
+            <div class="map-container">
+                <iframe src="https://maps.google.com/maps?q=Rudolf-Braas-Str.%2027a,63150%20Heusenstamm&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+
+            <div class="route-button-container">
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Rudolf-Braas-Straße+27a,63150+Heusenstamm" target="_blank" class="route-btn">
+                    <span class="icon">🚗</span> Route berechnen &amp; Navigation starten
+                </a>
+            </div>
+        </section>
+
+        <section class="container py-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title h3 mb-0">Aktuelle Angebote</h2>
                 <a href="{% url 'public_vehicles' %}" class="btn btn-outline-primary">Alle Fahrzeuge</a>
@@ -90,5 +270,25 @@
             </div>
         </section>
     </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <p class="footer-text">
+                    © 2026 <strong>Auto Wallstein</strong> — Rudolf-Braas-Straße 27a, 63150 Heusenstamm
+                </p>
+                <p class="footer-links">
+                    <a href="{% url 'about' %}">Impressum</a>
+                    <span class="divider">|</span>
+                    <a href="{% url 'contact' %}">Datenschutz</a>
+                </p>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev">
+                    Design und Entwicklung by <span>Alina Wallstein</span>
+                </p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

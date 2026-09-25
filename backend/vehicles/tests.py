@@ -82,6 +82,19 @@ class InquiryFlowTests(TestCase):
         self.assertTrue(uploaded.image.url.startswith("/media/"))
         self.assertTrue(uploaded.image.storage.exists(uploaded.image.name))
 
+    def test_homepage_contains_branding_and_fahrzeuge_call_to_action(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Auto Wallstein")
+        self.assertContains(response, "FINDEN SIE IHREN NÄCHSTEN MERCEDES")
+        self.assertContains(response, "Fahrzeuge ansehen")
+
+    def test_fahrzeuge_url_alias_is_available(self):
+        response = self.client.get("/fahrzeuge/")
+
+        self.assertEqual(response.status_code, 200)
+
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse("dashboard"))
 
