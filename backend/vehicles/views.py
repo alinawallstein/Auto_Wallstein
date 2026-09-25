@@ -62,10 +62,6 @@ def about_page(request):
     return render(request, "public/about.html")
 
 
-def ueberuns_page(request):
-    return render(request, "public/about.html")
-
-
 def financing_page(request):
     return render(request, "public/finanzierung.html")
 

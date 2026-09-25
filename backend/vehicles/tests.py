@@ -64,7 +64,7 @@ class VehicleTestCase(TestCase):
 class InquiryFlowTests(VehicleTestCase):
     def test_vehicle_inquiry_can_be_submitted(self):
         response = self.client.post(
-            reverse("contact"),
+            reverse("kontakt"),
             {
                 "inquiry_type": "vehicle_request",
                 "vehicle": self.vehicle.pk,
@@ -145,7 +145,7 @@ class InquiryFlowTests(VehicleTestCase):
         response = self.client.get(reverse("dashboard"))
 
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/login/", response.url)
+        self.assertIn(reverse("login"), response.url)
 
     def test_dashboard_renders_for_admin(self):
         user = get_user_model().objects.create_superuser("admin", "admin@example.com", "admin123")
@@ -281,11 +281,11 @@ class PublicInventoryTests(VehicleTestCase):
                 self.assertEqual(list(response.context["vehicles"]), expected)
 
     def test_current_legacy_urls_remain_available_with_query_parameters(self):
-        # Aliases currently render directly. Replace these expectations when redirects are introduced.
+        # Old links must reach canonical pages with their query parameters intact.
         for url in ["/vehicles/?brand=BMW", "/contact/?inquiry_type=test_drive", "/about/"]:
             with self.subTest(url=url):
-                self.assertEqual(self.client.get(url).status_code, 200)
-        response = self.client.get("/vehicles/", {"brand": "Audi"})
+                self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+        response = self.client.get("/vehicles/", {"brand": "Audi"}, follow=True)
         self.assertEqual(list(response.context["vehicles"]), [])
 
 
@@ -590,3 +590,84 @@ class PublicComponentTests(VehicleTestCase):
                      'pages/home.css', 'pages/vehicles.css', 'pages/contact.css'):
             with self.subTest(path=path):
                 self.assertIsNotNone(finders.find('css/' + path))
+
+
+class CanonicalRouteTests(VehicleTestCase):
+    def test_management_names_resolve_under_verwaltung(self):
+        for name, args, expected in [
+            ('dashboard', [], '/verwaltung/'), ('login', [], '/verwaltung/anmelden/'),
+            ('logout', [], '/verwaltung/abmelden/'),
+            ('vehicle_create', [], '/verwaltung/fahrzeuge/neu/'),
+            ('vehicle_update', [self.vehicle.pk], f'/verwaltung/fahrzeuge/{self.vehicle.pk}/bearbeiten/'),
+            ('vehicle_images', [self.vehicle.pk], f'/verwaltung/fahrzeuge/{self.vehicle.pk}/bilder/'),
+            ('vehicle_delete', [self.vehicle.pk], f'/verwaltung/fahrzeuge/{self.vehicle.pk}/loeschen/'),
+        ]:
+            with self.subTest(name=name):
+                self.assertEqual(reverse(name, args=args), expected)
+
+    def test_old_get_urls_redirect_with_query_string(self):
+        query = '?brand=Mercedes-Benz&model=A%2B200&sort=price_asc'
+        for old, name, args in [
+            ('/vehicles/', 'public_vehicles', []), ('/contact/', 'kontakt', []),
+            ('/about/', 'ueberuns', []), ('/login/', 'login', []),
+            ('/logout/', 'logout', []), ('/dashboard/', 'dashboard', []),
+            ('/fahrzeuge/neu/', 'vehicle_create', []),
+            (f'/fahrzeuge/{self.vehicle.pk}/bearbeiten/', 'vehicle_update', [self.vehicle.pk]),
+            (f'/fahrzeuge/{self.vehicle.pk}/bilder/', 'vehicle_images', [self.vehicle.pk]),
+            (f'/fahrzeuge/{self.vehicle.pk}/loeschen/', 'vehicle_delete', [self.vehicle.pk]),
+        ]:
+            with self.subTest(old=old):
+                self.assertRedirects(self.client.get(old + query), reverse(name, args=args) + query,
+                                     status_code=301, fetch_redirect_response=False)
+
+    def test_old_contact_post_preserves_body_and_saves_once(self):
+        data = {'name': 'Max', 'email': 'max@example.com', 'message': 'Probefahrt bitte',
+                'inquiry_type': 'test_drive', 'vehicle': self.vehicle.pk}
+        url = f'/contact/?vehicle={self.vehicle.pk}&inquiry_type=test_drive'
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 307)
+        self.assertFalse(CustomerInquiry.objects.exists())
+        response = self.client.post(url, data, follow=True)
+        self.assertContains(response, 'Vielen Dank')
+        inquiry = CustomerInquiry.objects.get()
+        self.assertEqual(inquiry.inquiry_type, 'test_drive')
+        self.assertEqual(inquiry.vehicle, self.vehicle)
+
+    def test_old_management_post_preserves_permission_checks(self):
+        user = get_user_model().objects.create_user('no_permissions')
+        self.client.force_login(user)
+        response = self.client.post(f'/fahrzeuge/{self.vehicle.pk}/loeschen/', follow=True)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Vehicle.objects.filter(pk=self.vehicle.pk).exists())
+        self.login_admin()
+        response = self.client.post(f'/fahrzeuge/{self.vehicle.pk}/loeschen/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain[-1], (reverse('dashboard'), 302))
+        self.assertFalse(Vehicle.objects.filter(pk=self.vehicle.pk).exists())
+
+    def test_old_login_post_reaches_new_dashboard(self):
+        get_user_model().objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        response = self.client.post('/login/', {'username': 'admin', 'password': 'admin123'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [(reverse('login'), 307), (reverse('dashboard'), 302)])
+        self.assertTemplateUsed(response, 'admin/dashboard.html')
+
+    def test_old_image_upload_preserves_file(self):
+        self.login_admin()
+        from django.test.client import encode_multipart
+        # Reuse the encoded request body across 307, rather than an exhausted file stream.
+        body = encode_multipart('wallstein-upload', {'images': [self.image_upload()]})
+        response = self.client.post(f'/fahrzeuge/{self.vehicle.pk}/bilder/', body,
+                                    content_type="multipart/form-data; boundary=wallstein-upload", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain[0], (reverse('vehicle_images', args=[self.vehicle.pk]), 307))
+        image = self.vehicle.images.get()
+        self.assertTrue(image.image.storage.exists(image.image.name))
+
+    def test_old_management_url_still_requires_login(self):
+        response = self.client.get(f'/fahrzeuge/{self.vehicle.pk}/bearbeiten/', follow=True)
+        target = reverse('vehicle_update', args=[self.vehicle.pk])
+        self.assertEqual(response.redirect_chain, [
+            (target, 301), (reverse('login') + '?next=' + target, 302),
+        ])
+        self.assertTemplateUsed(response, 'admin/login.html')

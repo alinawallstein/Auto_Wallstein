@@ -37,3 +37,26 @@ python manage.py runserver 127.0.0.1:8000
 ```
 
 The public website and the internal admin area are served by Django from the backend app.
+
+## URLs and compatibility
+
+Public pages use German URLs: `/fahrzeuge/`, `/fahrzeuge/<id>/`,
+`/kontakt/`, `/ueberuns/`, `/finanzierung/` and `/service/`.
+
+The custom vehicle-management area is under `/verwaltung/`:
+
+- Dashboard: `/verwaltung/`
+- Login / logout: `/verwaltung/anmelden/`, `/verwaltung/abmelden/`
+- Create: `/verwaltung/fahrzeuge/neu/`
+- Edit / images / delete: `/verwaltung/fahrzeuge/<id>/bearbeiten/`,
+  `/verwaltung/fahrzeuge/<id>/bilder/`, `/verwaltung/fahrzeuge/<id>/loeschen/`
+
+Django's built-in admin remains at `/admin/`. Management requires the relevant
+Django model permissions; authentication alone does not grant access.
+
+Old English public URLs and old management URLs redirect to their canonical
+addresses. GET/HEAD requests use HTTP 301; other methods use HTTP 307 to preserve
+submitted form data and uploaded files. Query strings are preserved. Existing
+management route names remain unchanged, so templates should use Django URL
+reversal rather than hard-coded paths. Public links should use `kontakt` and
+`ueberuns`, not the legacy `contact` and `about` names.

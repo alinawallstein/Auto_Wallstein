@@ -1,26 +1,29 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
+from .redirects import canonical_redirect
 
 urlpatterns = [
     path("", views.public_home, name="home"),
-    path("login/", views.admin_login, name="login"),
-    path("logout/", views.admin_logout, name="logout"),
-    path("dashboard/", views.dashboard, name="dashboard"),
     path("fahrzeuge/", views.public_vehicles, name="public_vehicles"),
-    path("fahrzeuge/neu/", views.vehicle_create, name="vehicle_create"),
     path("fahrzeuge/<int:pk>/", views.vehicle_detail, name="vehicle_detail"),
-    path("fahrzeuge/<int:pk>/bearbeiten/", views.vehicle_update, name="vehicle_update"),
-    path("fahrzeuge/<int:pk>/bilder/", views.vehicle_images, name="vehicle_images"),
-    path("fahrzeuge/<int:pk>/loeschen/", views.vehicle_delete, name="vehicle_delete"),
-    path("vehicles/", views.public_vehicles, name="public_vehicles_legacy"),
-    path("ueberuns/", views.ueberuns_page, name="ueberuns"),
+    path("ueberuns/", views.about_page, name="ueberuns"),
     path("finanzierung/", views.financing_page, name="finanzierung"),
     path("oeffnungszeiten/", views.openings_page, name="oeffnungszeiten"),
     path("service/", views.service_page, name="service"),
     path("kontakt/", views.contact_page, name="kontakt"),
     path("impressum/", views.impressum_page, name="impressum"),
     path("datenschutz/", views.datenschutz_page, name="datenschutz"),
-    path("contact/", views.contact_page, name="contact"),
-    path("about/", views.about_page, name="about"),
+    path("verwaltung/", include("vehicles.urls_management")),
+    # Retain old route names for external callers; internal links use canonical names.
+    path("vehicles/", canonical_redirect, {"route_name": "public_vehicles"}, name="public_vehicles_legacy"),
+    path("contact/", canonical_redirect, {"route_name": "kontakt"}, name="contact"),
+    path("about/", canonical_redirect, {"route_name": "ueberuns"}, name="about"),
+    path("login/", canonical_redirect, {"route_name": "login"}),
+    path("logout/", canonical_redirect, {"route_name": "logout"}),
+    path("dashboard/", canonical_redirect, {"route_name": "dashboard"}),
+    path("fahrzeuge/neu/", canonical_redirect, {"route_name": "vehicle_create"}),
+    path("fahrzeuge/<int:pk>/bearbeiten/", canonical_redirect, {"route_name": "vehicle_update"}),
+    path("fahrzeuge/<int:pk>/bilder/", canonical_redirect, {"route_name": "vehicle_images"}),
+    path("fahrzeuge/<int:pk>/loeschen/", canonical_redirect, {"route_name": "vehicle_delete"}),
 ]
