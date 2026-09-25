@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -65,7 +66,7 @@
                     <p class="text-uppercase text-muted small mb-1">Übersicht</p>
                     <h1 class="h3 mb-0">Dashboard</h1>
                 </div>
-                <a href="{% url 'vehicle_create' %}" class="btn btn-primary">+ Neues Fahrzeug</a>
+                {% if perms.vehicles.add_vehicle %}<a href="{% url 'vehicle_create' %}" class="btn btn-primary">+ Neues Fahrzeug</a>{% endif %}
             </div>
 
             <div class="row g-3 mb-4">
@@ -138,8 +139,8 @@
                                             <td>{{ vehicle.updated_at|date:"d.m.Y H:i" }}</td>
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end gap-2">
-                                                    <a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-                                                    <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-outline-danger">Löschen</a>
+                                                    {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>{% endif %}
+                                                    {% if perms.vehicles.delete_vehicle %}<a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-outline-danger">Löschen</a>{% endif %}
                                                 </div>
                                             </td>
                                         </tr>

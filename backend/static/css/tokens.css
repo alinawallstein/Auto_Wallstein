@@ -1,0 +1,33 @@
+:root {
+    /* Color tokens */
+    --color-bg: #0d1116;
+    --color-surface: #0f1418;
+    --color-surface-weak: #12171b;
+    --color-text: #f3f6f9;
+    --color-text-muted: #b7c1ca;
+    --color-border: rgba(255,255,255,0.06);
+    --color-accent: #7a8793;
+    --color-accent-strong: #5c6975;
+
+    /* Layout */
+    --container-width: min(1160px, calc(100% - 32px));
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+
+    /* Radius & shadow */
+    --radius-1: 8px;
+    --radius-2: 16px;
+    --shadow-soft: 0 12px 28px rgba(0,0,0,0.22);
+
+    /* Typography */
+    --fs-display: clamp(2.6rem, 6vw, 4rem);
+    --fs-h1: clamp(1.6rem, 4vw, 2.6rem);
+    --fs-body: 1rem;
+    --transition-fast: 180ms ease;
+}
+
+/* Utility tokens for reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    :root { --transition-fast: 0ms; }
+}

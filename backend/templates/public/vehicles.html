@@ -1,39 +1,13 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fahrzeuge | Auto Wallstein</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/site.css">
-</head>
-<body class="vehicle-shell">
-    <nav class="navbar vehicle-navbar">
-        <div class="logo">
-            <a href="{% url 'home' %}" aria-label="Zur Startseite">
-                <img src="{% static 'images/logo.png' %}" alt="Auto Wallstein Logo">
-            </a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'public_vehicles' %}">Fahrzeuge</a></li>
-            <li><a href="{% url 'finanzierung' %}">Finanzierung</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropbtn">Historie ▼</a>
-                <ul class="dropdown-content">
-                    <li><a href="{% url 'ueberuns' %}">Über uns</a></li>
-                    <li><a href="{% url 'oeffnungszeiten' %}">Öffnungszeiten</a></li>
-                    <li><a href="{% url 'service' %}">Service</a></li>
-                    <li><a href="{% url 'impressum' %}">Impressum</a></li>
-                    <li><a href="{% url 'datenschutz' %}">Datenschutz</a></li>
-                    <li><a href="{% url 'kontakt' %}">Kontakt &amp; Anfahrt</a></li>
-                </ul>
-            </li>
-            <li class="nav-cta-tel"><a href="tel:+496104406770">Anrufen</a></li>
-        </ul>
-    </nav>
+{% extends "public/base.html" %}
 
-    <main class="container vehicle-main py-5">
+{% block title %}Fahrzeuge | Auto Wallstein{% endblock %}
+
+{% block extra_head %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container vehicle-main py-5">
         <div class="d-flex justify-content-between align-items-center mb-4 vehicle-heading-wrap">
             <h1 class="section-title h2 mb-0">Unsere Fahrzeuge</h1>
         </div>
@@ -41,9 +15,21 @@
         <div class="card filter-panel border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <form method="get" class="row g-3 align-items-end">
+                    {% if filter_form.errors %}
+                        <div class="col-12" role="alert">
+                            <p>Bitte korrigieren Sie die Filterangaben.</p>
+                            <ul>
+                                {% for field in filter_form %}
+                                    {% for error in field.errors %}
+                                        <li><a href="#filter_{{ field.name }}">{{ field.label }}</a>: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                     <div class="col-md-3">
-                        <label class="form-label">Marke</label>
-                        <select name="brand" class="form-select">
+                        <label class="form-label" for="filter_brand">Marke</label>
+                        <select id="filter_brand" name="brand" class="form-select">
                             <option value="">Alle</option>
                             {% for option in brands %}
                                 <option value="{{ option }}" {% if active_filters.brand == option %}selected{% endif %}>{{ option }}</option>
@@ -51,20 +37,20 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Modell</label>
-                        <input type="text" name="model" value="{{ active_filters.model }}" class="form-control">
+                        <label class="form-label" for="filter_model">Modell</label>
+                        <input type="text" id="filter_model" name="model" value="{{ active_filters.model }}" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Preis von</label>
-                        <input type="number" name="price_min" value="{{ active_filters.price_min }}" class="form-control">
+                        <label class="form-label" for="filter_price_min">Preis von</label>
+                        <input type="number" id="filter_price_min" name="price_min" value="{{ active_filters.price_min }}" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Preis bis</label>
-                        <input type="number" name="price_max" value="{{ active_filters.price_max }}" class="form-control">
+                        <label class="form-label" for="filter_price_max">Preis bis</label>
+                        <input type="number" id="filter_price_max" name="price_max" value="{{ active_filters.price_max }}" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Sortierung</label>
-                        <select name="sort" class="form-select">
+                        <label class="form-label" for="filter_sort">Sortierung</label>
+                        <select id="filter_sort" name="sort" class="form-select">
                             <option value="newest" {% if active_filters.sort == 'newest' or not active_filters.sort %}selected{% endif %}>Neueste</option>
                             <option value="price_asc" {% if active_filters.sort == 'price_asc' %}selected{% endif %}>Preis aufsteigend</option>
                             <option value="price_desc" {% if active_filters.sort == 'price_desc' %}selected{% endif %}>Preis absteigend</option>
@@ -72,20 +58,20 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Baujahr von</label>
-                        <input type="number" name="year_min" value="{{ active_filters.year_min }}" class="form-control">
+                        <label class="form-label" for="filter_year_min">Baujahr von</label>
+                        <input type="number" id="filter_year_min" name="year_min" value="{{ active_filters.year_min }}" class="form-control">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Baujahr bis</label>
-                        <input type="number" name="year_max" value="{{ active_filters.year_max }}" class="form-control">
+                        <label class="form-label" for="filter_year_max">Baujahr bis</label>
+                        <input type="number" id="filter_year_max" name="year_max" value="{{ active_filters.year_max }}" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Km bis</label>
-                        <input type="number" name="mileage_max" value="{{ active_filters.mileage_max }}" class="form-control">
+                        <label class="form-label" for="filter_mileage_max">Km bis</label>
+                        <input type="number" id="filter_mileage_max" name="mileage_max" value="{{ active_filters.mileage_max }}" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Kraftstoff</label>
-                        <select name="fuel_type" class="form-select">
+                        <label class="form-label" for="filter_fuel_type">Kraftstoff</label>
+                        <select id="filter_fuel_type" name="fuel_type" class="form-select">
                             <option value="">Alle</option>
                             {% for option in fuel_types %}
                                 <option value="{{ option }}" {% if active_filters.fuel_type == option %}selected{% endif %}>{{ option }}</option>
@@ -93,8 +79,8 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Getriebe</label>
-                        <select name="transmission" class="form-select">
+                        <label class="form-label" for="filter_transmission">Getriebe</label>
+                        <select id="filter_transmission" name="transmission" class="form-select">
                             <option value="">Alle</option>
                             {% for option in transmissions %}
                                 <option value="{{ option }}" {% if active_filters.transmission == option %}selected{% endif %}>{{ option }}</option>
@@ -136,12 +122,11 @@
                         </article>
                     </div>
                 {% endfor %}
-            {% else %}
+            {% elif not filter_form.errors %}
                 <div class="col-12">
                     <div class="alert alert-light border">Keine Fahrzeuge entsprechen den aktuellen Filtern.</div>
                 </div>
             {% endif %}
         </div>
-    </main>
-</body>
-</html>
+    </div>
+{% endblock %}

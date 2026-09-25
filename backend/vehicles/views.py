@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import redirect, render
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomerInquiryForm, VehicleForm, VehicleImageActionForm, VehicleImageUploadForm
+from .forms import CustomerInquiryForm, VehicleFilterForm, VehicleForm, VehicleImageActionForm, VehicleImageUploadForm
 from .models import CustomerInquiry, Vehicle, VehicleImage, VehicleStatus
 
 
@@ -16,73 +17,43 @@ def public_home(request):
 
 
 def public_vehicles(request):
-    queryset = Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
-
-    brand = request.GET.get("brand")
-    model = request.GET.get("model")
-    price_min = request.GET.get("price_min")
-    price_max = request.GET.get("price_max")
-    year_min = request.GET.get("year_min")
-    year_max = request.GET.get("year_max")
-    mileage_max = request.GET.get("mileage_max")
-    fuel_type = request.GET.get("fuel_type")
-    transmission = request.GET.get("transmission")
-    sort = request.GET.get("sort", "newest")
-
-    if brand:
-        queryset = queryset.filter(brand__icontains=brand)
-    if model:
-        queryset = queryset.filter(model__icontains=model)
-    if price_min:
-        queryset = queryset.filter(sale_price__gte=price_min)
-    if price_max:
-        queryset = queryset.filter(sale_price__lte=price_max)
-    if year_min:
-        queryset = queryset.filter(year__gte=year_min)
-    if year_max:
-        queryset = queryset.filter(year__lte=year_max)
-    if mileage_max:
-        queryset = queryset.filter(mileage__lte=mileage_max)
-    if fuel_type:
-        queryset = queryset.filter(fuel_type__icontains=fuel_type)
-    if transmission:
-        queryset = queryset.filter(transmission__icontains=transmission)
-
-    if sort == "price_asc":
-        queryset = queryset.order_by("sale_price")
-    elif sort == "price_desc":
-        queryset = queryset.order_by("-sale_price")
-    elif sort == "mileage":
-        queryset = queryset.order_by("mileage")
+    base_queryset = Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
+    filter_form = VehicleFilterForm(request.GET)
+    queryset = base_queryset
+    if filter_form.is_valid():
+        filters = filter_form.cleaned_data
+        lookups = {
+            "brand": "brand__icontains", "model": "model__icontains",
+            "price_min": "sale_price__gte", "price_max": "sale_price__lte",
+            "year_min": "year__gte", "year_max": "year__lte",
+            "mileage_max": "mileage__lte", "fuel_type": "fuel_type__icontains",
+            "transmission": "transmission__icontains",
+        }
+        for field, lookup in lookups.items():
+            value = filters.get(field)
+            if value is not None and value != "":
+                queryset = queryset.filter(**{lookup: value})
+        ordering = {
+            "price_asc": "sale_price", "price_desc": "-sale_price",
+            "mileage": "mileage", "newest": "-created_at",
+        }
+        queryset = queryset.order_by(ordering[filters.get("sort") or "newest"], "pk")
     else:
-        queryset = queryset.order_by("-created_at")
+        queryset = queryset.none()
 
     context = {
         "vehicles": queryset,
-        "brands": queryset.values_list("brand", flat=True).distinct().order_by("brand"),
-        "models": queryset.values_list("model", flat=True).distinct().order_by("model"),
-        "fuel_types": queryset.values_list("fuel_type", flat=True).distinct().order_by("fuel_type"),
-        "transmissions": queryset.values_list("transmission", flat=True).distinct().order_by("transmission"),
-        "active_filters": {
-            "brand": brand,
-            "model": model,
-            "price_min": price_min,
-            "price_max": price_max,
-            "year_min": year_min,
-            "year_max": year_max,
-            "mileage_max": mileage_max,
-            "fuel_type": fuel_type,
-            "transmission": transmission,
-            "sort": sort,
-        },
+        "filter_form": filter_form,
+        "brands": base_queryset.values_list("brand", flat=True).distinct().order_by("brand"),
+        "fuel_types": base_queryset.values_list("fuel_type", flat=True).distinct().order_by("fuel_type"),
+        "transmissions": base_queryset.values_list("transmission", flat=True).distinct().order_by("transmission"),
+        "active_filters": {name: request.GET.get(name, "") for name in filter_form.fields},
     }
     return render(request, "public/vehicles.html", context)
 
 
 def vehicle_detail(request, pk):
-    vehicle = Vehicle.objects.filter(pk=pk, is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE).first()
-    if not vehicle:
-        return redirect("public_vehicles")
+    vehicle = get_object_or_404(Vehicle, pk=pk, is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
     gallery = vehicle.images.order_by("sort_order", "created_at")
     return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery})
 
@@ -161,6 +132,7 @@ def admin_logout(request):
 
 
 @login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle',), raise_exception=True)
 def dashboard(request):
     vehicles = Vehicle.objects.all()
     stats = {
@@ -175,18 +147,22 @@ def dashboard(request):
 
 
 @login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle', 'vehicles.add_vehicle'), raise_exception=True)
 def vehicle_create(request):
     form = VehicleForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         vehicle = form.save()
         messages.success(request, "Fahrzeug wurde erfolgreich angelegt.")
-        return redirect("vehicle_images", pk=vehicle.pk)
+        if request.user.has_perm("vehicles.change_vehicle"):
+            return redirect("vehicle_images", pk=vehicle.pk)
+        return redirect("dashboard")
     return render(request, "admin/vehicle_form.html", {"form": form, "title": "Neues Fahrzeug"})
 
 
 @login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle', 'vehicles.change_vehicle'), raise_exception=True)
 def vehicle_update(request, pk):
-    vehicle = Vehicle.objects.get(pk=pk)
+    vehicle = get_object_or_404(Vehicle, pk=pk)
     form = VehicleForm(request.POST or None, instance=vehicle)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -196,8 +172,9 @@ def vehicle_update(request, pk):
 
 
 @login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle', 'vehicles.delete_vehicle'), raise_exception=True)
 def vehicle_delete(request, pk):
-    vehicle = Vehicle.objects.get(pk=pk)
+    vehicle = get_object_or_404(Vehicle, pk=pk)
     if request.method == "POST":
         vehicle.delete()
         messages.success(request, "Fahrzeug wurde gelöscht.")
@@ -206,12 +183,15 @@ def vehicle_delete(request, pk):
 
 
 @login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle', 'vehicles.change_vehicle'), raise_exception=True)
 def vehicle_images(request, pk):
-    vehicle = Vehicle.objects.get(pk=pk)
+    vehicle = get_object_or_404(Vehicle, pk=pk)
     upload_form = VehicleImageUploadForm(request.POST or None, request.FILES or None)
     action_form = VehicleImageActionForm(request.POST or None)
 
     if request.method == "POST":
+        if request.FILES.getlist("images") and not request.user.has_perm("vehicles.add_vehicleimage"):
+            raise PermissionDenied
         if upload_form.is_valid():
             files = request.FILES.getlist("images")
             for index, uploaded_file in enumerate(files, start=1):
@@ -226,6 +206,9 @@ def vehicle_images(request, pk):
             return redirect("vehicle_images", pk=vehicle.pk)
 
         if action_form.is_valid():
+            permission = "vehicles.delete_vehicleimage" if action_form.cleaned_data["action"] == "delete" else "vehicles.change_vehicleimage"
+            if not request.user.has_perm(permission):
+                raise PermissionDenied
             image_id = action_form.cleaned_data["image_id"]
             action = action_form.cleaned_data["action"]
             image = vehicle.images.filter(pk=image_id).first()

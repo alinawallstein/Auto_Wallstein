@@ -5,6 +5,29 @@ from django import forms
 from .models import CustomerInquiry, Vehicle, VehicleAIText, VehicleImage, VehicleStatus
 
 
+class VehicleFilterForm(forms.Form):
+    brand = forms.CharField(required=False, max_length=100, label="Marke")
+    model = forms.CharField(required=False, max_length=120, label="Modell")
+    price_min = forms.DecimalField(required=False, min_value=0, max_digits=12, decimal_places=2, label="Preis von")
+    price_max = forms.DecimalField(required=False, min_value=0, max_digits=12, decimal_places=2, label="Preis bis")
+    year_min = forms.IntegerField(required=False, min_value=0, max_value=9999, label="Baujahr von")
+    year_max = forms.IntegerField(required=False, min_value=0, max_value=9999, label="Baujahr bis")
+    mileage_max = forms.IntegerField(required=False, min_value=0, max_value=2147483647, label="Km bis")
+    fuel_type = forms.CharField(required=False, max_length=60, label="Kraftstoff")
+    transmission = forms.CharField(required=False, max_length=50, label="Getriebe")
+    sort = forms.ChoiceField(required=False, label="Sortierung", choices=[
+        ("newest", "Neueste"), ("price_asc", "Preis aufsteigend"),
+        ("price_desc", "Preis absteigend"), ("mileage", "Kilometerstand"),
+    ])
+
+    def clean(self):
+        data = super().clean()
+        for lower, upper in (("price_min", "price_max"), ("year_min", "year_max")):
+            if data.get(lower) is not None and data.get(upper) is not None and data[lower] > data[upper]:
+                self.add_error(upper, "Der Höchstwert darf nicht unter dem Mindestwert liegen.")
+        return data
+
+
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
@@ -91,6 +114,9 @@ class MultipleFileField(forms.FileField):
             if file_data in (None, ""):
                 continue
             cleaned_files.append(super().clean(file_data, initial))
+        if not cleaned_files:
+            # Apply required-field validation to an empty multiple upload too.
+            return super().clean(None, initial)
         return cleaned_files
 
 

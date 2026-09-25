@@ -1,0 +1,18 @@
+@import './tokens.css';
+
+/* Base typographic scale and container layout */
+html { font-size: 16px; }
+body { font-family: 'Lato', Arial, Helvetica, sans-serif; color: var(--color-text); background: var(--color-bg); }
+
+.container { width: var(--container-width); margin: 0 auto; padding: 0 var(--space-2); }
+
+h1, .h1 { font-size: var(--fs-display); margin: 0 0 var(--space-2); }
+h2, .h2 { font-size: var(--fs-h1); margin: 0 0 var(--space-2); }
+p, li { font-size: var(--fs-body); color: var(--color-text-muted); }
+
+/* Generic layout helpers */
+.grid { display: grid; gap: var(--space-3); }
+.flex-center { display:flex; align-items:center; justify-content:center; }
+
+/* Keep a small set of utility classes to avoid heavy dependency on Bootstrap */
+.visually-hidden { position:absolute!important; height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px; }
