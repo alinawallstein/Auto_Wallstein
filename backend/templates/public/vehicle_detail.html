@@ -1,20 +1,21 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ vehicle.brand }} {{ vehicle.model }} | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}">{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}"><script src="{% static 'js/gallery.js' %}" defer></script>{% endblock %}
 {% block content %}
 <div class="page-section">
     <div class="vehicle-overview">
-        <div class="vehicle-gallery">
+        <div class="vehicle-gallery" data-gallery>
             {% if gallery %}
-                <a href="{{ gallery.0.image.url }}" aria-label="Hauptbild in voller Größe öffnen">
-                    <img class="vehicle-gallery__main" src="{{ gallery.0.image.url }}" width="960" height="720" alt="{{ gallery.0.alt_text|default:vehicle.brand }} {{ vehicle.model }}">
+                <a data-gallery-link href="{{ gallery.0.image.url }}" aria-label="Ausgewähltes Bild in voller Größe öffnen">
+                    <img class="vehicle-gallery__main" data-gallery-main src="{{ gallery.0.image.url }}" width="960" height="720" alt="{% if gallery.0.alt_text %}{{ gallery.0.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}">
                 </a>
                 {% if gallery|length > 1 %}
+                    <p data-gallery-status role="status">Bild 1 von {{ gallery|length }}</p>
                     <div class="vehicle-gallery__thumbs">
-                        {% for image in gallery|slice:"1:" %}
-                            <a href="{{ image.image.url }}" aria-label="Fahrzeugbild {{ forloop.counter|add:1 }} in voller Größe öffnen">
-                                <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:vehicle.brand }} {{ vehicle.model }}" loading="lazy" width="240" height="180">
+                        {% for image in gallery %}
+                            <a data-gallery-choice href="{{ image.image.url }}" aria-label="Fahrzeugbild {{ forloop.counter }} in voller Größe öffnen">
+                                <img src="{{ image.image.url }}" alt="{% if image.alt_text %}{{ image.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}" loading="lazy" width="240" height="180">
                             </a>
                         {% endfor %}
                     </div>

@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% block title %}Fahrzeugbestand | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1>Fahrzeugbestand</h1><p>{{ page_obj.paginator.count }} Fahrzeuge gefunden</p></div>
+        {% if perms.vehicles.add_vehicle %}<a class="btn btn-primary" href="{% url 'vehicle_create' %}">Neues Fahrzeug</a>{% endif %}
+    </div>
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-5"><label class="form-label" for="stock-search">Marke, Modell, Variante oder interne Nummer</label><input class="form-control" type="search" id="stock-search" name="q" value="{{ query }}"></div>
+        <div class="col-md-3"><label class="form-label" for="stock-status">Status</label><select class="form-select" id="stock-status" name="status"><option value="">Alle</option>{% for value,label in statuses %}<option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-4"><label class="form-label" for="stock-visibility">Website</label><select class="form-select" id="stock-visibility" name="visibility"><option value="">Alle</option><option value="public"{% if visibility == 'public' %} selected{% endif %}>Öffentlich sichtbar</option><option value="hidden"{% if visibility == 'hidden' %} selected{% endif %}>Nicht öffentlich</option></select></div>
+        <div class="d-flex gap-3"><button class="btn btn-primary" type="submit">Suchen</button><a class="btn btn-outline-secondary" href="{% url 'management_vehicles' %}">Zurücksetzen</a></div>
+    </form>
+    <div class="table-responsive">
+        <table class="table management-table">
+            <caption>Fahrzeuge – Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}</caption>
+            <thead><tr><th scope="col">Fahrzeug</th><th scope="col">Status / Website</th><th scope="col">Verkaufspreis</th><th scope="col">Bilder</th><th scope="col">Aktionen</th></tr></thead>
+            <tbody>{% for vehicle in page_obj %}<tr>
+                <td><strong>{{ vehicle.brand }} {{ vehicle.model }}</strong><br>{{ vehicle.variant }}<br><small>{{ vehicle.internal_number }}</small></td>
+                <td>{{ vehicle.get_status_display }}<br><small>{% if vehicle.is_publicly_listed %}Öffentlich sichtbar{% else %}Nicht öffentlich{% endif %}</small></td>
+                <td>{{ vehicle.sale_price|floatformat:'2g' }} €</td><td>{{ vehicle.image_count }}</td>
+                <td><div class="management-actions">
+                    {% if perms.vehicles.change_vehicle %}<a class="btn btn-sm btn-outline-primary" href="{% url 'vehicle_update' vehicle.pk %}">Bearbeiten</a><a class="btn btn-sm btn-outline-secondary" href="{% url 'vehicle_images' vehicle.pk %}">Bilder</a>{% endif %}
+                    {% if vehicle.is_publicly_listed %}<a class="btn btn-sm btn-outline-secondary" href="{% url 'vehicle_detail' vehicle.pk %}">Website ansehen</a>{% endif %}
+                    {% if perms.vehicles.delete_vehicle %}<a class="btn btn-sm btn-outline-danger" href="{% url 'vehicle_delete' vehicle.pk %}">Löschen</a>{% endif %}
+                </div></td>
+            </tr>{% empty %}<tr><td colspan="5">Keine Fahrzeuge gefunden. Passen Sie die Suche an oder legen Sie ein Fahrzeug an.</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}<nav class="management-pagination d-flex gap-3 align-items-center" aria-label="Bestandsseiten">
+        {% if page_obj.has_previous %}<a href="?{{ page_query }}&amp;page={{ page_obj.previous_page_number }}">Zurück</a>{% endif %}
+        <span>Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?{{ page_query }}&amp;page={{ page_obj.next_page_number }}">Weiter</a>{% endif %}
+    </nav>{% endif %}
+</section>
+{% endblock %}

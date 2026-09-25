@@ -16,8 +16,13 @@ independent of Bootstrap component names. */
 .site-brand {
   flex: 0 0 auto;
 }
-.site-brand img {
+.site-brand-logo {
+  display: block;
+  width: 72px;
+  height: auto;
   object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.96;
 }
 .site-menu {
   display: flex;

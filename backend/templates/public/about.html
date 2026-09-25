@@ -1,6 +1,8 @@
 {% extends "public/base.html" %}
+{% load static %}
 
 {% block title %}Über uns | Auto Wallstein{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}">{% endblock %}
 
 {% block content %}
 <div class="page-section">
@@ -8,6 +10,38 @@
         <h1>Über uns</h1>
         <p>Wir bieten hochwertige Fahrzeuge mit persönlicher Beratung und fairen Preisen.</p>
         <p>Als familiengeführter Mercedes-Benz Fachhandel in Heusenstamm begleiten wir unsere Kunden von der Fahrzeugauswahl bis zur Finanzierung und Übergabe mit klarer Kommunikation und fairen Konditionen.</p>
+    </section>
+
+    <section class="history-section">
+        <div class="timeline-nav">
+            <ul>
+                <li class="active">1955</li>
+                <li>Heute</li>
+            </ul>
+        </div>
+
+        <div class="history-item">
+            <div class="history-text">
+                <span class="year-label">1955</span>
+                <h2>Der Grundstein <br>für Leidenschaft.</h2>
+                <p>Auto Wallstein wurde mit einer klaren Vision gegründet: Erstklassige Mercedes-Benz Fahrzeuge für Liebhaber zugänglich zu machen.</p>
+            </div>
+            <div class="history-image">
+                <img loading="lazy" src="{% static 'images/1955.jpg' %}" alt="Geschichte">
+                <img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Geschichte">
+            </div>
+        </div>
+
+        <div class="history-item reverse">
+            <div class="history-text">
+                <span class="year-label">Heute</span>
+                <h2>Ihr Partner für <br>Premium-Automobile.</h2>
+                <p>Mit Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG finden wir heute für jeden Kunden den perfekten Jahreswagen.</p>
+            </div>
+            <div class="history-image">
+                <img loading="lazy" src="{% static 'images/vonoben.jpg' %}" alt="Showroom">
+            </div>
+        </div>
     </section>
 </div>
 {% endblock %}

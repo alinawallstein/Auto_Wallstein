@@ -671,3 +671,94 @@ class CanonicalRouteTests(VehicleTestCase):
             (target, 301), (reverse('login') + '?next=' + target, 302),
         ])
         self.assertTemplateUsed(response, 'admin/login.html')
+
+
+class PublicGalleryTests(VehicleTestCase):
+    def setUp(self):
+        super().setUp()
+        self.first = VehicleImage.objects.create(vehicle=self.vehicle, image=self.image_upload('first.png'), sort_order=1)
+        self.cover = VehicleImage.objects.create(vehicle=self.vehicle, image=self.image_upload('cover.png'), sort_order=2,
+                                                is_main=True, alt_text='Ansicht von vorne')
+
+    def test_selected_main_image_leads_all_public_views(self):
+        for route in ('home', 'public_vehicles'):
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+                self.assertContains(response, self.cover.image.url)
+                self.assertNotContains(response, self.first.image.url)
+                self.assertContains(response, 'alt="Ansicht von vorne"')
+        response = self.client.get(reverse('vehicle_detail', args=[self.vehicle.pk]))
+        self.assertEqual(list(response.context['gallery']), [self.cover, self.first])
+        self.assertContains(response, 'alt="Ansicht von vorne"')
+        self.assertContains(response, f'href="{self.first.image.url}"')
+        self.assertContains(response, 'js/gallery.js')
+
+    def test_missing_main_image_falls_back_to_sort_order(self):
+        self.cover.is_main = False
+        self.cover.save()
+        response = self.client.get(reverse('vehicle_detail', args=[self.vehicle.pk]))
+        self.assertEqual(list(response.context['gallery']), [self.first, self.cover])
+
+    def test_empty_gallery_has_no_controls(self):
+        self.vehicle.images.all().delete()
+        response = self.client.get(reverse('vehicle_detail', args=[self.vehicle.pk]))
+        self.assertContains(response, 'Kein Bild vorhanden.')
+        self.assertNotContains(response, 'data-gallery-main')
+
+    def test_prefetched_images_do_not_query_per_vehicle(self):
+        from .selectors import public_vehicles_with_images
+        self.another_vehicle()
+        with self.assertNumQueries(2):
+            vehicles = list(public_vehicles_with_images())
+        with self.assertNumQueries(0):
+            for vehicle in vehicles:
+                list(vehicle.public_images)
+
+
+class ManagementInventoryTests(VehicleTestCase):
+    def test_inventory_requires_login_and_view_permission(self):
+        url = reverse('management_vehicles')
+        self.assertEqual(self.client.get(url).status_code, 302)
+        user = get_user_model().objects.create_user('reader')
+        self.client.force_login(user)
+        self.assertEqual(self.client.get(url).status_code, 403)
+        from django.contrib.auth.models import Permission
+        user.user_permissions.add(Permission.objects.get(content_type__app_label='vehicles', codename='view_vehicle'))
+        response = self.client.get(url)
+        self.assertContains(response, 'BMW 3er')
+        self.assertNotContains(response, reverse('vehicle_update', args=[self.vehicle.pk]))
+        self.assertNotContains(response, reverse('vehicle_delete', args=[self.vehicle.pk]))
+
+    def test_search_status_and_visibility(self):
+        self.login_admin()
+        self.another_vehicle(brand='Audi', status=VehicleStatus.RESERVED)
+        for params, brands in [({'q': 'V-001'}, ['BMW']), ({'q': '320d', 'status': 'reserved'}, ['Audi']),
+                               ({'visibility': 'hidden'}, ['Audi']), ({'visibility': 'public'}, ['BMW'])]:
+            with self.subTest(params=params):
+                response = self.client.get(reverse('management_vehicles'), params)
+                self.assertEqual([v.brand for v in response.context['page_obj']], brands)
+
+    def test_all_vehicles_are_reachable_through_pagination(self):
+        self.login_admin()
+        for index in range(22):
+            self.another_vehicle(internal_number=f'STOCK-{index}')
+        url = reverse('management_vehicles')
+        response = self.client.get(url, {'q': 'STOCK', 'visibility': 'public'})
+        self.assertEqual(response.context['page_obj'].paginator.count, 22)
+        self.assertEqual(len(response.context['page_obj']), 20)
+        self.assertContains(response, 'q=STOCK&amp;visibility=public&amp;page=2')
+        second = self.client.get(url, {'q': 'STOCK', 'visibility': 'public', 'page': 2})
+        self.assertEqual(len(second.context['page_obj']), 2)
+        self.assertFalse(set(v.pk for v in response.context['page_obj']) & set(v.pk for v in second.context['page_obj']))
+
+    def test_management_pages_share_shell(self):
+        self.login_admin()
+        for name, args in [('dashboard', []), ('management_vehicles', []), ('vehicle_create', []),
+                           ('vehicle_update', [self.vehicle.pk]), ('vehicle_images', [self.vehicle.pk]),
+                           ('vehicle_delete', [self.vehicle.pk])]:
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name, args=args))
+                self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, 'admin/base.html')
+                self.assertContains(response, reverse('management_vehicles'))
+                self.assertEqual(response.content.decode().count('<main '), 1)

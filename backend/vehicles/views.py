@@ -5,19 +5,22 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomerInquiryForm, VehicleFilterForm, VehicleForm, VehicleImageActionForm, VehicleImageUploadForm
+from .forms import CustomerInquiryForm, VehicleFilterForm, VehicleForm, VehicleImageActionForm, VehicleImageUploadForm, VehiclePublicationForm
 from .models import CustomerInquiry, Vehicle, VehicleImage, VehicleStatus
+from .selectors import public_vehicles_with_images
 
 
 def public_home(request):
-    featured_vehicles = Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)[:6]
+    featured_vehicles = public_vehicles_with_images()[:6]
     return render(request, "public/home.html", {"featured_vehicles": featured_vehicles})
 
 
 def public_vehicles(request):
-    base_queryset = Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
+    base_queryset = public_vehicles_with_images()
     filter_form = VehicleFilterForm(request.GET)
     queryset = base_queryset
     if filter_form.is_valid():
@@ -53,8 +56,8 @@ def public_vehicles(request):
 
 
 def vehicle_detail(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk, is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
-    gallery = vehicle.images.order_by("sort_order", "created_at")
+    vehicle = get_object_or_404(public_vehicles_with_images(), pk=pk)
+    gallery = vehicle.public_images
     return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery})
 
 
@@ -150,7 +153,7 @@ def vehicle_create(request):
         vehicle = form.save()
         messages.success(request, "Fahrzeug wurde erfolgreich angelegt.")
         if request.user.has_perm("vehicles.change_vehicle"):
-            return redirect("vehicle_images", pk=vehicle.pk)
+            return redirect("vehicle_update", pk=vehicle.pk)
         return redirect("dashboard")
     return render(request, "admin/vehicle_form.html", {"form": form, "title": "Neues Fahrzeug"})
 
@@ -163,8 +166,8 @@ def vehicle_update(request, pk):
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Fahrzeug wurde erfolgreich bearbeitet.")
-        return redirect("vehicle_images", pk=vehicle.pk)
-    return render(request, "admin/vehicle_form.html", {"form": form, "title": "Fahrzeug bearbeiten"})
+        return redirect("vehicle_update", pk=vehicle.pk)
+    return render(request, "admin/vehicle_form.html", {"form": form, "vehicle": vehicle, "title": "Fahrzeug bearbeiten", "active_section": "data", "has_images": vehicle.images.exists()})
 
 
 @login_required(login_url="login")
@@ -249,5 +252,56 @@ def vehicle_images(request, pk):
     return render(
         request,
         "admin/vehicle_images.html",
-        {"vehicle": vehicle, "images": images, "upload_form": upload_form, "action_form": action_form},
+        {"vehicle": vehicle, "images": images, "upload_form": upload_form, "action_form": action_form, "active_section": "images"},
     )
+
+
+@login_required(login_url="login")
+@permission_required("vehicles.view_vehicle", raise_exception=True)
+def management_vehicles(request):
+    queryset = Vehicle.objects.annotate(image_count=Count("images"))
+    query = request.GET.get("q", "").strip()
+    status = request.GET.get("status", "")
+    visibility = request.GET.get("visibility", "")
+    if query:
+        queryset = queryset.filter(Q(brand__icontains=query) | Q(model__icontains=query)
+                                   | Q(variant__icontains=query) | Q(internal_number__icontains=query))
+    if status in VehicleStatus.values:
+        queryset = queryset.filter(status=status)
+    else:
+        status = ""
+    public = Q(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
+    if visibility == "public":
+        queryset = queryset.filter(public)
+    elif visibility == "hidden":
+        queryset = queryset.exclude(public)
+    else:
+        visibility = ""
+    page = Paginator(queryset.order_by("-updated_at", "-pk"), 20).get_page(request.GET.get("page"))
+    parameters = request.GET.copy()
+    parameters.pop("page", None)
+    return render(request, "admin/vehicle_list.html", {
+        "page_obj": page, "query": query, "selected_status": status,
+        "visibility": visibility, "statuses": VehicleStatus.choices,
+        "page_query": parameters.urlencode(),
+    })
+
+
+@login_required(login_url="login")
+@permission_required(("vehicles.view_vehicle", "vehicles.change_vehicle"), raise_exception=True)
+def vehicle_publication(request, pk):
+    vehicle = get_object_or_404(Vehicle, pk=pk)
+    form = VehiclePublicationForm(
+        request.POST if request.method == "POST" else None,
+        initial={"website_enabled": vehicle.is_published and vehicle.public_visible},
+    )
+    if request.method == "POST" and form.is_valid():
+        enabled = form.cleaned_data["website_enabled"]
+        vehicle.is_published = enabled
+        vehicle.public_visible = enabled
+        vehicle.save(update_fields=["is_published", "public_visible", "updated_at"])
+        messages.success(request, "Veröffentlichungseinstellungen gespeichert.")
+        return redirect("vehicle_publication", pk=vehicle.pk)
+    return render(request, "admin/vehicle_publication.html", {
+        "vehicle": vehicle, "form": form, "active_section": "publication",
+    })

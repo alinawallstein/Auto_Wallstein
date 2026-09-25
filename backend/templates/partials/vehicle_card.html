@@ -1,7 +1,7 @@
 <article class="vehicle-card">
-    {% with cover=vehicle.images.first %}
+    {% with cover=vehicle.public_images.0 %}
         {% if cover %}
-            <img class="vehicle-card__image" src="{{ cover.image.url }}" alt="{{ cover.alt_text|default:vehicle.brand }} {{ vehicle.model }}" loading="lazy" width="800" height="500">
+            <img class="vehicle-card__image" src="{{ cover.image.url }}" alt="{% if cover.alt_text %}{{ cover.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}" loading="lazy" width="800" height="500">
         {% else %}
             <div class="vehicle-card__placeholder">Kein Bild vorhanden</div>
         {% endif %}

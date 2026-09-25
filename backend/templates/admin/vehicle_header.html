@@ -1,0 +1,15 @@
+<header class="vehicle-workspace-header">
+    <a href="{% url 'management_vehicles' %}">← Zurück zum Bestand</a>
+    {% if vehicle %}
+        <h1 class="h3 mt-3 mb-2">{{ vehicle.brand }} {{ vehicle.model }}{% if vehicle.variant %} · {{ vehicle.variant }}{% endif %}</h1>
+        <p>{{ vehicle.internal_number }} · {{ vehicle.get_status_display }} · {% if vehicle.is_publicly_listed %}Auf der Website sichtbar{% else %}Nicht auf der Website sichtbar{% endif %}</p>
+        <nav class="vehicle-sections" aria-label="Fahrzeug bearbeiten">
+            <a href="{% url 'vehicle_update' vehicle.pk %}"{% if active_section == 'data' %} aria-current="page"{% endif %}>Fahrzeugdaten</a>
+            <a href="{% url 'vehicle_images' vehicle.pk %}"{% if active_section == 'images' %} aria-current="page"{% endif %}>Bilder</a>
+            <a href="{% url 'vehicle_publication' vehicle.pk %}"{% if active_section == 'publication' %} aria-current="page"{% endif %}>Veröffentlichung</a>
+        </nav>
+    {% else %}
+        <h1 class="h3 mt-3">Neues Fahrzeug</h1>
+        <p>Erfassen Sie die Fahrzeugdaten. Nach dem Anlegen können Sie Bilder hinzufügen und das Fahrzeug für die Website freigeben.</p>
+    {% endif %}
+</header>

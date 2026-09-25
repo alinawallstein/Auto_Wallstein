@@ -12,5 +12,206 @@
             <p class="finance-highlights"><strong>Ihre Vorteile:</strong> schnelle Rückmeldung, unkomplizierte Abwicklung, Finanzierung auch ohne Anzahlung möglich.</p>
         </div>
     </section>
+
+    <section class="finance-calculator-section">
+        <div class="calculator-wrap">
+            <div class="calculator-header">
+                <h2>Finanzierungsrechner</h2>
+                <p>Berechnen Sie schnell Ihre monatliche Rate.</p>
+            </div>
+
+            <div class="calculator-grid">
+                <div class="calculator-form">
+                    <label for="finance-price">
+                        Fahrzeugpreis (€)
+                        <input id="finance-price" type="number" min="1000" step="100" value="25000">
+                    </label>
+
+                    <label for="finance-downpayment">
+                        Anzahlung (€)
+                        <input id="finance-downpayment" type="number" min="0" step="100" value="5000">
+                    </label>
+
+                    <label for="finance-rate">
+                        Effektivzins (% p.a.)
+                        <input id="finance-rate" type="number" min="0" step="0.1" value="4.9">
+                    </label>
+
+                    <label for="finance-term">
+                        Laufzeit (Monate)
+                        <input id="finance-term" type="number" min="12" max="120" step="1" value="60">
+                    </label>
+                </div>
+
+                <div class="calculator-result" aria-live="polite">
+                    <div class="result-row">
+                        <span>Finanzierungsbetrag</span>
+                        <strong id="finance-amount">20.000,00 €</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Monatsrate</span>
+                        <strong id="finance-monthly">0,00 €</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Gesamtbetrag</span>
+                        <strong id="finance-total">0,00 €</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Gesamtzinsen</span>
+                        <strong id="finance-interest">0,00 €</strong>
+                    </div>
+                    <p class="calculator-note">Eine unverbindliche Berechnung zur Orientierung.  Persönliche Konditionen sprechen wir gern mit Ihnen individuell ab.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+
+<style>
+    .finance-calculator-section {
+        padding: 3rem 1.25rem 4rem;
+    }
+
+    .calculator-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .calculator-header {
+        background: #0f172a;
+        color: #fff;
+        padding: 1.5rem 2rem;
+    }
+
+    .calculator-header h2 {
+        margin: 0 0 0.25rem;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .calculator-header p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .calculator-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .calculator-form {
+        display: grid;
+        gap: 1.25rem;
+    }
+
+    .calculator-form label {
+        display: grid;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .calculator-form input {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font: inherit;
+        color: #111827;
+        background: #fff;
+    }
+
+    .calculator-result {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: grid;
+        align-content: center;
+        gap: 1rem;
+    }
+
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        color: #1f2937;
+    }
+
+    .result-row strong {
+        font-size: 1.05rem;
+        color: #0f172a;
+    }
+
+    .calculator-note {
+        margin: 0;
+        color: #475569;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+        .calculator-grid {
+            grid-template-columns: 1fr;
+            padding: 1.25rem;
+        }
+
+        .calculator-header {
+            padding: 1.25rem 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    function currency(value) {
+        return new Intl.NumberFormat('de-DE', {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    function calculateFinancing() {
+        const price = Number(document.getElementById('finance-price').value) || 0;
+        const downPayment = Number(document.getElementById('finance-downpayment').value) || 0;
+        const annualRate = Number(document.getElementById('finance-rate').value) || 0;
+        const termMonths = Number(document.getElementById('finance-term').value) || 0;
+
+        const financedAmount = Math.max(price - downPayment, 0);
+        const monthlyRate = annualRate / 100 / 12;
+
+        let monthlyPayment = 0;
+        if (termMonths > 0 && financedAmount > 0) {
+            if (monthlyRate === 0) {
+                monthlyPayment = financedAmount / termMonths;
+            } else {
+                monthlyPayment = financedAmount * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / (Math.pow(1 + monthlyRate, termMonths) - 1);
+            }
+        }
+
+        const totalPayment = monthlyPayment * termMonths;
+        const interest = Math.max(totalPayment - financedAmount, 0);
+
+        document.getElementById('finance-amount').textContent = currency(financedAmount);
+        document.getElementById('finance-monthly').textContent = currency(monthlyPayment);
+        document.getElementById('finance-total').textContent = currency(totalPayment);
+        document.getElementById('finance-interest').textContent = currency(interest);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        ['finance-price', 'finance-downpayment', 'finance-rate', 'finance-term'].forEach(function (id) {
+            document.getElementById(id).addEventListener('input', calculateFinancing);
+        });
+        calculateFinancing();
+    });
+</script>
 {% endblock %}

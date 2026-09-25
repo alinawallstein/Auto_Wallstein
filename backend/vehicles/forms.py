@@ -3,6 +3,7 @@ from __future__ import annotations
 from django import forms
 
 from .models import CustomerInquiry, Vehicle, VehicleAIText, VehicleImage, VehicleStatus
+from .selectors import public_vehicles
 
 
 class VehicleFilterForm(forms.Form):
@@ -57,12 +58,10 @@ class VehicleForm(forms.ModelForm):
             "description",
             "equipment",
             "status",
-            "is_published",
-            "public_visible",
         ]
         widgets = {
-            "first_registration": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
-            "hu_valid_until": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "first_registration": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date", "class": "form-control"}),
+            "hu_valid_until": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date", "class": "form-control"}),
             "description": forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
             "equipment": forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
             "status": forms.Select(attrs={"class": "form-select"}),
@@ -86,13 +85,27 @@ class VehicleForm(forms.ModelForm):
             self.add_error("purchase_price", "Der Einkaufspreis darf nicht negativ sein.")
         if sale_price is not None and sale_price < 0:
             self.add_error("sale_price", "Der Verkaufspreis darf nicht negativ sein.")
-        if sale_price is not None and purchase_price is not None and sale_price < 0:
-            self.add_error("sale_price", "Der Verkaufspreis darf nicht kleiner als 0 sein.")
-
-        if cleaned_data.get("status") == VehicleStatus.SOLD and not cleaned_data.get("is_published"):
-            cleaned_data["is_published"] = False
-
         return cleaned_data
+
+
+    def field_groups(self):
+        groups = [
+            ("Verkauf & Bestand", ["sale_price", "mileage", "status"]),
+            ("Fahrzeug", ["internal_number", "brand", "model", "variant", "vehicle_type"]),
+            ("Technische Daten", ["first_registration", "year", "fuel_type", "transmission", "power_kw", "power_ps", "engine_capacity", "doors", "seats"]),
+            ("Zustand & Ausstattung", ["exterior_color", "interior_equipment", "previous_owners", "hu_valid_until", "equipment", "description"]),
+            ("Interne Angaben", ["purchase_price", "vin"]),
+        ]
+        return [(title, [self[name] for name in names]) for title, names in groups]
+
+
+class VehiclePublicationForm(forms.Form):
+    website_enabled = forms.BooleanField(
+        required=False, label="Für die Website freigeben",
+        help_text="Das Fahrzeug erscheint nur mit dem Verkaufsstatus „Verfügbar“. Bei Reservierung, Verkauf oder Vorbereitung bleibt es ausgeblendet.",
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
+    )
+
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -153,7 +166,7 @@ class CustomerInquiryForm(forms.ModelForm):
             kwargs["initial"] = {**initial, "inquiry_type": inquiry_type}
         super().__init__(*args, **kwargs)
         self.fields["vehicle"].required = False
-        self.fields["vehicle"].queryset = Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
+        self.fields["vehicle"].queryset = public_vehicles()
         self.fields["message"].label = "Nachricht"
         self.fields["email"].label = "E-Mail"
         self.fields["phone"].label = "Telefon"
