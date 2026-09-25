@@ -1,16 +1,18 @@
 :root {
-    --bg: #f4efe9;
-    --bg-soft: #efe8df;
-    --panel: #ffffff;
-    --panel-alt: #f8f5f2;
-    --ink: #171b20;
-    --ink-soft: #505962;
-    --line: #e4ddd5;
-    --gold: #c8a66a;
-    --gold-deep: #9d7745;
-    --gold-soft: rgba(200, 166, 106, 0.12);
-    --shadow: 0 22px 54px rgba(24, 31, 38, 0.10);
-    --shadow-strong: 0 30px 72px rgba(24, 31, 38, 0.14);
+    --bg: #0d1116;
+    --bg-soft: #121b22;
+    --panel: #151b20;
+    --panel-alt: #1b2329;
+    --ink: #f3f6f9;
+    --ink-soft: #b7c1ca;
+    --line: rgba(255,255,255,0.08);
+    --silver: #dfe5eb;
+    --silver-strong: #b9c3cc;
+    --silver-soft: rgba(191, 199, 206, 0.12);
+    --accent: #7a8793;
+    --accent-deep: #5c6975;
+    --shadow: 0 24px 60px rgba(0,0,0,0.28);
+    --shadow-strong: 0 34px 80px rgba(0,0,0,0.36);
     --radius: 22px;
 }
 
@@ -24,7 +26,7 @@ html {
 
 body {
     margin: 0;
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+    background: linear-gradient(180deg, #091016 0%, #111a21 32%, #0e1419 100%);
     color: var(--ink);
     font-family: 'Lato', Arial, Helvetica, sans-serif;
     line-height: 1.6;
@@ -73,12 +75,12 @@ footer {
     justify-content: space-between;
     width: min(1180px, calc(100% - 32px));
     margin: 18px auto 0;
-    padding: 16px 22px;
-    background: rgba(255, 255, 255, 0.82);
+    padding: 14px 18px;
+    background: rgba(15, 20, 24, 0.78);
     border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(18px);
+    border-radius: 16px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.16);
+    backdrop-filter: blur(20px);
 }
 
 .logo {
@@ -112,19 +114,20 @@ footer {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 12px;
+    padding: 9px 11px;
     color: var(--ink);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.09em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     border-radius: 10px;
-    transition: background 0.18s ease, transform 0.18s ease;
+    transition: background 0.18s ease, transform 0.18s ease, color 0.18s ease;
 }
 
 .nav-links a:hover,
 .dropdown:hover > .dropbtn {
-    background: var(--gold-soft);
+    background: rgba(255,255,255,0.03);
+    color: var(--silver);
     transform: translateY(-1px);
 }
 
@@ -162,14 +165,14 @@ footer {
 
 .nav-cta-email a,
 .nav-cta-tel a {
-    background: var(--panel-alt);
+    background: rgba(255,255,255,0.02);
     border: 1px solid var(--line);
 }
 
 .nav-cta-tel a {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
-    color: #fff;
-    box-shadow: 0 12px 24px rgba(157, 119, 69, 0.18);
+    background: linear-gradient(135deg, rgba(223,229,235,0.96), rgba(185,195,204,0.88));
+    color: #101820;
+    box-shadow: 0 12px 24px rgba(191, 199, 206, 0.16);
 }
 
 .hero-section {
@@ -179,7 +182,7 @@ footer {
     align-items: center;
     padding: 120px 0 70px;
     background:
-        linear-gradient(90deg, rgba(18, 22, 28, 0.86), rgba(18, 22, 28, 0.46) 45%, rgba(18, 22, 28, 0.7)),
+        linear-gradient(90deg, rgba(7, 10, 13, 0.90), rgba(7, 10, 13, 0.60) 42%, rgba(7, 10, 13, 0.80)),
         url('pics/titelbild.jpeg') center/cover no-repeat;
     border-bottom: 1px solid var(--line);
 }
@@ -202,7 +205,7 @@ footer {
     line-height: 0.9;
     letter-spacing: -0.06em;
     font-weight: 900;
-    text-shadow: 0 18px 45px rgba(0,0,0,0.28);
+    text-shadow: 0 18px 45px rgba(0,0,0,0.36);
 }
 
 .hero-content h2.sub-title {
@@ -249,9 +252,9 @@ input[type="button"]:hover {
 .btn-primary,
 button[type="submit"],
 input[type="submit"] {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
-    color: #fff;
-    box-shadow: 0 12px 22px rgba(157, 119, 69, 0.22);
+    background: linear-gradient(135deg, rgba(223,229,235,0.96), rgba(185,195,204,0.88));
+    color: #111821;
+    box-shadow: 0 12px 22px rgba(191, 199, 206, 0.16);
 }
 
 .btn-outline-primary {
@@ -305,7 +308,7 @@ main {
 }
 
 .welcome-section {
-    background: var(--panel);
+    background: linear-gradient(180deg, rgba(20,27,32,0.98), rgba(15,19,22,0.96));
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -352,9 +355,9 @@ main {
     min-height: 300px;
     border-radius: 18px;
     overflow: hidden;
-    border: 1px solid var(--line);
-    background: var(--panel-alt);
-    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.01);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.14);
 }
 
 .grid-item img {
@@ -470,7 +473,7 @@ main {
 .year-label {
     display: block;
     margin-bottom: 8px;
-    color: var(--gold-deep);
+    color: var(--silver-strong);
     font-size: clamp(3rem, 6vw, 5rem);
     line-height: 1;
     font-weight: 900;
@@ -538,10 +541,10 @@ main {
 .hours-card,
 .contact-card {
     padding: 28px 24px;
-    background: var(--panel);
+    background: linear-gradient(180deg, rgba(21,27,32,0.98), rgba(17,22,26,0.96));
     border: 1px solid var(--line);
     border-radius: 18px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.12);
 }
 
 .hours-card h3,
@@ -573,7 +576,7 @@ main {
     margin-top: 28px;
     padding: 28px 24px;
     text-align: center;
-    background: linear-gradient(135deg, rgba(200, 166, 106, 0.12), rgba(22, 27, 32, 0.04));
+    background: linear-gradient(135deg, rgba(191, 199, 206, 0.14), rgba(24, 29, 34, 0.06));
     border: 1px solid var(--line);
     border-radius: 18px;
 }
@@ -598,12 +601,12 @@ main {
     min-height: 48px;
     padding: 0 20px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
-    color: #fff;
+    background: linear-gradient(135deg, rgba(223,229,235,0.96), rgba(185,195,204,0.88));
+    color: #101820;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    box-shadow: 0 12px 26px rgba(157, 119, 69, 0.18);
+    box-shadow: 0 12px 26px rgba(124, 138, 150, 0.18);
 }
 
 .contact-card {
@@ -619,8 +622,8 @@ main {
     height: 52px;
     margin-bottom: 16px;
     border-radius: 14px;
-    background: var(--gold-soft);
-    color: var(--gold-deep);
+    background: rgba(191, 199, 206, 0.12);
+    color: var(--silver);
     font-size: 1.4rem;
 }
 
@@ -737,8 +740,8 @@ textarea:focus {
 .pill {
     display: inline-block;
     padding: 0.42rem 0.7rem;
-    background: var(--gold-soft);
-    color: var(--gold-deep);
+    background: rgba(191, 199, 206, 0.12);
+    color: var(--silver);
     border-radius: 999px;
     font-size: 0.76rem;
     font-weight: 800;
