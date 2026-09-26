@@ -324,7 +324,7 @@ class InquiryRegressionTests(VehicleTestCase):
         self.assertTrue(confirmation.alternatives)
         pdf_attachment = next(item for item in confirmation.attachments if isinstance(item, tuple) and item[2] == "application/pdf")
         self.assertTrue(pdf_attachment[0].startswith("Auto-Wallstein_Expose_BMW_3er"))
-        self.assertIn("<auto-wallstein-logo>", confirmation.message().as_string())
+        self.assertIn("data:image/png;base64,", confirmation.alternatives[0][0])
 
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_confirmation_without_vehicle_has_no_expose_and_missing_optional_data_is_safe(self):

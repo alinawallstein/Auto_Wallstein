@@ -90,7 +90,7 @@ def _page_content(vehicle, image_data, page_number, page_count, contact, logo_re
     text(54, 455, "ANGEBOT", 9, "F2", "0.84 0.55 0.10")
     price = f"{vehicle.sale_price:,.2f} EUR".replace(",", "X").replace(".", ",").replace("X", ".")
     text(54, 430, price, 20, "F2", "0.05 0.08 0.10")
-    facts = [("Erstzulassung", vehicle.first_registration.strftime("%m/%Y") if vehicle.first_registration else ""), ("Baujahr", vehicle.year), ("Kilometerstand", f"{vehicle.mileage:,} km".replace(",", ".")), ("Leistung", f"{vehicle.power_kw} kW / {vehicle.power_ps} PS"), ("Kraftstoff", vehicle.fuel_type), ("Getriebe", vehicle.transmission), ("Fahrzeugtyp", vehicle.vehicle_type), ("Hubraum", f"{vehicle.engine_capacity} cm³"), ("Türen", vehicle.doors), ("Sitzplätze", vehicle.seats), ("Außenfarbe", vehicle.exterior_color), ("Innenausstattung", vehicle.interior_equipment), ("Vorbesitzer", vehicle.previous_owners), ("HU gültig bis", vehicle.hu_valid_until.strftime("%m/%Y") if vehicle.hu_valid_until else "")]
+    facts = [("Erstzulassung", vehicle.first_registration.strftime("%m/%Y") if vehicle.first_registration else ""), ("Kilometerstand", f"{vehicle.mileage:,} km".replace(",", ".")), ("Leistung", f"{vehicle.power_kw} kW / {vehicle.power_ps} PS"), ("Kraftstoff", vehicle.fuel_type), ("Getriebe", vehicle.transmission), ("Fahrzeugtyp", vehicle.vehicle_type)]
     for index, (label, value) in enumerate(facts):
         x = 54 + (index % 3) * 168
         y = 390 - (index // 3) * 36
@@ -99,21 +99,6 @@ def _page_content(vehicle, image_data, page_number, page_count, contact, logo_re
         commands.extend(["0.90 0.92 0.93 rg", f"{x} {y} 158 28 re", "f"])
         text(x + 8, y + 17, label, 7, "F2", "0.35 0.40 0.43")
         text(x + 8, y + 5, _text(value), 8, "F2")
-    y = 270
-    if _text(vehicle.description):
-        text(54, y, "Fahrzeugbeschreibung", 12, "F2")
-        for line in _text(vehicle.description).splitlines()[:5]:
-            y -= 16
-            text(54, y, line[: ninety], 9)
-    equipment = _text(vehicle.equipment)
-    if _text(vehicle.interior_equipment):
-        equipment = f"{equipment} · Innenausstattung: {vehicle.interior_equipment}" if equipment else f"Innenausstattung: {vehicle.interior_equipment}"
-    if equipment:
-        y -= 26
-        text(54, y, "Ausstattung", 12, "F2")
-        for line in equipment.splitlines()[:5]:
-            y -= 16
-            text(54, y, line[: ninety], 9)
     commands.extend(["0.55 0.58 0.60 RG", "54 38 m", "541 38 l", "S"])
     text(54, 23, f"Auto Wallstein · {contact}", 8, "F1", "0.35 0.40 0.43")
     text(485, 23, f"Seite {page_number}/{page_count}", 8, "F1", "0.35 0.40 0.43")

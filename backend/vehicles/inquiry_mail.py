@@ -1,6 +1,6 @@
 """Mail transport and durable reply records; the original inquiry remains untouched."""
+import base64
 import logging
-from email.mime.image import MIMEImage
 from pathlib import Path
 from smtplib import SMTPException
 
@@ -61,7 +61,7 @@ def _vehicle_context(inquiry, request=None):
     name = f'{vehicle.brand} {vehicle.model}' if vehicle else 'Fahrzeug'
     context = {
         'inquiry': inquiry, 'vehicle': vehicle, 'vehicle_name': name,
-        'logo_url': request.build_absolute_uri(static('images/logo.png')) if request else static('images/logo.png'),
+        'logo_url': static('images/logo.png'),
         'vehicle_url': request.build_absolute_uri(f'/fahrzeuge/{vehicle.pk}/') if request and vehicle and vehicle.is_publicly_listed else '',
         'image_url': '', 'price': '', 'registration': '', 'mileage': '', 'power': '', 'fuel': '', 'transmission': '',
         'contact_name': 'Auto Wallstein', 'contact_address': 'Rudolf-Braas-Straße 27a · 63150 Heusenstamm',
@@ -87,12 +87,11 @@ def send_customer_inquiry_mails(inquiry, request=None):
         confirmation.attach_alternative(render_to_string('email/inquiry_confirmation.html', context), 'text/html')
         logo_path = Path(settings.BASE_DIR) / 'static' / 'images' / 'logo.png'
         try:
-            logo_part = MIMEImage(logo_path.read_bytes())
-            logo_part.add_header('Content-ID', '<auto-wallstein-logo>')
-            logo_part.add_header('Content-Disposition', 'inline', filename='auto-wallstein-logo.png')
-            confirmation.attach(logo_part)
+            context['logo_url'] = 'data:image/png;base64,' + base64.b64encode(logo_path.read_bytes()).decode('ascii')
+            confirmation.alternatives = []
+            confirmation.attach_alternative(render_to_string('email/inquiry_confirmation.html', context), 'text/html')
         except OSError:
-            logger.warning('Inquiry logo attachment failed for inquiry %s', inquiry.pk)
+            logger.warning('Inquiry logo embedding failed for inquiry %s', inquiry.pk)
         if inquiry.vehicle:
             try:
                 pdf = build_vehicle_expose(inquiry.vehicle)
