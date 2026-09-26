@@ -10,10 +10,8 @@ from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomerInquiryForm, VehicleFilterForm, VehicleForm, VehicleImageActionForm, VehicleImageUploadForm, VehiclePublicationForm
-from .models import CustomerInquiry, Vehicle, VehicleImage, VehicleStatus, NewsArticle, Homepage
-from .financing import calculate_financing
-from .financing_forms import FinancingInquiryForm
-from .selectors import public_vehicles_with_images
+from .models import CustomerInquiry, Vehicle, VehicleImage, VehicleStatus, Homepage
+from .selectors import public_news_items, public_vehicles_with_images
 
 
 from .content import website_content
@@ -26,7 +24,8 @@ from django.views.decorators.http import require_POST
 def public_home(request):
     content = website_content(request)['site_content']
     featured_vehicles = public_vehicles_with_images()[:6]
-    return render(request, "public/home.html", {"hero_slides": homepage_slides(content), "featured_vehicles": featured_vehicles, "latest_news": NewsArticle.objects.filter(is_published=True)[:3]})
+    latest_news = public_news_items()[:3]
+    return render(request, "public/home.html", {"hero_slides": homepage_slides(content), "featured_vehicles": featured_vehicles, "latest_news": latest_news})
 
 
 def public_vehicles(request):
@@ -68,26 +67,7 @@ def public_vehicles(request):
 def vehicle_detail(request, pk):
     vehicle = get_object_or_404(public_vehicles_with_images(), pk=pk)
     gallery = vehicle.public_images
-    page = Homepage.objects.filter(pk=1).first()
-    annual_rate = page.financing_annual_rate if page else Homepage._meta.get_field('financing_annual_rate').default
-    return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery, "financing_rate": annual_rate, "financing_form": FinancingInquiryForm()})
-
-
-def financing_inquiry(request, pk):
-    vehicle = get_object_or_404(public_vehicles_with_images(), pk=pk)
-    form = FinancingInquiryForm(request.POST or None)
-    page = Homepage.objects.filter(pk=1).first()
-    annual_rate = page.financing_annual_rate if page else Homepage._meta.get_field('financing_annual_rate').default
-    if request.method == 'POST' and form.is_valid():
-        try:
-            values = calculate_financing(vehicle.sale_price, form.cleaned_data['downpayment'], form.cleaned_data['term_months'], annual_rate)
-        except ValueError:
-            form.add_error(None, 'Die Finanzierungswerte sind nicht plausibel.')
-        else:
-            inquiry = CustomerInquiry.objects.create(inquiry_type='financing_request', vehicle=vehicle, name=f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name']}", email=form.cleaned_data['email'], phone=form.cleaned_data['phone'], message=form.cleaned_data['message'] or 'Finanzierungsanfrage über den Fahrzeugrechner.', subject=f'Finanzierung: {vehicle.brand} {vehicle.model}', financing_vehicle_price=values['price'], financing_downpayment=values['downpayment'], financing_term_months=values['term_months'], financing_annual_rate=values['annual_rate'], financing_monthly_rate=values['monthly_rate'], financing_final_payment=values['final_payment'])
-            send_customer_inquiry_mails(inquiry, request=request)
-            return render(request, 'public/vehicle_detail.html', {'vehicle': vehicle, 'gallery': vehicle.public_images, 'financing_rate': annual_rate, 'financing_form': FinancingInquiryForm(), 'financing_success': True})
-    return render(request, 'public/vehicle_detail.html', {'vehicle': vehicle, 'gallery': vehicle.public_images, 'financing_rate': annual_rate, 'financing_form': form})
+    return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery})
 
 
 def about_page(request):
@@ -96,7 +76,7 @@ def about_page(request):
 
 def financing_page(request):
     page = Homepage.objects.filter(pk=1).first()
-    rate = page.financing_annual_rate if page else Homepage._meta.get_field('financing_annual_rate').default
+    rate = page.financing_annual_rate if page else None
     return render(request, "public/finanzierung.html", {'financing_rate': rate})
 
 

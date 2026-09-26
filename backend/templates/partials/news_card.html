@@ -1,1 +1,10 @@
-<article class="vehicle-card">{% if article.image %}<img class="vehicle-card__image" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="800" height="500" loading="lazy">{% endif %}<div class="vehicle-card__body">{% if heading_level == "h3" %}<h3 class="vehicle-card__title">{{ article.title }}</h3>{% else %}<h2 class="vehicle-card__title">{{ article.title }}</h2>{% endif %}<p>{{ article.excerpt }}</p><a href="{% url 'news_detail' article.pk %}">Beitrag lesen</a></div></article>
+<article class="vehicle-card news-card{% if not article.image %} news-card--no-image{% endif %}">
+    {% if article.image %}<img class="news-card__image" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="800" height="500" loading="lazy">{% endif %}
+    <div class="news-card__body">
+        <span class="news-type news-type--{{ article.type }}">{{ article.get_type_display }}</span>
+        {% if heading_level == 'h3' %}<h3>{{ article.title }}</h3>{% else %}<h2>{{ article.title }}</h2>{% endif %}
+        <p>{{ article.excerpt }}</p>
+        <time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:'d. F Y' }}</time>
+        <a href="{% url 'news_detail' article.slug %}">Mehr erfahren <span aria-hidden="true">→</span></a>
+    </div>
+</article>

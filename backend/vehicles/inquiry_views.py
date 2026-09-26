@@ -29,6 +29,8 @@ def inquiries(request):
                 Q(subject__icontains=query) | Q(vehicle__brand__icontains=query) | Q(vehicle__model__icontains=query))
         if form.cleaned_data['status']:
             items = items.filter(status=form.cleaned_data['status'])
+        if form.cleaned_data['inquiry_type']:
+            items = items.filter(inquiry_type=form.cleaned_data['inquiry_type'])
         items = items.order_by('created_at', 'pk') if form.cleaned_data['order'] == 'oldest' else items.order_by('-created_at', '-pk')
     else:
         items = items.none()

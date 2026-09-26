@@ -1,3 +1,24 @@
 {% extends 'public/base.html' %}
-{% block title %}Neuigkeiten | Auto Wallstein{% endblock %}
-{% block content %}<section class="page-section"><h1>Neuigkeiten</h1><div class="vehicle-grid">{% for article in page_obj %}{% include 'partials/news_card.html' %}{% empty %}<p>Derzeit sind keine Beiträge veröffentlicht.</p>{% endfor %}</div>{% include 'partials/catalog_pagination.html' %}</section>{% endblock %}
+{% load static %}
+{% block title %}Aktuelles | Auto Wallstein{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/news.css' %}">{% endblock %}
+{% block content %}
+<section class="page-section news-page">
+    <h1>Aktuelles bei Auto Wallstein</h1>
+    <nav class="news-filters" aria-label="News filtern">
+        <a href="{% url 'public_news' %}"{% if not selected_type %} aria-current="page"{% endif %}>Alle</a>
+        {% for value, label in news_filters %}
+            {% if value != 'news' %}<a href="?type={{ value }}"{% if selected_type == value %} aria-current="page"{% endif %}>{% if value == 'vehicle' %}Fahrzeuge{% elif value == 'offer' %}Angebote{% elif value == 'company' %}Unternehmen{% elif value == 'event' %}Events{% else %}Hinweise{% endif %}</a>{% endif %}
+        {% endfor %}
+    </nav>
+    {% if featured_article and not selected_type %}
+    <section class="news-featured" aria-label="Hervorgehobene Meldung">
+        {% include 'partials/news_card.html' with article=featured_article %}
+    </section>
+    {% endif %}
+    <div class="news-grid">
+        {% for article in page_obj %}{% include 'partials/news_card.html' %}{% empty %}<p>Derzeit sind keine Meldungen veröffentlicht.</p>{% endfor %}
+    </div>
+    {% include 'partials/catalog_pagination.html' %}
+</section>
+{% endblock %}

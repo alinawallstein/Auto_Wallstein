@@ -6,8 +6,8 @@ from .redirects import canonical_redirect
 urlpatterns = [
     path("zubehoer/", catalog_views.public_accessories, name="public_accessories"),
     path("zubehoer/<int:pk>/", catalog_views.accessory_detail, name="accessory_detail"),
-    path("neuigkeiten/", catalog_views.public_news, name="public_news"),
-    path("neuigkeiten/<int:pk>/", catalog_views.news_detail, name="news_detail"),
+    path("aktuelles/", catalog_views.public_news, name="public_news"),
+    path("aktuelles/<slug:slug>/", catalog_views.news_detail, name="news_detail"),
     path("", views.public_home, name="home"),
     path("fahrzeuge/", views.public_vehicles, name="public_vehicles"),
     path("fahrzeuge/<int:pk>/", views.vehicle_detail, name="vehicle_detail"),
@@ -16,7 +16,6 @@ urlpatterns = [
     path("oeffnungszeiten/", views.openings_page, name="oeffnungszeiten"),
     path("service/", views.service_page, name="service"),
     path("kontakt/", views.contact_page, name="kontakt"),
-    path("fahrzeuge/<int:pk>/finanzierungsanfrage/", views.financing_inquiry, name="financing_inquiry"),
     path("impressum/", views.impressum_page, name="impressum"),
     path("datenschutz/", views.datenschutz_page, name="datenschutz"),
     path("verwaltung/", include("vehicles.urls_management")),

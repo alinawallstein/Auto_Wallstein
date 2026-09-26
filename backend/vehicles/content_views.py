@@ -9,8 +9,8 @@ from .content import homepage_content
 from .slider import homepage_slides
 from .content_forms import HomepageForm
 from .content_schema import TEXT_FIELDS, IMAGE_FIELDS
-from .models import Homepage, HomepageImage, NewsArticle
-from .selectors import public_vehicles_with_images
+from .models import Homepage, HomepageImage
+from .selectors import public_news_items, public_vehicles_with_images
 
 
 @login_required(login_url='login')
@@ -57,7 +57,7 @@ def homepage_preview(request):
         'hero_slides': homepage_slides(content),
         'site_content': content, 'content_preview': True,
         'featured_vehicles': public_vehicles_with_images()[:6],
-        'latest_news': NewsArticle.objects.filter(is_published=True)[:3],
+        'latest_news': public_news_items()[:3],
     })
     response['X-Robots-Tag'] = 'noindex, nofollow'
     return response

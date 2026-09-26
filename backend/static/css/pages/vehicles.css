@@ -1,3 +1,9 @@
+/* ═══════════════════════════════════════════════════════════════
+   FAHRZEUGDETAIL & FAHRZEUGLISTE
+   Importiert nach: tokens.css  base.css  components.css  layout.css
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Filter & Fahrzeugliste ────────────────────────────────────── */
 .filter-panel {
   margin-bottom: var(--space-5);
   border-block: 1px solid var(--color-border);
@@ -63,19 +69,6 @@
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
-@media (max-width: 60rem) {
-  .filter-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .vehicle-overview, .vehicle-information {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 40rem) {
-  .filter-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 .vehicle-gallery__thumbs button {
   padding: 0;
   min-height: 44px;
@@ -84,4 +77,34 @@
 }
 .vehicle-gallery__thumbs button[aria-pressed="true"] {
   border-color: var(--color-accent);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1024 px – Laptop */
+@media (max-width: 64rem) {
+  .filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vehicle-overview, .vehicle-information {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 834 px – Tablet */
+@media (max-width: 52rem) {
+}
+
+/* 600 px – großes Smartphone */
+@media (max-width: 37.5rem) {
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 390 px – iPhone */
+@media (max-width: 24.375rem) {
 }

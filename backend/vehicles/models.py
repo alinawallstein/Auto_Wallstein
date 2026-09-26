@@ -5,6 +5,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 from django.utils import timezone
+from django.utils.text import slugify
 
 from .slider_validation import validate_slide_link
 
@@ -219,22 +220,55 @@ class HomepageImage(models.Model):
 
 
 class NewsArticle(models.Model):
+    class Type(models.TextChoices):
+        NEWS = 'news', 'News'
+        VEHICLE = 'vehicle', 'Neues Fahrzeug'
+        OFFER = 'offer', 'Angebot / Aktion'
+        COMPANY = 'company', 'Unternehmen'
+        EVENT = 'event', 'Event'
+        NOTICE = 'notice', 'Hinweis'
+
+    class Status(models.TextChoices):
+        DRAFT = 'draft', 'Entwurf'
+        PUBLISHED = 'published', 'Veröffentlicht'
+        ARCHIVED = 'archived', 'Archiviert'
+
+    type = models.CharField('News-Typ', max_length=12, choices=Type.choices, default=Type.NEWS)
     title = models.CharField('Überschrift', max_length=180)
     excerpt = models.CharField('Kurztext', max_length=350)
-    body = models.TextField('Beitrag')
+    body = models.TextField('Inhalt', blank=True)
+    slug = models.SlugField('URL-Adresse', max_length=200, unique=True, blank=True)
     image = models.ImageField('Titelbild', upload_to='news/%Y/%m/', blank=True)
     image_alt = models.CharField('Bildbeschreibung', max_length=200, blank=True)
-    is_published = models.BooleanField('Veröffentlichen', default=False)
+    status = models.CharField('Status', max_length=12, choices=Status.choices, default=Status.DRAFT)
     published_at = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateField('Gültig bis', null=True, blank=True)
+    event_date = models.DateField('Veranstaltungsdatum', null=True, blank=True)
+    event_time = models.TimeField('Uhrzeit', null=True, blank=True)
+    event_location = models.CharField('Veranstaltungsort', max_length=200, blank=True)
+    vehicle = models.ForeignKey('Vehicle', verbose_name='Verknüpftes Fahrzeug', null=True, blank=True,
+                                on_delete=models.SET_NULL, related_name='news_articles')
+    is_featured = models.BooleanField('Hervorgehoben', default=False)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-published_at', '-pk']
+        ordering = ['-is_featured', '-published_at', '-pk']
         verbose_name = 'Neuigkeit'
         verbose_name_plural = 'Neuigkeiten'
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) or 'neuigkeit'
+            slug = base_slug
+            suffix = 2
+            while NewsArticle.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base_slug}-{suffix}'
+                suffix += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 
 class HeroSlide(models.Model):

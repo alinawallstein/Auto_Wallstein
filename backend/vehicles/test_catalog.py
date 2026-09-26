@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from django.utils import timezone
 from .tests import VehicleTestCase
 from .models import Accessory, AccessoryImage, Homepage, HomepageImage, NewsArticle
 from .content_schema import TEXT_FIELDS
@@ -138,21 +139,56 @@ class HomepageEditingTests(VehicleTestCase):
 class NewsTests(VehicleTestCase):
     def test_draft_publication_and_public_rendering(self):
         self.login_admin()
-        data = {'title': 'Neu bei uns', 'excerpt': 'Kurztext', 'body': '<script>unsafe</script>', 'image': self.image_upload()}
+        data = {'type': 'news', 'status': 'draft', 'title': 'Neu bei uns', 'excerpt': 'Kurztext', 'body': '<script>unsafe</script>', 'image': self.image_upload()}
         response = self.client.post(reverse('news_create'), data)
+        self.assertEqual(response.status_code, 302, response.context['form'].errors if response.context else None)
         article = NewsArticle.objects.get()
         self.assertRedirects(response, reverse('news_edit', args=[article.pk]))
-        self.assertEqual(self.client.get(reverse('news_detail', args=[article.pk])).status_code, 404)
+        self.assertEqual(self.client.get(reverse('news_detail', args=[article.slug])).status_code, 404)
         data.pop('image')
-        data['is_published'] = 'on'
+        data['status'] = 'published'
         self.client.post(reverse('news_edit', args=[article.pk]), data)
         article.refresh_from_db()
         self.assertIsNotNone(article.published_at)
-        response = self.client.get(reverse('news_detail', args=[article.pk]))
+        response = self.client.get(reverse('news_detail', args=[article.slug]))
         self.assertContains(response, '&lt;script&gt;')
         self.assertContains(self.client.get(reverse('home')), 'Neu bei uns')
         self.assertRedirects(self.client.post(reverse('news_delete', args=[article.pk])), reverse('management_news'))
         self.assertFalse(NewsArticle.objects.exists())
+
+    def test_news_schedule_archive_vehicle_and_filters(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        published = NewsArticle.objects.create(
+            type=NewsArticle.Type.VEHICLE, title='Sportwagen neu im Bestand', excerpt='Jetzt verfügbar',
+            status=NewsArticle.Status.PUBLISHED, published_at=timezone.now(), vehicle=self.vehicle,
+            is_featured=True,
+        )
+        scheduled = NewsArticle.objects.create(
+            type=NewsArticle.Type.OFFER, title='Kommendes Angebot', excerpt='Bald verfügbar',
+            status=NewsArticle.Status.PUBLISHED, published_at=timezone.now() + timedelta(days=3),
+        )
+        archived = NewsArticle.objects.create(
+            type=NewsArticle.Type.EVENT, title='Vergangene Veranstaltung', excerpt='Archiviert',
+            status=NewsArticle.Status.ARCHIVED,
+        )
+        listing = self.client.get(reverse('public_news'))
+        self.assertContains(listing, published.title)
+        self.assertNotContains(listing, scheduled.title)
+        self.assertNotContains(listing, archived.title)
+        self.assertContains(self.client.get(reverse('public_news') + '?type=vehicle'), published.title)
+        detail = self.client.get(reverse('news_detail', args=[published.slug]))
+        self.assertContains(detail, reverse('vehicle_detail', args=[self.vehicle.pk]))
+
+    def test_short_news_without_body_or_image_is_valid(self):
+        article = NewsArticle.objects.create(
+            title='Länger geöffnet', excerpt='Am Samstag sind wir bis 16 Uhr da.',
+            status=NewsArticle.Status.PUBLISHED, published_at=timezone.now(),
+        )
+        response = self.client.get(reverse('news_detail', args=[article.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'news-detail__image')
 
     def test_noneditor_cannot_create_news(self):
         self.client.force_login(get_user_model().objects.create_user('reader'))

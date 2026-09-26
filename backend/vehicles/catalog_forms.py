@@ -52,8 +52,15 @@ class NewsArticleForm(forms.ModelForm):
 
     class Meta:
         model = NewsArticle
-        fields = ['title', 'excerpt', 'body', 'image', 'image_alt', 'is_published']
-        widgets = {'body': forms.Textarea(attrs={'rows': 12})}
+        fields = ['type', 'title', 'excerpt', 'body', 'image', 'image_alt', 'status', 'published_at',
+                  'is_featured', 'end_date', 'vehicle', 'event_date', 'event_time', 'event_location']
+        widgets = {
+            'body': forms.Textarea(attrs={'rows': 8}),
+            'published_at': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'event_date': forms.DateInput(attrs={'type': 'date'}),
+            'event_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -5,7 +5,7 @@
     <a href="{% if kind == 'accessory' %}{% url 'management_accessories' %}{% else %}{% url 'management_news' %}{% endif %}">Zurück zur Übersicht</a>
     <h1 class="mt-3">{{ title }}</h1>
     {% if item.pk %}<p><a href="{% if kind == 'accessory' %}{% url 'accessory_preview' item.pk %}{% else %}{% url 'news_preview' item.pk %}{% endif %}">Gespeicherten Stand in der Vorschau ansehen</a></p>{% endif %}
-    <p>{% if kind == 'accessory' %}Nicht veröffentlichte, reservierte und verkaufte Angebote erscheinen nicht auf der Website. Das erste Bild nach Reihenfolge wird als Hauptbild verwendet.{% else %}Ohne „Veröffentlichen“ bleibt der Beitrag ein interner Entwurf. Text wird sicher als Text angezeigt; HTML ist nicht erforderlich.{% endif %}</p>
+    <p>{% if kind == 'accessory' %}Nicht veröffentlichte, reservierte und verkaufte Angebote erscheinen nicht auf der Website. Das erste Bild nach Reihenfolge wird als Hauptbild verwendet.{% else %}Entwürfe und archivierte Meldungen sind nicht öffentlich. Veröffentlichungsdatum und optionale Angaben zu Angebot, Fahrzeug oder Event können passend zum News-Typ gesetzt werden.{% endif %}</p>
     <form method="post" enctype="multipart/form-data" data-unsaved-form{% if form.errors or images.errors %} data-unsaved-errors{% endif %} novalidate>
         {% csrf_token %}
         {{ form.non_field_errors }}

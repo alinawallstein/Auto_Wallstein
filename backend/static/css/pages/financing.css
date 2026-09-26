@@ -1,0 +1,200 @@
+.finance-calculator-section {
+  padding: var(--space-1) var(--space-3) var(--space-6);
+}
+
+.calculator-wrap {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid #dfe3e6;
+  border-radius: 12px;
+  box-shadow: 0 18px 42px rgb(22 25 28 / 14%), 0 3px 10px rgb(22 25 28 / 8%);
+}
+
+.calculator-header {
+  padding: clamp(24px, 4vw, 40px);
+  color: var(--color-on-dark);
+  background: linear-gradient(115deg, #171b1f 0%, #343e47 72%, #46525c 100%);
+}
+
+.calculator-header h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-h2);
+}
+
+.calculator-header p {
+  margin: 0;
+  color: rgb(255 255 255 / 82%);
+  line-height: 1.55;
+}
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+  gap: clamp(24px, 4vw, 44px);
+  padding: clamp(24px, 4vw, 40px);
+}
+
+.calculator-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 22px 20px;
+}
+
+.calculator-form label,
+.calculator-rate {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.calculator-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: .7rem .85rem;
+  border: 1px solid #cbd1d5;
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 400;
+}
+
+.calculator-form input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.calculator-form input:hover {
+  border-color: #8b969e;
+}
+
+.calculator-rate strong {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  color: var(--color-text);
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.calculator-result {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid #e0e4e7;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #f8f9fa, #f1f3f4);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: 14px;
+  border-bottom: 1px solid #dfe3e6;
+}
+
+.result-row strong {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.calculator-result .result-row:nth-child(2) strong {
+  font-size: var(--fs-h2);
+  color: var(--color-accent);
+}
+
+.calculator-note {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+@media (max-width: 56rem) {
+  .calculator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-result {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .calculator-note {
+    grid-column: 1 / -1;
+  }
+}
+
+.vehicle-card__link {
+  display: inline-block;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.vehicle-card__link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 40rem) {
+  .calculator-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 22px;
+  }
+
+  .calculator-header {
+    padding: 24px 22px;
+  }
+
+  .calculator-result {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .calculator-note {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 30rem) {
+  .finance-calculator-section {
+    padding-inline: 16px;
+  }
+
+  .calculator-grid {
+    padding: 18px;
+  }
+
+  .calculator-form {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .calculator-result {
+    padding: 18px;
+  }
+
+  .result-row {
+    align-items: baseline;
+    font-size: .92rem;
+  }
+
+  .calculator-result .result-row:nth-child(2) strong {
+    font-size: 1.4rem;
+  }
+}

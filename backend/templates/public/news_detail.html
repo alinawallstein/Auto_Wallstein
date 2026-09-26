@@ -1,3 +1,19 @@
 {% extends 'public/base.html' %}
+{% load static %}
 {% block title %}{{ article.title }} | Auto Wallstein{% endblock %}
-{% block content %}{% if content_preview %}<aside class="notice">Interne Vorschau – <a href="{% url 'news_edit' article.pk %}">Zur Bearbeitung</a></aside>{% endif %}<article class="page-section"><a href="{% url 'public_news' %}">Alle Neuigkeiten</a><h1>{{ article.title }}</h1><p>{{ article.published_at|date:'d.m.Y' }}</p>{% if article.image %}<img class="news-hero" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="1200" height="800">{% endif %}<p>{{ article.excerpt }}</p><div class="article-copy">{{ article.body|linebreaks }}</div></article>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/news.css' %}">{% endblock %}
+{% block content %}
+{% if content_preview %}<aside class="notice">Interne Vorschau – <a href="{% url 'news_edit' article.pk %}">Zur Bearbeitung</a></aside>{% endif %}
+<article class="page-section news-detail">
+    <a href="{% url 'public_news' %}">Alle Meldungen</a>
+    <p><span class="news-type news-type--{{ article.type }}">{{ article.get_type_display }}</span></p>
+    <h1>{{ article.title }}</h1>
+    {% if article.published_at %}<time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:'d. F Y' }}</time>{% endif %}
+    {% if article.end_date %}<p>Gültig bis {{ article.end_date|date:'d. F Y' }}</p>{% endif %}
+    {% if article.event_date %}<p>Veranstaltung: {{ article.event_date|date:'d. F Y' }}{% if article.event_time %}, {{ article.event_time|time:'H:i' }} Uhr{% endif %}{% if article.event_location %} · {{ article.event_location }}{% endif %}</p>{% endif %}
+    {% if article.image %}<img class="news-detail__image" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="1200" height="800">{% endif %}
+    <p class="news-detail__excerpt">{{ article.excerpt }}</p>
+    {% if article.body %}<div class="article-copy">{{ article.body|linebreaks }}</div>{% endif %}
+    {% if article.vehicle %}<a class="aw-button" href="{% url 'vehicle_detail' article.vehicle.pk %}">Passendes Fahrzeug ansehen</a>{% endif %}
+</article>
+{% endblock %}

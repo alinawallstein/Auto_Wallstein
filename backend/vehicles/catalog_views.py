@@ -6,10 +6,12 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.views.decorators.cache import never_cache
 
 from .models import Accessory, NewsArticle
 from .catalog_forms import AccessoryForm, AccessoryImages, NewsArticleForm
+from .selectors import public_news_items
 
 
 def public_accessories(request):
@@ -23,12 +25,30 @@ def accessory_detail(request, pk):
 
 
 def public_news(request):
-    items = NewsArticle.objects.filter(is_published=True)
-    return render(request, 'public/news.html', {'page_obj': Paginator(items, 12).get_page(request.GET.get('page'))})
+    items = public_news_items()
+    selected_type = request.GET.get('type', '')
+    category_types = {
+        'vehicle': [NewsArticle.Type.VEHICLE],
+        'offer': [NewsArticle.Type.OFFER],
+        'company': [NewsArticle.Type.COMPANY],
+        'event': [NewsArticle.Type.EVENT],
+        'notice': [NewsArticle.Type.NOTICE],
+    }
+    if selected_type in category_types:
+        items = items.filter(type__in=category_types[selected_type])
+    featured = items.filter(is_featured=True).first()
+    if not selected_type and featured:
+        items = items.exclude(pk=featured.pk)
+    page_obj = Paginator(items, 12).get_page(request.GET.get('page'))
+    return render(request, 'public/news.html', {
+        'page_obj': page_obj, 'featured_article': featured,
+        'selected_type': selected_type, 'news_filters': NewsArticle.Type.choices,
+    })
 
 
-def news_detail(request, pk):
-    return render(request, 'public/news_detail.html', {'article': get_object_or_404(NewsArticle, pk=pk, is_published=True)})
+def news_detail(request, slug):
+    article = get_object_or_404(public_news_items(), slug=slug)
+    return render(request, 'public/news_detail.html', {'article': article})
 
 
 @login_required(login_url='login')
@@ -76,7 +96,29 @@ def accessory_delete(request, pk):
 @login_required(login_url='login')
 @permission_required('vehicles.view_newsarticle', raise_exception=True)
 def news(request):
-    return render(request, 'admin/catalog_list.html', {'items': NewsArticle.objects.order_by('-updated_at'), 'kind': 'news', 'title': 'Neuigkeiten'})
+    items = NewsArticle.objects.all()
+    query = request.GET.get('q', '').strip()
+    news_type = request.GET.get('type', '')
+    status = request.GET.get('status', '')
+    published_after = parse_date(request.GET.get('published_after', ''))
+    published_before = parse_date(request.GET.get('published_before', ''))
+    if query:
+        items = items.filter(Q(title__icontains=query) | Q(excerpt__icontains=query))
+    if news_type in NewsArticle.Type.values:
+        items = items.filter(type=news_type)
+    if status in NewsArticle.Status.values:
+        items = items.filter(status=status)
+    if published_after:
+        items = items.filter(published_at__date__gte=published_after)
+    if published_before:
+        items = items.filter(published_at__date__lte=published_before)
+    return render(request, 'admin/catalog_list.html', {
+        'items': items.order_by('-updated_at'), 'query': query, 'kind': 'news', 'title': 'Neuigkeiten',
+        'news_types': NewsArticle.Type.choices, 'news_statuses': NewsArticle.Status.choices,
+        'selected_type': news_type, 'selected_status': status,
+        'published_after': request.GET.get('published_after', ''),
+        'published_before': request.GET.get('published_before', ''),
+    })
 
 
 @login_required(login_url='login')
@@ -88,8 +130,10 @@ def news_edit(request, pk=None):
     form = NewsArticleForm(request.POST if request.method == 'POST' else None, request.FILES or None, instance=item)
     if request.method == 'POST' and form.is_valid():
         article = form.save(commit=False)
-        if article.is_published and not article.published_at:
+        if article.status == NewsArticle.Status.PUBLISHED and not article.published_at:
             article.published_at = timezone.now()
+        if article.status != NewsArticle.Status.PUBLISHED:
+            article.is_featured = False
         article.save()
         messages.success(request, 'Beitrag gespeichert.')
         return redirect('news_edit', pk=item.pk) if request.user.has_perm('vehicles.change_newsarticle') else redirect('management_news')
@@ -112,7 +156,7 @@ def news_delete(request, pk):
 @permission_required(('vehicles.view_newsarticle', 'vehicles.change_newsarticle'), raise_exception=True)
 def news_preview(request, pk):
     response = render(request, 'public/news_detail.html', {
-        'article': get_object_or_404(NewsArticle, pk=pk), 'content_preview': True,
+            'article': get_object_or_404(NewsArticle, pk=pk), 'content_preview': True,
     })
     response['X-Robots-Tag'] = 'noindex, nofollow'
     return response

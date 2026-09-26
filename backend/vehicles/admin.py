@@ -2,12 +2,21 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .slider_forms import HeroSlideForm
-from .models import CustomerInquiry, HeroSlide, InquiryReply, Vehicle, VehicleAIText, VehicleImage
+from .models import CustomerInquiry, HeroSlide, InquiryReply, NewsArticle, Vehicle, VehicleAIText, VehicleImage
 
 
 class VehicleImageInline(admin.TabularInline):
     model = VehicleImage
     extra = 1
+
+
+@admin.register(NewsArticle)
+class NewsArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'type', 'status', 'published_at', 'is_featured')
+    list_filter = ('type', 'status', 'is_featured', 'published_at')
+    search_fields = ('title', 'excerpt', 'body')
+    date_hierarchy = 'published_at'
+    exclude = ('slug',)
 
 
 @admin.register(Vehicle)

@@ -1,36 +1,92 @@
 {% extends 'management/base.html' %}
+{% load static %}
 {% block title %}Dashboard | Auto Wallstein{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
 {% block content %}
-<section class="container py-4">
-    <p class="text-muted mb-1">Auto Wallstein · Verwaltung</p>
-    <h1>Dashboard</h1>
-    <p class="text-muted">Anfragen bearbeiten, Bestand pflegen und Ihre Website aktualisieren.</p>
+<section class="dashboard container-fluid py-4 px-3 px-xl-4">
+    <header class="dashboard-header">
+        <div>
+            <p class="dashboard-eyebrow">AUTO WALLSTEIN · VERWALTUNG</p>
+            <h1>Dashboard</h1>
+            <p>Übersicht über Fahrzeuge, Kundenanfragen und Inhalte.</p>
+        </div>
+        <div class="dashboard-actions">
+            {% if perms.vehicles.add_vehicle %}<a class="btn btn-primary" href="{% url 'vehicle_create' %}">+ Fahrzeug hinzufügen</a>{% endif %}
+            {% if perms.vehicles.add_newsarticle %}<a class="btn btn-outline-primary" href="{% url 'news_create' %}">+ News erstellen</a>{% endif %}
+        </div>
+    </header>
+
+    <div class="dashboard-kpis">
+        {% if stats %}<a class="dashboard-kpi" href="{% url 'management_vehicles' %}?visibility=public"><span class="dashboard-kpi__label">Fahrzeuge online</span><strong>{{ stats.public }}</strong><span>von {{ stats.total }} insgesamt</span></a>{% endif %}
+        {% if inquiry_stats %}<a class="dashboard-kpi" href="{% url 'management_inquiries' %}?status=new"><span class="dashboard-kpi__label">Neue Anfragen</span><strong>{{ inquiry_stats.new }}</strong><span>{{ inquiry_stats.open }} offen oder in Bearbeitung</span></a>
+        <a class="dashboard-kpi" href="{% url 'management_inquiries' %}?inquiry_type=financing_request&amp;status=new"><span class="dashboard-kpi__label">Finanzierungsanfragen</span><strong>{{ inquiry_stats.financing_new }}</strong><span>neu eingegangen</span></a>{% endif %}
+        {% if news_stats %}<a class="dashboard-kpi" href="{% url 'management_news' %}"><span class="dashboard-kpi__label">News veröffentlicht</span><strong>{{ news_stats.published }}</strong><span>{{ news_stats.drafts }} Entwürfe{% if news_stats.scheduled %} · {{ news_stats.scheduled }} geplant{% endif %}</span></a>{% endif %}
+    </div>
+
     {% if inquiry_stats %}
-    <h2 class="h5 mt-4">Kundenanfragen</h2>
-    <div class="management-stats">
-        <a class="card p-3" href="{% url 'management_inquiries' %}?status=new"><span>Neu / ungelesen</span><strong>{{ inquiry_stats.new }}</strong></a>
-        <div class="card p-3"><span>Offen</span><strong>{{ inquiry_stats.open }}</strong></div>
-        <a class="card p-3" href="{% url 'management_inquiries' %}?status=answered"><span>Beantwortet</span><strong>{{ inquiry_stats.answered }}</strong></a>
-        <a class="card p-3" href="{% url 'management_inquiries' %}"><span>Alle Anfragen</span><strong>{{ inquiry_stats.total }}</strong></a>
+    <div class="dashboard-grid dashboard-grid--priority">
+        <section class="dashboard-panel">
+            <div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">PRIORITÄT</p><h2>Neue Kundenanfragen</h2></div><a href="{% url 'management_inquiries' %}">Alle Anfragen <span aria-hidden="true">→</span></a></div>
+            <div class="dashboard-list">
+                {% for inquiry in recent_inquiries %}<a class="dashboard-list-row" href="{% url 'inquiry_detail' inquiry.pk %}">
+                    <span class="dashboard-list-row__main"><strong>{{ inquiry.name }}</strong><span>{{ inquiry.display_subject }}</span></span>
+                    <span class="dashboard-list-row__meta"><span class="dashboard-status dashboard-status--{{ inquiry.status }}">{{ inquiry.get_status_display }}</span><time datetime="{{ inquiry.created_at|date:'c' }}">{{ inquiry.created_at|date:'d.m.Y H:i' }}</time></span>
+                </a>{% empty %}<p class="dashboard-empty">Noch keine Kundenanfragen vorhanden.</p>{% endfor %}
+            </div>
+        </section>
+
+        <section class="dashboard-panel">
+            <div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">LETZTE 30 TAGE</p><h2>Anfragenverlauf</h2></div><span class="dashboard-panel__total">{{ inquiry_stats.total }} gesamt</span></div>
+            <div class="dashboard-activity-chart" role="img" aria-label="Eingegangene Kundenanfragen pro Tag in den letzten 30 Tagen">
+                {% for day in inquiry_activity %}<span class="dashboard-activity-chart__bar" style="height: max(3px, {{ day.percent }}%)" title="{{ day.date|date:'d.m.' }}: {{ day.count }} Anfrage{% if day.count != 1 %}n{% endif %}"></span>{% endfor %}
+            </div>
+            <div class="dashboard-chart-axis"><span>{{ inquiry_activity.0.date|date:'d.m.' }}</span><span>{{ inquiry_activity.15.date|date:'d.m.' }}</span><span>{{ inquiry_activity.29.date|date:'d.m.' }}</span></div>
+            <h3 class="dashboard-subheading">Anfragen nach Status</h3>
+            <div class="dashboard-breakdown">{% for status in inquiry_statuses %}<div class="dashboard-breakdown__row"><span>{{ status.label }}</span><progress max="{{ inquiry_stats.total|default:1 }}" value="{{ status.count }}" aria-label="{{ status.label }}: {{ status.count }}"></progress><strong>{{ status.count }}</strong></div>{% endfor %}</div>
+        </section>
     </div>
-    <div class="card p-3 my-3"><h2 class="h5">Letzte Kundenanfragen</h2>
-    {% for inquiry in recent_inquiries %}<a class="management-recent" href="{% url 'inquiry_detail' inquiry.pk %}"><span><strong>{{ inquiry.name }}</strong> · {{ inquiry.display_subject }}</span><small>{{ inquiry.get_status_display }} · {{ inquiry.created_at|date:'d.m.Y H:i' }}</small></a>{% empty %}<p>Noch keine Kundenanfragen.</p>{% endfor %}</div>
+
+    <section class="dashboard-panel dashboard-financing">
+        <div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">KUNDENANFRAGEN</p><h2>Finanzierungsanfragen</h2></div><a href="{% url 'management_inquiries' %}">Postfach öffnen <span aria-hidden="true">→</span></a></div>
+        <div class="dashboard-list dashboard-list--compact">
+            {% for inquiry in recent_financing %}<a class="dashboard-list-row" href="{% url 'inquiry_detail' inquiry.pk %}"><span class="dashboard-list-row__main"><strong>{{ inquiry.name }}</strong><span>{% if inquiry.vehicle %}{{ inquiry.vehicle.brand }} {{ inquiry.vehicle.model }} · {% endif %}{% if inquiry.financing_monthly_rate %}ca. {{ inquiry.financing_monthly_rate|floatformat:'2g' }} € / Monat{% else %}Finanzierungsanfrage{% endif %}</span></span><span class="dashboard-list-row__meta"><span class="dashboard-status dashboard-status--{{ inquiry.status }}">{{ inquiry.get_status_display }}</span><time datetime="{{ inquiry.created_at|date:'c' }}">{{ inquiry.created_at|date:'d.m.Y H:i' }}</time></span></a>{% empty %}<p class="dashboard-empty">Noch keine Finanzierungsanfragen vorhanden.</p>{% endfor %}
+        </div>
+    </section>
     {% endif %}
+
     {% if stats %}
-    <h2 class="h5 mt-4">Fahrzeugbestand</h2>
-    <div class="management-stats">
-        <a class="card p-3" href="{% url 'management_vehicles' %}"><span>Alle Fahrzeuge</span><strong>{{ stats.total }}</strong></a>
-        <a class="card p-3" href="{% url 'management_vehicles' %}?status=available"><span>Verfügbar</span><strong>{{ stats.available }}</strong></a>
-        <a class="card p-3" href="{% url 'management_vehicles' %}?visibility=public"><span>Öffentlich sichtbar</span><strong>{{ stats.public }}</strong></a>
+    <div class="dashboard-grid">
+        <section class="dashboard-panel">
+            <div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">BESTAND</p><h2>Fahrzeugbestand</h2></div><a href="{% url 'management_vehicles' %}">Verwalten <span aria-hidden="true">→</span></a></div>
+            <div class="dashboard-inventory-summary"><strong>{{ stats.total }}</strong><span>Fahrzeuge gesamt</span><strong>{{ stats.public }}</strong><span>aktuell online</span></div>
+            <div class="dashboard-breakdown">{% for status in vehicle_statuses %}<div class="dashboard-breakdown__row"><span>{{ status.label }}</span><progress max="{{ stats.total|default:1 }}" value="{{ status.count }}" aria-label="{{ status.label }}: {{ status.count }}"></progress><strong>{{ status.count }}</strong></div>{% endfor %}</div>
+            {% if fuel_stats %}<h3 class="dashboard-subheading">Bestand nach Kraftstoff</h3><div class="dashboard-breakdown">{% for fuel in fuel_stats %}<div class="dashboard-breakdown__row"><span>{{ fuel.fuel_type|default:'Nicht angegeben' }}</span><progress max="{{ stats.total|default:1 }}" value="{{ fuel.count }}" aria-label="{{ fuel.fuel_type }}: {{ fuel.count }}"></progress><strong>{{ fuel.count }}</strong></div>{% endfor %}</div>{% endif %}
+        </section>
+
+        <section class="dashboard-panel">
+            <div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">BESTANDSPFLEGE</p><h2>Zuletzt hinzugefügt</h2></div><a href="{% url 'management_vehicles' %}">Alle Fahrzeuge <span aria-hidden="true">→</span></a></div>
+            <div class="dashboard-vehicle-list">{% for vehicle in recent_vehicles %}<article class="dashboard-vehicle-row">
+                {% with image=vehicle.dashboard_images.0 %}{% if image %}<img src="{{ image.image.url }}" alt="{{ image.alt_text|default:vehicle.brand }} {{ vehicle.model }}" width="96" height="72" loading="lazy">{% else %}<div class="dashboard-vehicle-placeholder" aria-hidden="true">—</div>{% endif %}{% endwith %}
+                <div><strong>{{ vehicle.brand }} {{ vehicle.model }}</strong><span>{{ vehicle.sale_price|floatformat:'2g' }} € · {{ vehicle.get_status_display }}</span></div>
+                {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_update' vehicle.pk %}">Bearbeiten</a>{% endif %}
+            </article>{% empty %}<p class="dashboard-empty">Keine Fahrzeuge gefunden.</p>{% endfor %}</div>
+        </section>
     </div>
-    <div class="card p-3 my-3"><div class="d-flex flex-wrap justify-content-between gap-2"><h2 class="h5">Zuletzt bearbeitete Fahrzeuge</h2>{% if perms.vehicles.add_vehicle %}<a href="{% url 'vehicle_create' %}">Fahrzeug hinzufügen</a>{% endif %}</div>
-    {% for vehicle in recent_vehicles %}<div class="management-recent"><span>{{ vehicle.brand }} {{ vehicle.model }} · {{ vehicle.internal_number }}</span><span>{{ vehicle.get_status_display }} · {{ vehicle.updated_at|date:'d.m.Y H:i' }} {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_update' vehicle.pk %}">Bearbeiten</a>{% endif %}</span></div>{% empty %}<p>Noch keine Fahrzeuge angelegt.</p>{% endfor %}</div>
     {% endif %}
-    {% if slide_stats or perms.vehicles.change_homepage or perms.vehicles.change_slider_settings %}
-    <div class="card p-3 mt-4"><h2 class="h5">Homepage</h2>
-        {% if slide_stats %}<p>{{ slide_stats.active }} aktive von {{ slide_stats.total }} Slides</p><p><a href="{% url 'management_slides' %}">Slider verwalten</a></p>{% endif %}
-        {% if perms.vehicles.change_slider_settings %}<p><a href="{% url 'slider_settings' %}">Wechselgeschwindigkeit einstellen</a></p>{% endif %}
-        {% if perms.vehicles.change_homepage %}<p><a href="{% url 'homepage_edit' %}">Website-Inhalte bearbeiten</a></p>{% endif %}
-    </div>{% endif %}
+
+    {% if news_stats or slide_stats or perms.vehicles.change_homepage or perms.vehicles.change_slider_settings %}
+    <div class="dashboard-grid">
+        {% if news_stats %}<section class="dashboard-panel"><div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">INHALTE</p><h2>News & Inhalte</h2></div><a href="{% url 'management_news' %}">News verwalten <span aria-hidden="true">→</span></a></div>
+            <div class="dashboard-news-counts"><span><strong>{{ news_stats.published }}</strong> veröffentlicht</span><span><strong>{{ news_stats.drafts }}</strong> Entwürfe</span><span><strong>{{ news_stats.scheduled }}</strong> geplant</span></div>
+            <div class="dashboard-list dashboard-list--compact">{% for article in recent_news %}<a class="dashboard-list-row" href="{% if perms.vehicles.change_newsarticle %}{% url 'news_edit' article.pk %}{% else %}{% url 'management_news' %}{% endif %}"><span class="dashboard-list-row__main"><strong>{{ article.title }}</strong><span>{{ article.get_type_display }}</span></span><span class="dashboard-list-row__meta"><span class="dashboard-status">{{ article.get_status_display }}</span><time datetime="{{ article.updated_at|date:'c' }}">{{ article.updated_at|date:'d.m.Y' }}</time></span></a>{% empty %}<p class="dashboard-empty">Noch keine News vorhanden.</p>{% endfor %}</div>
+        </section>{% endif %}
+        {% if slide_stats or perms.vehicles.change_homepage or perms.vehicles.change_slider_settings %}<section class="dashboard-panel"><div class="dashboard-panel__heading"><div><p class="dashboard-eyebrow">WEBSITE</p><h2>Homepage & Darstellung</h2></div></div>
+            {% if slide_stats %}<p class="dashboard-homepage-summary">{{ slide_stats.active }} aktive Slides von {{ slide_stats.total }}</p><a class="dashboard-action-link" href="{% url 'management_slides' %}">Slider verwalten <span aria-hidden="true">→</span></a>{% endif %}
+            {% if perms.vehicles.change_homepage %}<a class="dashboard-action-link" href="{% url 'homepage_edit' %}">Website-Inhalte bearbeiten <span aria-hidden="true">→</span></a>{% endif %}
+            {% if perms.vehicles.change_slider_settings %}<a class="dashboard-action-link" href="{% url 'slider_settings' %}">Slider-Einstellungen <span aria-hidden="true">→</span></a>{% endif %}
+            {% if perms.vehicles.view_accessory %}<a class="dashboard-action-link" href="{% url 'management_accessories' %}">Teile & Zubehör verwalten <span aria-hidden="true">→</span></a>{% endif %}
+        </section>{% endif %}
+    </div>
+    {% endif %}
 </section>
 {% endblock %}

@@ -5,10 +5,13 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.db import connection
 from django.test import Client, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from django.utils import timezone
 
-from .models import CustomerInquiry, HeroSlide, Homepage, InquiryReply, InquiryStatus
+from .models import CustomerInquiry, HeroSlide, Homepage, InquiryReply, InquiryStatus, NewsArticle
 from .tests import VehicleTestCase
 
 
@@ -163,15 +166,62 @@ class InquiryManagementTests(VehicleTestCase):
 
     def test_dashboard_counts_and_permissions(self):
         self.login_admin()
+        finance = CustomerInquiry.objects.create(
+            inquiry_type='financing_request', name='Finanzkunde', email='finance@example.com',
+            vehicle=self.vehicle, message='Bitte Finanzierung anbieten.',
+            financing_monthly_rate='350.00',
+        )
+        NewsArticle.objects.create(title='Aktuelle Meldung', excerpt='Kurzer Teaser', status='published',
+                                   published_at=timezone.now())
+        NewsArticle.objects.create(title='Interner Entwurf', excerpt='Noch nicht veröffentlicht')
         response = self.client.get(reverse('dashboard'))
-        self.assertEqual(response.context['inquiry_stats']['new'], 1)
+        self.assertEqual(response.context['inquiry_stats']['new'], 2)
+        self.assertEqual(response.context['inquiry_stats']['financing_new'], 1)
         self.assertEqual(response.context['stats']['public'], 1)
+        self.assertEqual(len(response.context['inquiry_activity']), 30)
+        self.assertEqual(response.context['news_stats']['published'], 1)
+        self.assertEqual(response.context['news_stats']['drafts'], 1)
+        self.assertEqual(response.context['recent_financing'][0], finance)
+        self.assertContains(response, 'Zuletzt hinzugefügt')
+        self.assertContains(response, 'Fahrzeugbestand')
         user = get_user_model().objects.create_user('inbox-only')
         user.user_permissions.add(Permission.objects.get(codename='view_customerinquiry'))
         self.client.force_login(user)
         response = self.client.get(reverse('dashboard'))
         self.assertNotIn('stats', response.context)
         self.assertNotContains(response, 'Fahrzeugübersicht')
+
+    def test_inquiry_type_filter_supports_financing_dashboard_link(self):
+        self.login_admin()
+        finance = CustomerInquiry.objects.create(inquiry_type='financing_request', name='Finanzkunde',
+            email='finance@example.com', message='Finanzierung')
+        response = self.client.get(reverse('management_inquiries'), {'inquiry_type': 'financing_request'})
+        self.assertContains(response, 'Finanzkunde')
+        self.assertNotContains(response, self.inquiry.name)
+
+    def test_dashboard_empty_states_and_zero_chart_data(self):
+        self.login_admin()
+        self.vehicle.delete()
+        CustomerInquiry.objects.all().delete()
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.context['stats']['total'], 0)
+        self.assertEqual(response.context['inquiry_stats']['total'], 0)
+        self.assertEqual(sum(day['count'] for day in response.context['inquiry_activity']), 0)
+        self.assertEqual(response.context['news_stats']['published'], 0)
+        self.assertContains(response, 'Noch keine Kundenanfragen vorhanden.')
+        self.assertContains(response, 'Keine Fahrzeuge gefunden.')
+        self.assertContains(response, 'Noch keine News vorhanden.')
+
+    def test_dashboard_query_count_does_not_grow_with_recent_vehicles(self):
+        self.login_admin()
+        self.client.get(reverse('dashboard'))
+        with CaptureQueriesContext(connection) as one_vehicle_queries:
+            self.client.get(reverse('dashboard'))
+        for index in range(4):
+            self.another_vehicle(internal_number=f'DASH-{index}')
+        with CaptureQueriesContext(connection) as five_vehicle_queries:
+            self.client.get(reverse('dashboard'))
+        self.assertEqual(len(one_vehicle_queries), len(five_vehicle_queries))
 
 
 class SliderManagementTests(VehicleTestCase):

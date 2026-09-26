@@ -2,7 +2,7 @@ import uuid
 
 from django import forms
 
-from .models import InquiryStatus
+from .models import CustomerInquiry, InquiryStatus
 
 
 class InquiryFilterForm(forms.Form):
@@ -10,6 +10,9 @@ class InquiryFilterForm(forms.Form):
                         widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'search'}))
     status = forms.ChoiceField(label='Status', required=False,
         choices=[('', 'Alle')] + list(InquiryStatus.choices), widget=forms.Select(attrs={'class': 'form-select'}))
+    inquiry_type = forms.ChoiceField(label='Anfragetyp', required=False,
+        choices=[('', 'Alle Anfragetypen')] + list(CustomerInquiry._meta.get_field('inquiry_type').choices),
+        widget=forms.Select(attrs={'class': 'form-select'}))
     order = forms.ChoiceField(label='Sortierung', required=False,
         choices=[('newest', 'Neueste zuerst'), ('oldest', 'Älteste zuerst')],
         widget=forms.Select(attrs={'class': 'form-select'}))
