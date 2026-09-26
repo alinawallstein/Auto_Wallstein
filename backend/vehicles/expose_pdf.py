@@ -3,7 +3,7 @@ from io import BytesIO
 from pathlib import Path
 
 from django.conf import settings
-from PIL import Image as PILImage
+from PIL import Image as PILImage, ImageOps
 
 PAGE_W, PAGE_H = 595, 842
 
@@ -20,6 +20,7 @@ def _image_bytes(field, max_width, max_height):
     try:
         path = Path(field.path)
         with PILImage.open(path) as source:
+            source = ImageOps.exif_transpose(source)
             if "A" in source.getbands():
                 background = PILImage.new("RGB", source.size, "white")
                 background.paste(source.convert("RGBA"), mask=source.getchannel("A"))
@@ -39,8 +40,11 @@ def _gallery_collage(items):
     """Place up to four gallery images close together while preserving aspect ratios."""
     if not items:
         return None
+    if len(items) == 1:
+        return items[0]
     cell_w, cell_h, gap = 238, 230, 10
-    canvas = PILImage.new("RGB", (cell_w * 2 + gap, cell_h * 2 + gap), "white")
+    rows = (min(len(items), 4) + 1) // 2
+    canvas = PILImage.new("RGB", (cell_w * 2 + gap, cell_h * rows + gap * (rows - 1)), "white")
     for index, (size, data) in enumerate(items[:4]):
         image = PILImage.open(BytesIO(data)).convert("RGB")
         scale = min((cell_w - 8) / image.width, (cell_h - 8) / image.height)
@@ -53,13 +57,29 @@ def _gallery_collage(items):
     return canvas.size, stream.getvalue()
 
 
-def _page_content(vehicle, image_data, page_number, page_count, contact, logo_ref=None, details=False):
+def _page_content(vehicle, image_data, page_number, page_count, contact, logo_ref=None, logo_size=None, details=False, gallery=False):
     commands = ["q", "0.95 0.96 0.97 rg", "0 0 595 842 re", "f", "Q"]
     def text(x, y, value, size=10, font="F1", color="0.15 0.20 0.24"):
         commands.extend([f"{color} rg", "BT", f"/{font} {size} Tf", f"{x} {y} Td", f"({_pdf_text(value)}) Tj", "ET"])
     if logo_ref:
-        commands.extend(["q", "135 0 0 38 54 775 cm", f"/Logo{logo_ref} Do", "Q"])
-    text(54, 744, "FAHRZEUGEXPOSÉ", 18, "F2")
+        logo_width, logo_height = logo_size or (135, 38)
+        logo_scale = min(135 / logo_width, 38 / logo_height)
+        draw_width, draw_height = logo_width * logo_scale, logo_height * logo_scale
+        commands.extend(["q", f"{draw_width} 0 0 {draw_height} 54 {775 + (38 - draw_height) / 2} cm", f"/Logo{logo_ref} Do", "Q"])
+    if not gallery:
+        text(54, 720 if details else 744, "FAHRZEUGEXPOSÉ", 18, "F2")
+    if gallery:
+        text(54, 704, "FAHRZEUGGALERIE", 14, "F2")
+        text(54, 680, f"{vehicle.brand} {vehicle.model}", 20, "F2", "0.05 0.08 0.10")
+        if image_data:
+            image_ref, (width, height) = image_data
+            x = 54 + (487 - width) / 2
+            y = 125 + (500 - height) / 2
+            commands.extend(["q", f"{width} 0 0 {height} {x} {y} cm", f"/Im{image_ref} Do", "Q"])
+        commands.extend(["0.55 0.58 0.60 RG", "54 38 m", "541 38 l", "S"])
+        text(54, 23, f"Auto Wallstein · {contact}", 8, "F1", "0.35 0.40 0.43")
+        text(485, 23, f"Seite {page_number}/{page_count}", 8, "F1", "0.35 0.40 0.43")
+        return "\n".join(commands).encode("latin-1")
     if details:
         text(54, 704, "FAHRZEUGDATEN, BESCHREIBUNG UND AUSSTATTUNG", 13, "F2")
         facts = [("Marke", vehicle.brand), ("Modell", vehicle.model), ("Variante", vehicle.variant), ("Fahrzeugtyp", vehicle.vehicle_type), ("Erstzulassung", vehicle.first_registration.strftime("%d.%m.%Y") if vehicle.first_registration else ""), ("Baujahr", vehicle.year), ("Kilometerstand", f"{vehicle.mileage:,} km".replace(",", ".")), ("Leistung", f"{vehicle.power_kw} kW / {vehicle.power_ps} PS"), ("Kraftstoff", vehicle.fuel_type), ("Getriebe", vehicle.transmission), ("Hubraum", f"{vehicle.engine_capacity} cm³"), ("Türen", vehicle.doors), ("Sitzplätze", vehicle.seats), ("Außenfarbe", vehicle.exterior_color), ("Innenausstattung", vehicle.interior_equipment), ("Vorbesitzer", vehicle.previous_owners), ("HU gültig bis", vehicle.hu_valid_until.strftime("%m/%Y") if vehicle.hu_valid_until else "")]
@@ -136,7 +156,7 @@ def build_vehicle_expose(vehicle, *, contact="06104 406770 · verkauf@auto-walls
             (width, height), data = image
             objects.append(f"<< /Type /XObject /Subtype /Image /Width {width} /Height {height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length {len(data)} >>\nstream\n".encode() + data + b"\nendstream")
         content_ref = len(objects) + 1
-        content = _page_content(vehicle, (image_ref, image[0]) if image else None, index + 1, len(pages), contact, logo_ref, details)
+        content = _page_content(vehicle, (image_ref, image[0]) if image else None, index + 1, len(pages), contact, logo_ref, logo_size, details, gallery=index >= 2)
         objects.append(f"<< /Length {len(content)} >>\nstream\n".encode() + content + b"\nendstream")
         page_ref = len(objects) + 1
         xobjects = []

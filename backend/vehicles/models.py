@@ -95,7 +95,7 @@ class CustomerInquiry(models.Model):
     subject = models.CharField('Betreff', max_length=300, blank=True, editable=False)
     inquiry_type = models.CharField(
         max_length=30,
-        choices=[("vehicle_request", "Fahrzeug anfragen"), ("test_drive", "Probefahrt anfragen")],
+        choices=[("vehicle_request", "Fahrzeug anfragen"), ("test_drive", "Probefahrt anfragen"), ("financing_request", "Finanzierung anfragen")],
         default="vehicle_request",
     )
     vehicle = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, blank=True, null=True, related_name="inquiries")
@@ -103,6 +103,12 @@ class CustomerInquiry(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=50, blank=True)
     message = models.TextField()
+    financing_vehicle_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, editable=False)
+    financing_downpayment = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, editable=False)
+    financing_term_months = models.PositiveSmallIntegerField(null=True, blank=True, editable=False)
+    financing_annual_rate = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
+    financing_monthly_rate = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, editable=False)
+    financing_final_payment = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -190,6 +196,7 @@ class AccessoryImage(models.Model):
 
 
 class Homepage(models.Model):
+    financing_annual_rate = models.DecimalField('Effektiver Jahreszins in Prozent', max_digits=5, decimal_places=2, default='6.99', validators=[MinValueValidator(0), MaxValueValidator(50)], help_text='Zentrale Einstellung für fahrzeugbezogene Finanzierungsrechner.')
     slider_interval = models.PositiveSmallIntegerField('Wechselgeschwindigkeit in Sekunden', default=4,
         validators=[MinValueValidator(2), MaxValueValidator(15)],
         help_text='Zwischen 2 und 15 Sekunden. Änderungen gelten sofort für den Slider.')

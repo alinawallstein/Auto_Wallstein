@@ -16,6 +16,7 @@ urlpatterns = [
     path("oeffnungszeiten/", views.openings_page, name="oeffnungszeiten"),
     path("service/", views.service_page, name="service"),
     path("kontakt/", views.contact_page, name="kontakt"),
+    path("fahrzeuge/<int:pk>/finanzierungsanfrage/", views.financing_inquiry, name="financing_inquiry"),
     path("impressum/", views.impressum_page, name="impressum"),
     path("datenschutz/", views.datenschutz_page, name="datenschutz"),
     path("verwaltung/", include("vehicles.urls_management")),

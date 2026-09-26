@@ -66,6 +66,7 @@ def _vehicle_context(inquiry, request=None):
         'image_url': '', 'price': '', 'registration': '', 'mileage': '', 'power': '', 'fuel': '', 'transmission': '',
         'contact_name': 'Auto Wallstein', 'contact_address': 'Rudolf-Braas-Straße 27a · 63150 Heusenstamm',
         'contact_phone': '+496104406770', 'contact_phone_display': '+49 6104 406770', 'contact_email': 'verkauf@auto-wallstein.de',
+        'financing': inquiry.inquiry_type == 'financing_request', 'financing_rate': inquiry.financing_annual_rate or '', 'financing_downpayment': inquiry.financing_downpayment or '', 'financing_term': inquiry.financing_term_months or '', 'financing_monthly': inquiry.financing_monthly_rate or '',
     }
     if vehicle:
         image = vehicle.images.first()

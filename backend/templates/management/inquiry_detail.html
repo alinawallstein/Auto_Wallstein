@@ -12,6 +12,7 @@
                 {% if inquiry.phone %}<dt class="col-sm-3">Telefon</dt><dd class="col-sm-9">{{ inquiry.phone }}</dd>{% endif %}
                 {% if inquiry.vehicle %}<dt class="col-sm-3">Fahrzeug</dt><dd class="col-sm-9">{{ inquiry.vehicle.brand }} {{ inquiry.vehicle.model }} · {{ inquiry.vehicle.internal_number }}</dd>{% endif %}</dl>
                 <div class="inquiry-original">{{ inquiry.message }}</div>
+                {% if inquiry.inquiry_type == 'financing_request' %}<h3 class="h6 mt-4">Finanzierungs-Snapshot</h3><dl class="row mb-0"><dt class="col-sm-6">Fahrzeugpreis</dt><dd class="col-sm-6">{{ inquiry.financing_vehicle_price }} €</dd><dt class="col-sm-6">Anzahlung</dt><dd class="col-sm-6">{{ inquiry.financing_downpayment }} €</dd><dt class="col-sm-6">Laufzeit</dt><dd class="col-sm-6">{{ inquiry.financing_term_months }} Monate</dd><dt class="col-sm-6">Effektiver Jahreszins</dt><dd class="col-sm-6">{{ inquiry.financing_annual_rate }} %</dd><dt class="col-sm-6">Monatsrate</dt><dd class="col-sm-6">{{ inquiry.financing_monthly_rate }} €</dd>{% if inquiry.financing_final_payment %}<dt class="col-sm-6">Schlussrate</dt><dd class="col-sm-6">{{ inquiry.financing_final_payment }} €</dd>{% endif %}</dl>{% endif %}
             </article>
             {% if perms.vehicles.change_customerinquiry and perms.vehicles.add_inquiryreply %}<a class="btn btn-primary mb-4" href="#reply">Antworten</a>{% endif %}
             <h2 class="h5">Antwortverlauf</h2>

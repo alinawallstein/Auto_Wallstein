@@ -34,6 +34,7 @@
             {% if perms.vehicles.view_heroslide %}<a href="{% url 'management_slides' %}">Slider</a>{% endif %}
             {% if perms.vehicles.change_slider_settings %}<a href="{% url 'slider_settings' %}">Slider-Einstellungen</a>{% endif %}
             {% if perms.vehicles.change_homepage %}<a href="{% url 'homepage_edit' %}">Website-Inhalte</a>{% endif %}{% endif %}
+            {% if perms.vehicles.change_slider_settings %}<a href="{% url 'financing_settings' %}">Finanzierungszins</a>{% endif %}
             {% if perms.vehicles.view_accessory or perms.vehicles.view_newsarticle %}<h2>Weitere Inhalte</h2>
             {% if perms.vehicles.view_accessory %}<a href="{% url 'management_accessories' %}">Teile & Zubehör</a>{% endif %}
             {% if perms.vehicles.view_newsarticle %}<a href="{% url 'management_news' %}">Neuigkeiten</a>{% endif %}{% endif %}

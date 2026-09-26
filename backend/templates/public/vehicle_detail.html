@@ -66,5 +66,27 @@
             <p class="vehicle-copy">{{ vehicle.equipment|default:"Keine Angaben." }}</p>
         </section>
     </div>
+    <section class="vehicle-financing card p-4 mt-4" id="finanzierung">
+        <h2>Finanzierung</h2>
+        {% if financing_success %}<p class="notice" role="status">Vielen Dank. Ihre Finanzierungsanfrage wurde übermittelt.</p>{% endif %}
+        <p class="text-muted">Unverbindliches Finanzierungsbeispiel auf Basis des aktuellen Fahrzeugpreises.</p>
+        <div class="financing-grid">
+            <div><label>Fahrzeugpreis</label><strong id="vehicle-finance-price" data-value="{{ vehicle.sale_price }}">{{ vehicle.sale_price|floatformat:2 }} €</strong></div>
+            <div><label>Anzahlung (€)</label><input id="vehicle-finance-downpayment" name="downpayment" form="financing-inquiry" type="number" min="0" max="{{ vehicle.sale_price }}" step="0.01" value="0"></div>
+            <div><label>Laufzeit (Monate)</label><input id="vehicle-finance-term" name="term_months" form="financing-inquiry" type="number" min="12" max="120" step="1" value="60"></div>
+            <div><label>Effektiver Jahreszins</label><strong>{{ financing_rate|floatformat:2 }} %</strong></div>
+        </div>
+        <div class="financing-result"><span>Monatliche Rate</span><strong id="vehicle-finance-monthly">0,00 €</strong></div>
+        <p class="small text-muted">Dieses Beispiel ist unverbindlich. Die persönlichen Konditionen werden individuell mit Ihnen abgestimmt.</p>
+        <form id="financing-inquiry" method="post" action="{% url 'financing_inquiry' vehicle.pk %}" class="financing-form">
+            {% csrf_token %}{{ financing_form.non_field_errors }}
+            <div class="financing-contact-grid">{% for field in financing_form %}{% if field.name != 'downpayment' and field.name != 'term_months' %}<label>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div>
+            <button class="aw-button" type="submit">Finanzierung anfragen</button>
+        </form>
+    </section>
 </div>
+<script>
+(() => { const price = Number(document.getElementById('vehicle-finance-price').dataset.value), rate = Number('{{ financing_rate }}'); const down = document.getElementById('vehicle-finance-downpayment'), term = document.getElementById('vehicle-finance-term'), output = document.getElementById('vehicle-finance-monthly'); const format = value => new Intl.NumberFormat('de-DE', {style:'currency', currency:'EUR'}).format(value); function update() { const principal = Math.max(price - Number(down.value || 0), 0), months = Number(term.value || 0), monthly = Math.pow(1 + rate / 100, 1 / 12) - 1; let payment = principal / months; if (monthly && months) { const factor = Math.pow(1 + monthly, months); payment = principal * monthly * factor / (factor - 1); } output.textContent = format(Number.isFinite(payment) ? payment : 0); } [down, term].forEach(input => input.addEventListener('input', update)); update(); })();
+</script>
+<style>.vehicle-financing{background:#f8fafc}.financing-grid,.financing-contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}.financing-grid label{display:block;color:#64748b;font-size:.85rem}.financing-grid input,.financing-form input,.financing-form textarea{display:block;width:100%;padding:.65rem;border:1px solid #cbd5e1;border-radius:6px}.financing-result{display:flex;justify-content:space-between;margin:1.25rem 0;padding:1rem;background:#27343d;color:#fff}.financing-contact-grid{grid-template-columns:repeat(2,1fr);margin-bottom:1rem}.financing-form label{display:grid;gap:.35rem}@media(max-width:700px){.financing-grid,.financing-contact-grid{grid-template-columns:1fr}}</style>
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, catalog_views, content_views, inquiry_views, slider_views, management
+from . import views, catalog_views, content_views, inquiry_views, slider_views, management, financing_views
 
 urlpatterns = [
     path('anfragen/', inquiry_views.inquiries, name='management_inquiries'),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('homepage/slider/<int:pk>/', slider_views.slide_edit, name='slide_edit'),
     path('homepage/slider/<int:pk>/loeschen/', slider_views.slide_delete, name='slide_delete'),
     path('homepage/slider/einstellungen/', slider_views.slider_settings, name='slider_settings'),
+    path('finanzierung/einstellungen/', financing_views.financing_settings, name='financing_settings'),
     path("zubehoer/<int:pk>/vorschau/", catalog_views.accessory_preview, name="accessory_preview"),
     path("neuigkeiten/<int:pk>/vorschau/", catalog_views.news_preview, name="news_preview"),
     path("zubehoer/", catalog_views.accessories, name="management_accessories"),
