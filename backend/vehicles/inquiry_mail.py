@@ -1,5 +1,7 @@
 """Mail transport and durable reply records; the original inquiry remains untouched."""
 import logging
+from email.mime.image import MIMEImage
+from pathlib import Path
 from smtplib import SMTPException
 
 from django.conf import settings
@@ -83,6 +85,14 @@ def send_customer_inquiry_mails(inquiry, request=None):
         context = _vehicle_context(inquiry, request)
         confirmation = EmailMultiAlternatives('Ihre Anfrage bei Auto Wallstein', render_to_string('email/inquiry_confirmation.txt', context), settings.DEFAULT_FROM_EMAIL, [inquiry.email])
         confirmation.attach_alternative(render_to_string('email/inquiry_confirmation.html', context), 'text/html')
+        logo_path = Path(settings.BASE_DIR) / 'static' / 'images' / 'logo.png'
+        try:
+            logo_part = MIMEImage(logo_path.read_bytes())
+            logo_part.add_header('Content-ID', '<auto-wallstein-logo>')
+            logo_part.add_header('Content-Disposition', 'inline', filename='auto-wallstein-logo.png')
+            confirmation.attach(logo_part)
+        except OSError:
+            logger.warning('Inquiry logo attachment failed for inquiry %s', inquiry.pk)
         if inquiry.vehicle:
             try:
                 pdf = build_vehicle_expose(inquiry.vehicle)

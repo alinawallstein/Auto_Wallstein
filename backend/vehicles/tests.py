@@ -322,15 +322,16 @@ class InquiryRegressionTests(VehicleTestCase):
         self.assertIn("erika@example.com", confirmation.to)
         self.assertIn("Ihre Anfrage ist bei uns eingegangen", confirmation.body)
         self.assertTrue(confirmation.alternatives)
-        self.assertEqual(confirmation.attachments[0][2], "application/pdf")
-        self.assertTrue(confirmation.attachments[0][0].startswith("Auto-Wallstein_Expose_BMW_3er"))
+        pdf_attachment = next(item for item in confirmation.attachments if isinstance(item, tuple) and item[2] == "application/pdf")
+        self.assertTrue(pdf_attachment[0].startswith("Auto-Wallstein_Expose_BMW_3er"))
+        self.assertIn("<auto-wallstein-logo>", confirmation.message().as_string())
 
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_confirmation_without_vehicle_has_no_expose_and_missing_optional_data_is_safe(self):
         response = self.client.post(reverse("kontakt"), self.payload(vehicle="", phone=""))
         self.assertContains(response, "Vielen Dank")
         confirmation = next(message for message in mail.outbox if message.subject == "Ihre Anfrage bei Auto Wallstein")
-        self.assertEqual(confirmation.attachments, [])
+        self.assertFalse(any(isinstance(item, tuple) and item[2] == "application/pdf" for item in confirmation.attachments))
         self.assertNotIn("None", confirmation.body)
 
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")

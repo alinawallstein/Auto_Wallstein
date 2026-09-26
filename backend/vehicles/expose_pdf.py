@@ -35,6 +35,24 @@ def _image_bytes(field, max_width, max_height):
         return None, None
 
 
+def _gallery_collage(items):
+    """Place up to four gallery images close together while preserving aspect ratios."""
+    if not items:
+        return None
+    cell_w, cell_h, gap = 238, 230, 10
+    canvas = PILImage.new("RGB", (cell_w * 2 + gap, cell_h * 2 + gap), "white")
+    for index, (size, data) in enumerate(items[:4]):
+        image = PILImage.open(BytesIO(data)).convert("RGB")
+        scale = min((cell_w - 8) / image.width, (cell_h - 8) / image.height)
+        image = image.resize((max(1, int(image.width * scale)), max(1, int(image.height * scale))))
+        x = (index % 2) * (cell_w + gap) + (cell_w - image.width) // 2
+        y = (index // 2) * (cell_h + gap) + (cell_h - image.height) // 2
+        canvas.paste(image, (x, y))
+    stream = BytesIO()
+    canvas.save(stream, format="JPEG", quality=90, optimize=True)
+    return canvas.size, stream.getvalue()
+
+
 def _page_content(vehicle, image_data, page_number, page_count, contact, logo_ref=None, details=False):
     commands = ["q", "0.95 0.96 0.97 rg", "0 0 595 842 re", "f", "Q"]
     def text(x, y, value, size=10, font="F1", color="0.15 0.20 0.24"):
@@ -114,7 +132,7 @@ def build_vehicle_expose(vehicle, *, contact="06104 406770 · verkauf@auto-walls
         if size and data:
             prepared.append((size, data))
     pages = [(prepared[0] if prepared else None, False), (None, True)]
-    pages.extend((item, False) for item in prepared[1:])
+    pages.extend((_gallery_collage(prepared[offset:offset + 4]), False) for offset in range(1, len(prepared), 4))
     objects = [b"<< /Type /Catalog /Pages 2 0 R >>", None,
                b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
                b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>"]
