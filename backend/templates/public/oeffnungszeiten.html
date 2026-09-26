@@ -12,15 +12,15 @@
         <div class="hours-card">
             <h3>Öffnungszeiten</h3>
             <table class="hours-table">
-                <tr><td>Montag – Freitag</td><td>09:00 – 13:00<br>14:30 – 18:00</td></tr>
-                <tr><td>Samstag</td><td>10:00 – 14:00</td></tr>
-                <tr><td>Sonntag</td><td>Geschlossen</td></tr>
+                <tr><td>Montag – Freitag</td><td>{{ site_content.weekdays }}</td></tr>
+                <tr><td>Samstag</td><td>{{ site_content.saturday }}</td></tr>
+                <tr><td>Sonntag</td><td>{{ site_content.sunday }}</td></tr>
             </table>
         </div>
         <div class="hours-card">
             <h3>Anfahrt &amp; Kontakt</h3>
-            <p><strong>Auto Wallstein</strong><br>Rudolf-Braas-Straße 27a<br>63150 Heusenstamm</p>
-            <p><a href="tel:+496104406770">+49 6104 406770</a></p>
+            <p><strong>{{ site_content.business_name }}</strong><br>{{ site_content.street }}<br>{{ site_content.city }}</p>
+            <p><a href="tel:{{ site_content.phone|cut:' ' }}">{{ site_content.phone }}</a></p>
         </div>
     </div>
 </div>

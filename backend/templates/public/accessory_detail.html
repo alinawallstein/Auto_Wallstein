@@ -1,0 +1,8 @@
+{% extends 'public/base.html' %}
+{% load static %}
+{% block title %}{{ item.title }} | Auto Wallstein{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}">{% endblock %}
+{% block content %}{% if content_preview %}<aside class="notice">Interne Vorschau – <a href="{% url 'accessory_edit' item.pk %}">Zur Bearbeitung</a></aside>{% endif %}<section class="page-section"><a href="{% url 'public_accessories' %}">Zurück zu Teile & Zubehör</a><h1>{{ item.title }}</h1><p>{{ item.get_category_display }} · {{ item.get_condition_display }}</p><p class="price">{{ item.price|floatformat:'2g' }} €</p>
+<div class="vehicle-grid">{% for image in item.images.all %}<a href="{{ image.image.url }}"><img class="vehicle-card__image" src="{{ image.image.url }}" alt="{{ image.alt_text|default:item.title }}" width="800" height="500" loading="lazy"></a>{% endfor %}</div>
+<h2>Beschreibung</h2><div>{{ item.description|linebreaks }}</div>{% if item.compatibility %}<h2>Passend für / Maße</h2><p>{{ item.compatibility }}</p>{% endif %}
+<div class="action-row"><a class="aw-button" href="mailto:{{ site_content.email }}?subject={{ item.title|urlencode }}">Per E-Mail anfragen</a><a class="aw-button aw-button--outline" href="tel:{{ site_content.phone|cut:' ' }}">{{ site_content.phone }}</a></div></section>{% endblock %}

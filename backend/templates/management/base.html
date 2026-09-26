@@ -13,10 +13,13 @@
     <a class="visually-hidden-focusable" href="#management-content">Zum Inhalt</a>
     <header class="management-header">
         <nav class="container d-flex flex-wrap align-items-center gap-3 py-3" aria-label="Verwaltung">
-            <a href="{% url 'dashboard' %}" class="management-brand"><img src="{% static 'images/logo.png' %}" width="48" height="48" alt="Auto Wallstein"></a>
-            <a href="{% url 'dashboard' %}">Übersicht</a>
-            <a href="{% url 'management_vehicles' %}">Fahrzeugbestand</a>
-            <a href="{% url 'home' %}">Website</a>
+            <a href="{% url 'home' %}" class="management-brand"><img src="{% static 'images/logo.png' %}" width="48" height="48" alt="Auto Wallstein"></a>
+            {% if perms.vehicles.view_vehicle %}<a href="{% url 'dashboard' %}">Übersicht</a>
+            <a href="{% url 'management_vehicles' %}">Fahrzeugbestand</a>{% endif %}
+            {% if perms.vehicles.view_accessory %}<a href="{% url 'management_accessories' %}">Teile & Zubehör</a>{% endif %}
+            {% if perms.vehicles.view_newsarticle %}<a href="{% url 'management_news' %}">Neuigkeiten</a>{% endif %}
+            {% if perms.vehicles.change_homepage %}<a href="{% url 'homepage_edit' %}">Website-Inhalte</a>{% endif %}
+            <a href="{% url 'home' %}">Website ansehen</a>
             <span class="ms-auto">{{ user.get_full_name|default:user.username }}</span>
             <a href="{% url 'logout' %}">Abmelden</a>
         </nav>

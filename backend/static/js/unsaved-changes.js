@@ -1,7 +1,7 @@
 (() => {
   const forms = Array.from(document.querySelectorAll('[data-unsaved-form]'));
   const snapshot = form => JSON.stringify(Array.from(new FormData(form), ([key, value]) =>
-    [key, value instanceof File ? [value.name, value.size, value.lastModified] : value]
+    [key, value instanceof File ? value.name ? [value.name, value.size, value.lastModified] : '' : value]
   ));
   const states = forms.map(form => ({form, initial: snapshot(form), submitted: false}));
   const dirty = state => !state.submitted &&

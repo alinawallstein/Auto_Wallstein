@@ -73,8 +73,6 @@ class VehicleForm(forms.ModelForm):
             existing_classes = field.widget.attrs.get("class", "")
             if field_name not in {"first_registration", "hu_valid_until", "description", "equipment", "status"}:
                 field.widget.attrs["class"] = f"{existing_classes} form-control".strip()
-            if field_name == "is_published" or field_name == "public_visible":
-                field.widget.attrs["class"] = "form-check-input"
 
     def clean(self):
         cleaned_data = super().clean()
@@ -86,7 +84,6 @@ class VehicleForm(forms.ModelForm):
         if sale_price is not None and sale_price < 0:
             self.add_error("sale_price", "Der Verkaufspreis darf nicht negativ sein.")
         return cleaned_data
-
 
     def field_groups(self):
         groups = [

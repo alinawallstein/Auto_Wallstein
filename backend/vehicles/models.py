@@ -4,6 +4,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from .slider_validation import validate_slide_link
+
 
 class VehicleStatus(models.TextChoices):
     IN_PREPARATION = "in_preparation", "In Vorbereitung"
@@ -125,3 +127,113 @@ class VehicleAIText(models.Model):
 
     def __str__(self) -> str:
         return f"{self.vehicle} - {self.text_type}"
+
+
+class Accessory(models.Model):
+    class Category(models.TextChoices):
+        TIRES = 'tires', 'Reifen'
+        WHEELS = 'wheels', 'Felgen & Kompletträder'
+        PARTS = 'parts', 'Autoteile'
+        OTHER = 'other', 'Zubehör'
+
+    title = models.CharField('Bezeichnung', max_length=160)
+    category = models.CharField('Kategorie', max_length=20, choices=Category.choices)
+    condition = models.CharField('Zustand', max_length=10, choices=[('new', 'Neu'), ('used', 'Gebraucht')], default='used')
+    description = models.TextField('Beschreibung')
+    compatibility = models.CharField('Passend für / Maße', max_length=250, blank=True)
+    price = models.DecimalField('Preis in Euro', max_digits=10, decimal_places=2)
+    status = models.CharField('Verkaufsstatus', max_length=20, choices=[('available', 'Verfügbar'), ('reserved', 'Reserviert'), ('sold', 'Verkauft')], default='available')
+    is_published = models.BooleanField('Auf der Website veröffentlichen', default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at', '-pk']
+        verbose_name = 'Zubehörangebot'
+        verbose_name_plural = 'Zubehörangebote'
+        constraints = [models.CheckConstraint(condition=models.Q(price__gte=0), name='accessory_price_nonnegative')]
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def is_public(self):
+        return self.is_published and self.status == 'available'
+
+
+class AccessoryImage(models.Model):
+    accessory = models.ForeignKey(Accessory, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField('Bild', upload_to='accessories/%Y/%m/')
+    alt_text = models.CharField('Bildbeschreibung', max_length=200, blank=True)
+    sort_order = models.PositiveIntegerField('Reihenfolge (kleinste Zahl = Hauptbild)', default=0)
+
+    class Meta:
+        ordering = ['sort_order', 'pk']
+
+
+class Homepage(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    draft = models.JSONField(default=dict)
+    published = models.JSONField(default=dict)
+    revision = models.PositiveIntegerField(default=0)
+    published_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Startseite'
+        verbose_name_plural = 'Startseite'
+        constraints = [models.CheckConstraint(condition=models.Q(id=1), name='homepage_singleton')]
+
+
+class HomepageImage(models.Model):
+    image = models.ImageField(upload_to='homepage/%Y/%m/')
+
+
+class NewsArticle(models.Model):
+    title = models.CharField('Überschrift', max_length=180)
+    excerpt = models.CharField('Kurztext', max_length=350)
+    body = models.TextField('Beitrag')
+    image = models.ImageField('Titelbild', upload_to='news/%Y/%m/', blank=True)
+    image_alt = models.CharField('Bildbeschreibung', max_length=200, blank=True)
+    is_published = models.BooleanField('Veröffentlichen', default=False)
+    published_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-published_at', '-pk']
+        verbose_name = 'Neuigkeit'
+        verbose_name_plural = 'Neuigkeiten'
+
+    def __str__(self):
+        return self.title
+
+
+class HeroSlide(models.Model):
+    title = models.CharField('Titel', max_length=180, blank=True)
+    subtitle = models.TextField('Untertitel', max_length=500, blank=True)
+    image = models.ImageField('Bild', upload_to='homepage/slides/%Y/%m/',
+                              help_text='JPEG, PNG oder WebP, höchstens 10 MB. Querformat empfohlen.')
+    image_alt = models.CharField('Bildbeschreibung', max_length=200, blank=True,
+                                 help_text='Beschreiben Sie das Motiv. Bei rein dekorativen Bildern leer lassen.')
+    button_text = models.CharField('Button-Text', max_length=60, blank=True)
+    button_url = models.CharField('Button-Link', max_length=500, blank=True,
+                                 validators=[validate_slide_link],
+                                 help_text='Interner Pfad wie /fahrzeuge/ oder vollständiger https://-Link.')
+    sort_order = models.PositiveIntegerField('Reihenfolge', default=0,
+                                            help_text='Kleinere Zahlen erscheinen zuerst.')
+    is_active = models.BooleanField('Aktiv', default=False,
+                                    help_text='Aktive Slides sind nach dem Speichern sofort öffentlich sichtbar.')
+    created_at = models.DateTimeField('Erstellt', auto_now_add=True)
+    updated_at = models.DateTimeField('Geändert', auto_now=True)
+
+    class Meta:
+        ordering = ['sort_order', 'pk']
+        verbose_name = 'Startseiten-Slide'
+        verbose_name_plural = 'Startseiten-Slides'
+
+    def __str__(self):
+        return self.title or f'Slide {self.pk or "(neu)"}'
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        super().clean()
+        if bool(self.button_text) != bool(self.button_url):
+            raise ValidationError('Für einen Button bitte Text und Link ausfüllen oder beide Felder leer lassen.')

@@ -13,6 +13,6 @@
             <li><a href="{% url 'ueberuns' %}">Über uns</a></li>
             <li><a href="{% url 'kontakt' %}">Kontakt</a></li>
         </ul>
-        <a class="site-phone" href="tel:+496104406770">+49 6104 406770</a>
+        <a class="site-phone" href="tel:{{ site_content.phone|cut:' ' }}">{{ site_content.phone }}</a>
     </nav>
 </header>

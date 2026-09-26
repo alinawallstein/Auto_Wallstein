@@ -1,50 +1,36 @@
 {% extends "public/base.html" %}
 {% load static %}
-{% block title %}Auto Wallstein | Mercedes-Benz Jahreswagen{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}">{% endblock %}
+{% block title %}{{ site_content.page_title }}{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-4"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-4"><script src="{% static 'js/hero-slider.js' %}?v=slider-4" defer></script>{% endblock %}
 {% block content %}
-    <header class="hero-section">
-        <div class="hero-content">
-            <h1 class="main-title">Mercedes Benz Jahres-&amp; Geschäftswagen</h1>
-            <p class="hero-subtitle">Entdecke aktuelle Angebote aus unserem Bestand und finde das passende Fahrzeug für dich.</p>
-            <a class="aw-button" href="{% url 'public_vehicles' %}">Fahrzeuge ansehen</a>
-        </div>
-        <a href="#welcome" class="scroll-down" aria-label="Zur nächsten Sektion scrollen">
-            <span></span>
-        </a>
-    </header>
+    {% if content_preview %}<aside class="notice">Entwurfsvorschau – nicht öffentlich. <a href="{% url 'homepage_edit' %}">Zur Bearbeitung</a></aside>{% endif %}
+    <h1 class="hero-slider__sr-only">{{ site_content.hero_title }}</h1>
+    {% include 'partials/hero_slider.html' %}
 
     <div>
         <section id="welcome" class="welcome-section">
-            <h2>FINDEN SIE IHREN NÄCHSTEN MERCEDES.</h2>
-            <p>
-                Willkommen bei Auto Wallstein. Entdecken Sie erstklassige Jahres- und Geschäftswagen von Mercedes-Benz.
-                Profitieren Sie von unserer Kompetenz und exklusivem Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG.
-                Ihr Traumwagen wartet auf Sie – besuchen Sie uns in Heusenstamm.
-            </p>
+            <h2> {{ site_content.welcome_title }} </h2>
+            <p> {{ site_content.welcome_text }} </p>
         </section>
 
         <div class="image-grid">
             <a href="{% url 'public_vehicles' %}" class="grid-item">
-                <img loading="lazy" src="{% static 'images/Dino.jpeg' %}" alt="Fahrzeugsuche">
-                <div class="grid-label">Fahrzeugsuche</div>
+                <img loading="lazy" src="{{ site_content.vehicles_image }}" alt="{{ site_content.vehicles_image_alt }}">
+                <div class="grid-label"> {{ site_content.tile_vehicles }} </div>
             </a>
-            <a href="{% url 'ueberuns' %}" class="grid-item">
-                <img loading="lazy" src="{% static 'images/krass.JPG' %}" alt="Export und Zulassung">
-                <div class="grid-label">Export &amp; Zulassung</div>
+            <a href="{% url 'service' %}" class="grid-item">
+                <img loading="lazy" src="{{ site_content.service_image }}" alt="{{ site_content.service_image_alt }}">
+                <div class="grid-label"> {{ site_content.tile_service }} </div>
             </a>
-            <a href="{% url 'kontakt' %}" class="grid-item">
-                <img loading="lazy" src="{% static 'images/finanzierung.jpg' %}" alt="Finanzierung">
-                <div class="grid-label">Finanzieren Sie bequem</div>
+            <a href="{% url 'finanzierung' %}" class="grid-item">
+                <img loading="lazy" src="{{ site_content.finance_image }}" alt="{{ site_content.finance_image_alt }}">
+                <div class="grid-label"> {{ site_content.tile_finance }} </div>
             </a>
         </div>
 
 
         <section class="fahrzeuge-section" id="fahrzeuge">
-            <h2 class="fahrzeuge-title">
-                Unser Fahrzeugbestand
-
-            </h2>
+            <h2 class="fahrzeuge-title"> {{ site_content.inventory_title }} </h2>
             <div class="iframe-container-large">
                 <iframe src="https://auto-wallstein.qualitaetshaendler.de/fahrzeugangebote/" title="Externer Fahrzeugbestand" loading="lazy" allowfullscreen></iframe>
             </div>
@@ -52,94 +38,85 @@
 
         <section class="page-section">
             <div class="section-heading">
-                <h2 class="section-title">Aktuelle Angebote</h2>
-                <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Alle Fahrzeuge</a>
+                <h2 class="section-title"> {{ site_content.featured_title }} </h2>
+                <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline"> {{ site_content.featured_button }} </a>
             </div>
             <div class="vehicle-grid">
                 {% for vehicle in featured_vehicles %}
                     {% include 'partials/vehicle_card.html' with vehicle=vehicle heading_level='h3' %}
                 {% empty %}
-                    <p class="notice full-width">Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.</p>
+                    <p class="notice full-width"> {{ site_content.featured_empty }} </p>
                 {% endfor %}
             </div>
         </section>
 
         <section class="welcome-section finance-intro">
             <div class="container">
-                <h2>Finanzierung</h2>
-                <p>
-                    Ein Auto ist eine Investition für viele Jahre – deshalb soll die Finanzierung zu Ihrer Situation passen.
-                    Bei Auto Wallstein unterstützen wir Sie dabei, eine passende Rate, Laufzeit und (auf Wunsch) eine Anzahlung
-                    zu wählen. Gemeinsam finden wir eine Lösung, die transparent, planbar und fair ist.
-                </p>
-                <p>
-                    Sprechen Sie uns gerne an – wir erstellen Ihnen ein individuelles Angebot und erklären Ihnen alle Schritte
-                    verständlich, damit Sie sicher entscheiden können.
-                </p>
-                <p class="finance-highlights">
-                    <strong>Ihre Vorteile:</strong> schnelle Rückmeldung, unkomplizierte Abwicklung, Finanzierung auch ohne Anzahlung möglich.
-                </p>
+                <h2> {{ site_content.finance_title }} </h2>
+                <p> {{ site_content.finance_text }} </p>
+                <p> {{ site_content.finance_more }} </p>
+                <p class="finance-highlights"> {{ site_content.finance_benefits }} </p>
             </div>
         </section>
 
         <section class="hours-page">
             <div class="besuch-container">
-                <h2 class="besuch-title">Besuchen Sie uns in Heusenstamm</h2>
-                <p class="besuch-text">Wir freuen uns auf Ihren Besuch. Beratung, Öffnungszeiten und Verkauf zu folgenden Zeiten:</p>
+                <h2 class="besuch-title"> {{ site_content.visit_title }} </h2>
+                <p class="besuch-text"> {{ site_content.visit_text }} </p>
             </div>
             <div class="hours-grid">
                 <div class="hours-card">
-                    <h3>Öffnungszeiten</h3>
+                    <h3> {{ site_content.hours_title }} </h3>
                     <table class="hours-table">
                         <tr>
                             <td>Montag – Freitag</td>
-                            <td>09:00 – 13:00<br>14:30 – 18:00</td>
+                            <td>{{ site_content.weekdays }}</td>
                         </tr>
                         <tr>
                             <td>Samstag</td>
-                            <td>10:00 – 14:00</td>
+                            <td>{{ site_content.saturday }}</td>
                         </tr>
                         <tr>
                             <td>Sonntag</td>
-                            <td>Geschlossen</td>
+                            <td>{{ site_content.sunday }}</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="hours-card">
-                    <h3>Anfahrt &amp; Kontakt</h3>
-                    <p><strong>Auto Wallstein</strong><br>
-                    Rudolf-Braas-Straße 27a<br>
-                    63150 Heusenstamm</p>
-                    <p><a href="tel:+496104406770">+49 6104 406770</a></p>
+                    <h3> {{ site_content.location_contact_title }} </h3>
+                    <p><strong>{{ site_content.business_name }}</strong><br>
+                    {{ site_content.street }}<br>
+                    {{ site_content.city }}</p>
+                    <p><a href="tel:{{ site_content.phone|cut:' ' }}">{{ site_content.phone }}</a></p>
                 </div>
             </div>
 
             <div class="hours-footer">
-                <h3>Möchten Sie eine Probefahrt vereinbaren?</h3>
-                <p>Gerne nehmen wir uns Zeit für Sie. Vereinbaren Sie vorab einen Termin.</p>
-                <a href="#kontakt" class="aw-button">Termin anfragen</a>
+                <h3> {{ site_content.appointment_title }} </h3>
+                <p> {{ site_content.appointment_text }} </p>
+                <a href="#kontakt" class="aw-button"> {{ site_content.appointment_button }} </a>
             </div>
         </section>
 
         <section class="contact-cards-section" id="kontakt">
             <div class="contact-container">
-                <h2 class="main-title-dark">Kontaktieren Sie uns</h2>
-                <p class="subtitle">Wir beraten Sie gerne persönlich zu Ihrem neuen Mercedes-Benz.</p>
+                <h2 class="main-title-dark"> {{ site_content.contact_title }} </h2>
+                <p class="subtitle"> {{ site_content.contact_text }} </p>
 
                 <div class="contact-grid">
-                    <a href="tel:+496104406770" class="contact-card">
+                    <a href="tel:{{ site_content.phone|cut:' ' }}" class="contact-card">
 
-                        <h3>Telefon</h3>
-                        <p>Rufen Sie uns direkt an</p>
-                        <span class="card-detail">+49 6104 406770</span>
+                        <h3> {{ site_content.phone_label }} </h3>
+                        <p> {{ site_content.phone_text }} </p>
+                        <span class="card-detail">{{ site_content.phone }}</span>
                     </a>
 
-                    <a href="mailto:verkauf@auto-wallstein.de" class="contact-card">
+                    <a href="mailto:{{ site_content.email }}" class="contact-card">
 
-                        <h3>E-Mail</h3>
-                        <p>Schreiben Sie uns Ihr Anliegen</p>
-                        <span class="card-detail">verkauf@auto-wallstein.de</span>
+                        <h3> {{ site_content.email_label }} </h3>
+                        <p> {{ site_content.email_text }} </p>
+                        <span class="card-detail">{{ site_content.email }}</span>
                     </a>
                 </div>
             </div>
@@ -147,21 +124,24 @@
 
         <section class="location-section">
             <div class="location-header">
-                <h2 class="black-bg-text">Anfahrt</h2>
-                <p>Rudolf-Braas-Straße 27a, 63150 Heusenstamm</p>
+                <h2 class="black-bg-text"> {{ site_content.map_title }} </h2>
+                <p>{{ site_content.street }}, {{ site_content.city }}</p>
             </div>
 
             <div class="map-container">
-                <iframe src="https://maps.google.com/maps?q=Rudolf-Braas-Str.%2027a,63150%20Heusenstamm&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" title="Anfahrt zu Auto Wallstein" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://maps.google.com/maps?q={{ site_content.street|urlencode }},{{ site_content.city|urlencode }}&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" title="Anfahrt zu Auto Wallstein" allowfullscreen="" loading="lazy"></iframe>
             </div>
 
             <div class="route-button-container">
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Rudolf-Braas-Straße+27a,63150+Heusenstamm" target="_blank" class="aw-button">
-                    Route berechnen &amp; Navigation starten
-                </a>
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ site_content.street|urlencode }},{{ site_content.city|urlencode }}" target="_blank" class="aw-button"> {{ site_content.map_button }} </a>
             </div>
         </section>
 
+        <section class="page-section">
+            <h2>{{ site_content.accessories_title }}</h2><p>{{ site_content.accessories_text }}</p>
+            <a class="aw-button aw-button--outline" href="{% url 'public_accessories' %}">{{ site_content.accessories_button }}</a>
+        </section>
+        {% if latest_news %}<section class="page-section"><div class="section-heading"><h2>{{ site_content.news_title }}</h2><a href="{% url 'public_news' %}">{{ site_content.news_button }}</a></div><div class="vehicle-grid">{% for article in latest_news %}{% include 'partials/news_card.html' with heading_level='h3' %}{% endfor %}</div></section>{% endif %}
     </div>
 
 {% endblock %}

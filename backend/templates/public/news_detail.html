@@ -1,0 +1,3 @@
+{% extends 'public/base.html' %}
+{% block title %}{{ article.title }} | Auto Wallstein{% endblock %}
+{% block content %}{% if content_preview %}<aside class="notice">Interne Vorschau – <a href="{% url 'news_edit' article.pk %}">Zur Bearbeitung</a></aside>{% endif %}<article class="page-section"><a href="{% url 'public_news' %}">Alle Neuigkeiten</a><h1>{{ article.title }}</h1><p>{{ article.published_at|date:'d.m.Y' }}</p>{% if article.image %}<img class="news-hero" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="1200" height="800">{% endif %}<p>{{ article.excerpt }}</p><div class="article-copy">{{ article.body|linebreaks }}</div></article>{% endblock %}

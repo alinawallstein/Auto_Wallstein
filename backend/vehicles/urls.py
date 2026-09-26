@@ -1,9 +1,13 @@
 from django.urls import include, path
 
-from . import views
+from . import views, catalog_views
 from .redirects import canonical_redirect
 
 urlpatterns = [
+    path("zubehoer/", catalog_views.public_accessories, name="public_accessories"),
+    path("zubehoer/<int:pk>/", catalog_views.accessory_detail, name="accessory_detail"),
+    path("neuigkeiten/", catalog_views.public_news, name="public_news"),
+    path("neuigkeiten/<int:pk>/", catalog_views.news_detail, name="news_detail"),
     path("", views.public_home, name="home"),
     path("fahrzeuge/", views.public_vehicles, name="public_vehicles"),
     path("fahrzeuge/<int:pk>/", views.vehicle_detail, name="vehicle_detail"),

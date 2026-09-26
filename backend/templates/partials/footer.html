@@ -3,9 +3,11 @@
     <div class="footer-container">
         <div class="footer-section">
             <p class="footer-text">
-                © {% now "Y" %} <strong>Auto Wallstein</strong> — Rudolf-Braas-Straße 27a, 63150 Heusenstamm
+                © {% now "Y" %} <strong>{{ site_content.business_name }}</strong> — {{ site_content.street }}, {{ site_content.city }}
             </p>
                 <p class="footer-links">
+                    <a href="{% url 'public_accessories' %}">Teile & Zubehör</a>
+                    <a href="{% url 'public_news' %}">Neuigkeiten</a>
                     <a href="{% url 'impressum' %}">Impressum</a>
                     <span class="divider">|</span>
                     <a href="{% url 'datenschutz' %}">Datenschutz</a>
@@ -15,8 +17,8 @@
                     <a href="{% url 'oeffnungszeiten' %}">Öffnungszeiten</a>
                 </p>
                 <p class="footer-ctas">
-                    <a href="tel:+496104406770" aria-label="Telefon"><img src="{% static 'images/icons/phone.svg' %}" alt="Telefon" class="icon-svg"/></a>
-                    <a href="mailto:verkauf@auto-wallstein.de" aria-label="E-Mail"><img src="{% static 'images/icons/mail.svg' %}" alt="E-Mail" class="icon-svg"/></a>
+                    <a href="tel:{{ site_content.phone|cut:' ' }}" aria-label="Telefon"><img src="{% static 'images/icons/phone.svg' %}" alt="Telefon" class="icon-svg"/></a>
+                    <a href="mailto:{{ site_content.email }}" aria-label="E-Mail"><img src="{% static 'images/icons/mail.svg' %}" alt="E-Mail" class="icon-svg"/></a>
                 </p>
         </div>
         <div class="footer-bottom">

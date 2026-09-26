@@ -29,8 +29,8 @@
     </form>
     <div class="contact-details">
         <h2>Persönlich für Sie da</h2>
-        <p>Auto Wallstein · Rudolf-Braas-Straße 27a · 63150 Heusenstamm</p>
-        <p><a href="tel:+496104406770">+49 6104 406770</a><br><a href="mailto:verkauf@auto-wallstein.de">verkauf@auto-wallstein.de</a></p>
+        <p>{{ site_content.business_name }} · {{ site_content.street }} · {{ site_content.city }}</p>
+        <p><a href="tel:{{ site_content.phone|cut:' ' }}">{{ site_content.phone }}</a><br><a href="mailto:{{ site_content.email }}">{{ site_content.email }}</a></p>
         <a href="{% url 'oeffnungszeiten' %}">Unsere Öffnungszeiten</a>
     </div>
 </section>

@@ -1,0 +1,7 @@
+{% extends 'public/base.html' %}
+{% block title %}Teile & Zubehör | Auto Wallstein{% endblock %}
+{% block content %}<section class="page-section"><h1>Teile & Zubehör</h1><p>Reifen, Autoteile und Zubehör aus unserem Angebot. Für Fragen zu Zustand und Passgenauigkeit sprechen Sie uns bitte an.</p>
+<div class="vehicle-grid">{% for item in page_obj %}<article class="vehicle-card">
+{% with image=item.images.first %}{% if image %}<img class="vehicle-card__image" src="{{ image.image.url }}" alt="{{ image.alt_text|default:item.title }}" width="800" height="500" loading="lazy">{% else %}<div class="vehicle-card__placeholder">Kein Bild vorhanden</div>{% endif %}{% endwith %}
+<div class="vehicle-card__body"><h2 class="vehicle-card__title">{{ item.title }}</h2><p>{{ item.get_category_display }} · {{ item.get_condition_display }}</p><p class="price">{{ item.price|floatformat:'2g' }} €</p><a class="aw-button aw-button--outline" href="{% url 'accessory_detail' item.pk %}">Angebot ansehen</a></div></article>{% empty %}<p>Derzeit sind keine Teile oder Zubehörangebote veröffentlicht.</p>{% endfor %}</div>
+{% include 'partials/catalog_pagination.html' %}</section>{% endblock %}

@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 
 from PIL import Image
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase, override_settings
@@ -306,6 +307,19 @@ class InquiryRegressionTests(VehicleTestCase):
         self.assertEqual(inquiry.inquiry_type, "test_drive")
         self.assertEqual(inquiry.vehicle, self.vehicle)
 
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        DEFAULT_FROM_EMAIL="noreply@autowallstein.test",
+        INQUIRY_NOTIFICATION_EMAIL="info@autowallstein.test",
+    )
+    def test_inquiry_sends_notification_and_auto_reply(self):
+        response = self.client.post(reverse("kontakt"), self.payload())
+        self.assertContains(response, "Vielen Dank")
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].subject, "Neue Kundenanfrage: Probefahrt anfragen")
+        self.assertIn("erika@example.com", mail.outbox[1].to)
+        self.assertIn("wir haben ihre e-mail erhalten", mail.outbox[1].body.lower())
+
     def test_general_contact_without_vehicle(self):
         response = self.client.post(reverse("kontakt"), self.payload(vehicle="", inquiry_type="vehicle_request"))
         self.assertContains(response, "Vielen Dank")
@@ -347,10 +361,10 @@ class ManagementRegressionTests(VehicleTestCase):
         data["internal_number"] = "V-NEW"
         response = self.client.post(reverse("vehicle_create"), data)
         created = Vehicle.objects.get(internal_number="V-NEW")
-        self.assertRedirects(response, reverse("vehicle_images", args=[created.pk]))
+        self.assertRedirects(response, reverse("vehicle_update", args=[created.pk]))
         data["sale_price"] = "29990.00"
         response = self.client.post(reverse("vehicle_update", args=[created.pk]), data)
-        self.assertRedirects(response, reverse("vehicle_images", args=[created.pk]))
+        self.assertRedirects(response, reverse("vehicle_update", args=[created.pk]))
         created.refresh_from_db()
         self.assertEqual(created.sale_price, Decimal("29990.00"))
         url = reverse("vehicle_delete", args=[created.pk])
@@ -498,7 +512,7 @@ class AccessAndValidationTests(VehicleTestCase):
                 self.assertTrue(Vehicle.objects.filter(internal_number='NEW').exists())
             elif allowed_route == 'vehicle_update':
                 response = self.client.post(reverse(allowed_route, args=[self.vehicle.pk]), data)
-                self.assertRedirects(response, reverse('vehicle_images', args=[self.vehicle.pk]))
+                self.assertRedirects(response, reverse('vehicle_update', args=[self.vehicle.pk]))
                 self.vehicle.refresh_from_db()
                 self.assertEqual(self.vehicle.sale_price, Decimal('28000.00'))
             else:
@@ -670,7 +684,7 @@ class CanonicalRouteTests(VehicleTestCase):
         self.assertEqual(response.redirect_chain, [
             (target, 301), (reverse('login') + '?next=' + target, 302),
         ])
-        self.assertTemplateUsed(response, 'admin/login.html')
+        self.assertTemplateUsed(response, 'management/login.html')
 
 
 class PublicGalleryTests(VehicleTestCase):
@@ -759,6 +773,99 @@ class ManagementInventoryTests(VehicleTestCase):
             with self.subTest(name=name):
                 response = self.client.get(reverse(name, args=args))
                 self.assertEqual(response.status_code, 200)
-                self.assertTemplateUsed(response, 'admin/base.html')
+                self.assertTemplateUsed(response, 'management/base.html')
                 self.assertContains(response, reverse('management_vehicles'))
                 self.assertEqual(response.content.decode().count('<main '), 1)
+
+
+class VehicleWorkspaceTests(VehicleTestCase):
+    def setUp(self):
+        super().setUp()
+        self.login_admin()
+
+    def payload(self, **changes):
+        data = model_to_dict(self.vehicle, exclude=['id', 'is_published', 'public_visible'])
+        data.update(hu_valid_until='')
+        data.update(changes)
+        return data
+
+    def test_save_stays_on_data_and_preserves_publication_flags(self):
+        self.vehicle.public_visible = False
+        self.vehicle.save()
+        url = reverse('vehicle_update', args=[self.vehicle.pk])
+        response = self.client.post(url, self.payload(sale_price='30000.00'), follow=True)
+        self.assertRedirects(response, url)
+        self.assertContains(response, 'Fahrzeug wurde erfolgreich bearbeitet.')
+        self.assertContains(response, 'Bilder hinzufügen')
+        self.vehicle.refresh_from_db()
+        self.assertTrue(self.vehicle.is_published)
+        self.assertFalse(self.vehicle.public_visible)
+        self.assertEqual(self.vehicle.sale_price, Decimal('30000.00'))
+
+    def test_create_starts_unpublished_and_opens_workspace(self):
+        response = self.client.post(reverse('vehicle_create'), self.payload(internal_number='NEW'), follow=True)
+        created = Vehicle.objects.get(internal_number='NEW')
+        self.assertRedirects(response, reverse('vehicle_update', args=[created.pk]))
+        self.assertContains(response, 'Fahrzeug wurde erfolgreich angelegt.')
+        self.assertContains(response, reverse('vehicle_images', args=[created.pk]))
+        self.assertFalse(created.is_published)
+        self.assertFalse(created.public_visible)
+
+    def test_all_sections_keep_vehicle_context_and_active_navigation(self):
+        for name in ('vehicle_update', 'vehicle_images', 'vehicle_publication'):
+            with self.subTest(name=name):
+                url = reverse(name, args=[self.vehicle.pk])
+                response = self.client.get(url)
+                self.assertContains(response, f'href="{url}" aria-current="page"')
+                self.assertContains(response, 'V-001')
+                self.assertContains(response, 'Zurück zum Bestand')
+                self.assertContains(response, 'data-unsaved-form')
+                self.assertContains(response, 'unsaved-changes.js')
+
+    def test_publication_checkbox_controls_flags_but_keeps_sales_status(self):
+        url = reverse('vehicle_publication', args=[self.vehicle.pk])
+        for status in VehicleStatus.values:
+            self.vehicle.status = status
+            self.vehicle.save()
+            self.assertRedirects(self.client.post(url, {'website_enabled': 'on'}), url)
+            self.vehicle.refresh_from_db()
+            self.assertTrue(self.vehicle.is_published)
+            self.assertTrue(self.vehicle.public_visible)
+            self.assertEqual(self.vehicle.status, status)
+            self.assertEqual(self.vehicle.is_publicly_listed, status == VehicleStatus.AVAILABLE)
+        self.assertRedirects(self.client.post(url, {}), url)
+        self.vehicle.refresh_from_db()
+        self.assertFalse(self.vehicle.is_published)
+        self.assertFalse(self.vehicle.public_visible)
+
+    def test_publication_requires_permissions_and_existing_vehicle(self):
+        self.assertEqual(self.client.get(reverse('vehicle_publication', args=[999999])).status_code, 404)
+        user = get_user_model().objects.create_user('no_access')
+        self.client.force_login(user)
+        url = reverse('vehicle_publication', args=[self.vehicle.pk])
+        self.assertEqual(self.client.post(url, {}).status_code, 403)
+        self.vehicle.refresh_from_db()
+        self.assertTrue(self.vehicle.is_publicly_listed)
+        self.client.logout()
+        self.assertEqual(self.client.get(url).status_code, 302)
+
+    def test_invalid_save_keeps_values_and_displays_errors(self):
+        url = reverse('vehicle_update', args=[self.vehicle.pk])
+        response = self.client.post(url, self.payload(sale_price='-1', variant='Neue Variante'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Neue Variante')
+        self.assertContains(response, 'data-unsaved-errors')
+        self.vehicle.refresh_from_db()
+        self.assertEqual(self.vehicle.variant, '320d')
+        response = self.client.post(url, {})
+        self.assertTrue(response.context['form'].errors)
+
+    def test_grouped_form_covers_every_editable_field_once(self):
+        from .forms import VehicleForm
+        form = VehicleForm(instance=self.vehicle)
+        names = [field.name for title, fields in form.field_groups() for field in fields]
+        self.assertCountEqual(names, list(form.fields))
+        response = self.client.get(reverse('vehicle_update', args=[self.vehicle.pk]))
+        self.assertContains(response, 'value="2022-01-01"')
+        self.assertNotContains(response, 'name="is_published"')
+        self.assertNotContains(response, 'name="public_visible"')

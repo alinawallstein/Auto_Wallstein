@@ -1,0 +1,2 @@
+{% extends 'management/base.html' %}
+{% block content %}<section class="container py-4"><h1>Eintrag löschen</h1><p>„{{ item.title }}“ wirklich löschen?</p><form method="post">{% csrf_token %}<button class="btn btn-danger">Endgültig löschen</button><a class="btn btn-outline-secondary" href="{% if kind == 'accessory' %}{% url 'management_accessories' %}{% else %}{% url 'management_news' %}{% endif %}">Abbrechen</a></form></section>{% endblock %}

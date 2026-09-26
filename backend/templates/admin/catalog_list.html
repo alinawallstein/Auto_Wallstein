@@ -1,0 +1,26 @@
+{% extends 'management/base.html' %}
+{% block title %}{{ title }} | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <h1>{{ title }}</h1>
+    {% if kind == 'accessory' %}
+        {% if perms.vehicles.add_accessory %}<a class="btn btn-primary mb-3" href="{% url 'accessory_create' %}">Neues Angebot</a>{% endif %}
+        <form class="d-flex gap-2 mb-4" method="get"><label for="catalog-search" class="visually-hidden">Angebote suchen</label><input id="catalog-search" class="form-control" name="q" value="{{ query }}" placeholder="Bezeichnung oder passende Fahrzeuge"><button class="btn btn-outline-primary">Suchen</button></form>
+    {% elif perms.vehicles.add_newsarticle %}<a class="btn btn-primary mb-3" href="{% url 'news_create' %}">Neuer Beitrag</a>{% endif %}
+    <div class="table-responsive"><table class="table management-table"><thead><tr><th>Bezeichnung</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>
+    {% for item in items %}<tr><td>{{ item.title }}{% if kind == 'accessory' %}<br>{{ item.price|floatformat:'2g' }} €{% endif %}</td>
+        <td>{% if kind == 'accessory' %}{{ item.get_status_display }} · {% if item.is_public %}Öffentlich{% else %}Nicht öffentlich{% endif %}{% else %}{% if item.is_published %}Veröffentlicht{% else %}Entwurf{% endif %}{% endif %}</td>
+        <td class="management-actions">
+        {% if kind == 'accessory' %}
+            {% if perms.vehicles.change_accessory %}<a href="{% url 'accessory_edit' item.pk %}">Bearbeiten</a>{% endif %}
+            {% if item.is_public %}<a href="{% url 'accessory_detail' item.pk %}">Website ansehen</a>{% endif %}
+            {% if perms.vehicles.delete_accessory %}<a href="{% url 'accessory_delete' item.pk %}">Löschen</a>{% endif %}
+        {% else %}
+            {% if perms.vehicles.change_newsarticle %}<a href="{% url 'news_edit' item.pk %}">Bearbeiten</a>{% endif %}
+            {% if item.is_published %}<a href="{% url 'news_detail' item.pk %}">Website ansehen</a>{% endif %}
+            {% if perms.vehicles.delete_newsarticle %}<a href="{% url 'news_delete' item.pk %}">Löschen</a>{% endif %}
+        {% endif %}</td></tr>
+    {% empty %}<tr><td colspan="3">Noch keine Einträge vorhanden.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

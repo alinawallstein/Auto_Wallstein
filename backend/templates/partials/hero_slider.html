@@ -1,0 +1,25 @@
+<section class="hero-slider" data-hero-slider aria-label="Aktuelles von Auto Wallstein" aria-roledescription="Karussell">
+    <div class="hero-slider__stage">
+        {% for slide in hero_slides %}
+            <article class="hero-slider__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide id="hero-slide-{{ forloop.counter }}" aria-roledescription="Folie" aria-label="{{ forloop.counter }} von {{ hero_slides|length }}"{% if not forloop.first %} hidden{% endif %}>
+                {% if slide.image_url %}<img class="hero-slider__image" data-hero-image src="{{ slide.image_url }}" alt="{{ slide.image_alt }}" width="1600" height="900" decoding="async" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>{% endif %}
+                <div class="hero-slider__content">
+                    {% if slide.title %}<h2 class="hero-slider__title">{{ slide.title }}</h2>{% endif %}
+                    {% if slide.subtitle %}<p class="hero-slider__subtitle">{{ slide.subtitle }}</p>{% endif %}
+                    {% if slide.button_text and slide.button_url %}<a class="aw-button hero-slider__button" href="{{ slide.button_url }}">{{ slide.button_text }}</a>{% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    {% if hero_slides|length > 1 %}
+        <div class="hero-slider__controls" data-hero-controls hidden>
+            <button type="button" data-hero-previous aria-label="Vorheriger Slide">←</button>
+            <div class="hero-slider__dots" aria-label="Slide auswählen">
+                {% for slide in hero_slides %}<button type="button" class="hero-slider__dot" data-hero-dot aria-label="Slide {{ forloop.counter }} anzeigen" aria-controls="hero-slide-{{ forloop.counter }}"{% if forloop.first %} aria-current="true"{% endif %}><span></span></button>{% endfor %}
+            </div>
+            <button type="button" data-hero-next aria-label="Nächster Slide">→</button>
+            <button type="button" class="hero-slider__toggle" data-hero-toggle>Pause</button>
+            <p class="hero-slider__sr-only" data-hero-status role="status" aria-live="off" aria-atomic="true">Slide 1 von {{ hero_slides|length }}</p>
+        </div>
+    {% endif %}
+</section>

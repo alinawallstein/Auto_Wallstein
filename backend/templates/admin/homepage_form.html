@@ -1,0 +1,22 @@
+{% extends 'management/base.html' %}
+{% block title %}Website-Inhalte | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <h1>Website-Inhalte</h1>
+    <p>Sliderbilder und deren Texte werden jetzt separat im Django-Admin verwaltet. Aktive Slides sind dort nach dem Speichern sofort öffentlich. Die Ersatztexte im Startbereich erscheinen, wenn kein Slide aktiv ist.</p>
+    {% if user.is_staff and perms.vehicles.view_heroslide %}<p><a class="btn btn-outline-primary" href="{% url 'admin:vehicles_heroslide_changelist' %}">Startseiten-Slides verwalten</a></p>{% endif %}
+    <p>Bearbeiten Sie die Startseite abschnittsweise. Entwürfe sind nicht öffentlich. Die Vorschau zeigt den zuletzt gespeicherten Entwurf.</p>
+    <p>Kontaktdaten werden auch in Navigation, Fußbereich und Kontaktinformationen übernommen. Layout, rechtliche Seiten und technische Verknüpfungen werden hier nicht verändert.</p>
+    <p><a href="{% url 'homepage_preview' %}">Gespeicherten Entwurf ansehen</a> · <a href="{% url 'home' %}">Öffentliche Startseite</a></p>
+    {% if page.published_at %}<p>Zuletzt veröffentlicht: {{ page.published_at|date:'d.m.Y H:i' }}</p>{% endif %}
+    {% if page.draft != page.published %}<div class="alert alert-warning" role="status"><strong>Unveröffentlichte Änderungen</strong><br>Ihre gespeicherten Texte und Bilder sind noch nicht auf der öffentlichen Startseite sichtbar. Prüfen Sie den Entwurf und wählen Sie anschließend „Auf Website veröffentlichen“.</div>{% endif %}
+    <form method="post" enctype="multipart/form-data" data-unsaved-form{% if form.errors %} data-unsaved-errors{% endif %} novalidate>
+        {% csrf_token %}{{ form.revision }}
+        {% if form.errors %}<div class="alert alert-danger" role="alert">Bitte die Eingaben prüfen. {{ form.non_field_errors }}{{ form.revision.errors }}</div>{% endif %}
+        {% for title, fields in form.groups %}<details class="card p-3 mb-3"{% if form.errors %} open{% endif %}><summary class="h5">{{ title }}</summary><div class="pt-3">{% for field in fields %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{% if field.field.current_image_url %}<img class="content-image-preview" src="{{ field.field.current_image_url }}" alt="Vorschau {{ field.label }}">{% endif %}{{ field }}{{ field.errors }}</div>{% endfor %}</div></details>{% endfor %}
+
+        <p>Bilder: JPEG, PNG oder WebP, höchstens 10 MB. Ein leeres Uploadfeld behält das zuletzt gespeicherte Bild.</p>
+        <div class="vehicle-save-bar"><button type="submit" name="action" value="save" class="btn btn-primary">Entwurf speichern</button><button type="submit" name="action" value="publish" class="btn btn-outline-primary">Auf Website veröffentlichen</button><span data-unsaved-status role="status"></span></div>
+    </form>
+</section>
+{% endblock %}
