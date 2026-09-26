@@ -1,100 +1,36 @@
-{% extends "management/base.html" %}
-{% block title %}Übersicht | Auto Wallstein{% endblock %}
+{% extends 'management/base.html' %}
+{% block title %}Dashboard | Auto Wallstein{% endblock %}
 {% block content %}
-<div class="container py-4">
-        <div class="dashboard-shell">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <div>
-                    <p class="text-uppercase text-muted small mb-1">Übersicht</p>
-                    <h1 class="h3 mb-0">Dashboard</h1>
-                </div>
-                {% if perms.vehicles.add_vehicle %}<a href="{% url 'vehicle_create' %}" class="btn btn-primary">+ Neues Fahrzeug</a>{% endif %}
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-12 col-md-3">
-                    <div class="stat-card card border-0 h-100">
-                        <div class="card-body">
-                            <div class="stat-label">Alle Fahrzeuge</div>
-                            <div class="display-6 fw-semibold mt-2">{{ stats.total }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="stat-card card border-0 h-100">
-                        <div class="card-body">
-                            <div class="stat-label">Verfügbar</div>
-                            <div class="display-6 fw-semibold mt-2">{{ stats.available }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="stat-card card border-0 h-100">
-                        <div class="card-body">
-                            <div class="stat-label">In Vorbereitung</div>
-                            <div class="display-6 fw-semibold mt-2">{{ stats.in_preparation }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="stat-card card border-0 h-100">
-                        <div class="card-body">
-                            <div class="stat-label">Reserviert</div>
-                            <div class="display-6 fw-semibold mt-2">{{ stats.reserved }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-12 col-md-4">
-                    <div class="stat-card card border-0 h-100">
-                        <div class="card-body">
-                            <div class="stat-label">Verkauft</div>
-                            <div class="display-6 fw-semibold mt-2">{{ stats.sold }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap justify-content-between gap-3 mb-3"><h2 class="h5">Zuletzt bearbeitet</h2><a href="{% url 'management_vehicles' %}">Gesamten Bestand verwalten</a></div>
-                    {% if recent_vehicles %}
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Fahrzeug</th>
-                                        <th>Status</th>
-                                        <th>Preis</th>
-                                        <th>Aktualisiert</th>
-                                        <th class="text-end">Aktionen</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for vehicle in recent_vehicles %}
-                                        <tr>
-                                            <td>{{ vehicle.brand }} {{ vehicle.model }}</td>
-                                            <td>{{ vehicle.get_status_display }}</td>
-                                            <td>€ {{ vehicle.sale_price }}</td>
-                                            <td>{{ vehicle.updated_at|date:"d.m.Y H:i" }}</td>
-                                            <td class="text-end">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>{% endif %}
-                                                    {% if perms.vehicles.delete_vehicle %}<a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-outline-danger">Löschen</a>{% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">Noch keine Fahrzeuge angelegt.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<section class="container py-4">
+    <p class="text-muted mb-1">Auto Wallstein · Verwaltung</p>
+    <h1>Dashboard</h1>
+    <p class="text-muted">Anfragen bearbeiten, Bestand pflegen und Ihre Website aktualisieren.</p>
+    {% if inquiry_stats %}
+    <h2 class="h5 mt-4">Kundenanfragen</h2>
+    <div class="management-stats">
+        <a class="card p-3" href="{% url 'management_inquiries' %}?status=new"><span>Neu / ungelesen</span><strong>{{ inquiry_stats.new }}</strong></a>
+        <div class="card p-3"><span>Offen</span><strong>{{ inquiry_stats.open }}</strong></div>
+        <a class="card p-3" href="{% url 'management_inquiries' %}?status=answered"><span>Beantwortet</span><strong>{{ inquiry_stats.answered }}</strong></a>
+        <a class="card p-3" href="{% url 'management_inquiries' %}"><span>Alle Anfragen</span><strong>{{ inquiry_stats.total }}</strong></a>
     </div>
+    <div class="card p-3 my-3"><h2 class="h5">Letzte Kundenanfragen</h2>
+    {% for inquiry in recent_inquiries %}<a class="management-recent" href="{% url 'inquiry_detail' inquiry.pk %}"><span><strong>{{ inquiry.name }}</strong> · {{ inquiry.display_subject }}</span><small>{{ inquiry.get_status_display }} · {{ inquiry.created_at|date:'d.m.Y H:i' }}</small></a>{% empty %}<p>Noch keine Kundenanfragen.</p>{% endfor %}</div>
+    {% endif %}
+    {% if stats %}
+    <h2 class="h5 mt-4">Fahrzeugbestand</h2>
+    <div class="management-stats">
+        <a class="card p-3" href="{% url 'management_vehicles' %}"><span>Alle Fahrzeuge</span><strong>{{ stats.total }}</strong></a>
+        <a class="card p-3" href="{% url 'management_vehicles' %}?status=available"><span>Verfügbar</span><strong>{{ stats.available }}</strong></a>
+        <a class="card p-3" href="{% url 'management_vehicles' %}?visibility=public"><span>Öffentlich sichtbar</span><strong>{{ stats.public }}</strong></a>
+    </div>
+    <div class="card p-3 my-3"><div class="d-flex flex-wrap justify-content-between gap-2"><h2 class="h5">Zuletzt bearbeitete Fahrzeuge</h2>{% if perms.vehicles.add_vehicle %}<a href="{% url 'vehicle_create' %}">Fahrzeug hinzufügen</a>{% endif %}</div>
+    {% for vehicle in recent_vehicles %}<div class="management-recent"><span>{{ vehicle.brand }} {{ vehicle.model }} · {{ vehicle.internal_number }}</span><span>{{ vehicle.get_status_display }} · {{ vehicle.updated_at|date:'d.m.Y H:i' }} {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_update' vehicle.pk %}">Bearbeiten</a>{% endif %}</span></div>{% empty %}<p>Noch keine Fahrzeuge angelegt.</p>{% endfor %}</div>
+    {% endif %}
+    {% if slide_stats or perms.vehicles.change_homepage or perms.vehicles.change_slider_settings %}
+    <div class="card p-3 mt-4"><h2 class="h5">Homepage</h2>
+        {% if slide_stats %}<p>{{ slide_stats.active }} aktive von {{ slide_stats.total }} Slides</p><p><a href="{% url 'management_slides' %}">Slider verwalten</a></p>{% endif %}
+        {% if perms.vehicles.change_slider_settings %}<p><a href="{% url 'slider_settings' %}">Wechselgeschwindigkeit einstellen</a></p>{% endif %}
+        {% if perms.vehicles.change_homepage %}<p><a href="{% url 'homepage_edit' %}">Website-Inhalte bearbeiten</a></p>{% endif %}
+    </div>{% endif %}
+</section>
 {% endblock %}

@@ -15,6 +15,8 @@ class Element {
       toggle: (name, enabled) => enabled ? this.classes.add(name) : this.classes.delete(name),
     };
   }
+  matches() { return Boolean(this.keyboardFocus); }
+  setPointerCapture() {}
   addEventListener(name, fn) { this.events[name] = fn; }
   setAttribute(name, value) { this.attributes[name] = value; }
   removeAttribute(name) { delete this.attributes[name]; }
@@ -23,7 +25,7 @@ class Element {
   querySelectorAll(selector) { return this.groups?.[selector] || []; }
   fire(name, event = {}) { this.events[name]?.(event); }
 }
-function setup(count, reducedMotion = false) {
+function setup(count, reducedMotion = false, interval = 4) {
   const timers = new Map();
   let timerId = 0;
   const images = Array.from({ length: count }, () => Object.assign(new Element(), { complete: true, naturalWidth: 1600, loading: 'lazy' }));
@@ -33,28 +35,30 @@ function setup(count, reducedMotion = false) {
   const controls = Object.assign(new Element(), { hidden: true });
   const previous = new Element();
   const next = new Element();
-  const toggle = new Element();
   const status = new Element();
   const dots = slides.map(() => new Element());
-  controls.selectors = { '[data-hero-previous]': previous, '[data-hero-next]': next, '[data-hero-toggle]': toggle, '[data-hero-status]': status };
+  controls.selectors = { '[data-hero-previous]': previous, '[data-hero-next]': next, '[data-hero-status]': status };
   controls.groups = { '[data-hero-dot]': dots };
-  controls.children = [previous, next, toggle, status, ...dots];
+  controls.children = [previous, next, status, ...dots];
   const slider = Object.assign(new Element(), {
+    dataset: { interval: String(interval) },
     children: [controls, ...slides],
     selectors: { '[data-hero-controls]': count > 1 ? controls : null },
     groups: { '[data-hero-slide]': slides, '[data-hero-image]': images },
   });
   const document = Object.assign(new Element(), { hidden: false, activeElement: null, groups: { '[data-hero-slider]': [slider] } });
-  toggle.focus = () => { document.activeElement = toggle; slider.fire('focusin'); };
+  next.focus = () => { document.activeElement = next; next.keyboardFocus = true; slider.fire('focusin', { target: next }); };
   const motion = Object.assign(new Element(), { matches: reducedMotion });
-  const window = {
+  const delays = [];
+  const window = Object.assign(new Element(), {
+    getComputedStyle: () => ({ transitionDuration: reducedMotion ? '0s' : '0.6s' }),
     matchMedia: () => motion,
-    setTimeout: (fn, delay) => { assert.equal(delay, 6000); timers.set(++timerId, fn); return timerId; },
+    setTimeout: (fn, delay) => { delays.push(delay); timers.set(++timerId, fn); return timerId; },
     clearTimeout: id => timers.delete(id),
-  };
+  });
   runInNewContext(source, { document, window });
   const tick = () => { const [id, fn] = timers.entries().next().value; timers.delete(id); fn(); };
-  return { slider, slides, images, previous, next, toggle, status, dots, controls, timers, tick, document, motion };
+  return { slider, slides, images, previous, next, status, dots, controls, timers, tick, document, motion, window, delays, reinitialize: () => runInNewContext(source, { document, window }) };
 }
 const active = s => s.slides.map(slide => slide.classes.has('is-active'));
 
@@ -91,26 +95,13 @@ test('automatic rotation wraps with exactly one scheduled change and no live ann
   assert.deepEqual(active(s), [true, false]);
   assert.equal(s.timers.size, 1);
 });
-test('explicit pause survives interactions and manual navigation', () => {
+test('hover and mouse focus do not stop autoplay; keyboard focus and background tabs do', () => {
   const s = setup(2);
-  s.toggle.fire('click');
   s.slider.fire('mouseenter');
-  s.slider.fire('mouseleave');
-  s.document.fire('visibilitychange');
-  s.next.fire('click');
-  assert.equal(s.timers.size, 0);
-  assert.equal(s.status.attributes['aria-live'], 'polite');
-  s.toggle.fire('click');
+  s.slider.fire('focusin', { target: s.next });
   assert.equal(s.timers.size, 1);
-});
-test('hover, focus and background tabs pause without accumulating timers', () => {
-  const s = setup(2);
-  s.slider.fire('mouseenter');
-  assert.equal(s.timers.size, 0);
-  s.slider.fire('focusin');
-  s.slider.fire('mouseleave');
-  assert.equal(s.timers.size, 0);
-  s.slider.fire('focusout', { relatedTarget: s.toggle });
+  s.next.keyboardFocus = true;
+  s.slider.fire('focusin', { target: s.next });
   assert.equal(s.timers.size, 0);
   s.slider.fire('focusout', { relatedTarget: null });
   assert.equal(s.timers.size, 1);
@@ -121,13 +112,20 @@ test('hover, focus and background tabs pause without accumulating timers', () =>
   s.document.fire('visibilitychange');
   assert.equal(s.timers.size, 1);
 });
-test('reduced motion starts paused and responds to changed preferences', () => {
+test('reduced motion disables autoplay and follows changed preferences', () => {
   const s = setup(2, true);
   assert.equal(s.timers.size, 0);
-  s.toggle.fire('click');
+  s.motion.matches = false;
+  s.motion.fire('change');
   assert.equal(s.timers.size, 1);
-  s.motion.fire('change', { matches: true });
+  s.motion.matches = true;
+  s.motion.fire('change');
   assert.equal(s.timers.size, 0);
+});
+test('database interval is used, invalid or missing intervals disable autoplay', () => {
+  for (const interval of [2, 5, 15]) assert.equal(setup(2, false, interval).timers.size, 1);
+  for (const interval of [0, 1, 16, 31, NaN]) assert.equal(setup(2, false, interval).timers.size, 0);
+  assert.equal(source.includes('data-hero-toggle'), false);
 });
 test('arrow keys work and focus is moved out of a departing slide', () => {
   const s = setup(2);
@@ -135,7 +133,7 @@ test('arrow keys work and focus is moved out of a departing slide', () => {
   let prevented = false;
   s.slider.fire('keydown', { key: 'ArrowRight', preventDefault: () => { prevented = true; } });
   assert.equal(prevented, true);
-  assert.equal(s.document.activeElement, s.toggle);
+  assert.equal(s.document.activeElement, s.next);
   assert.deepEqual(active(s), [false, true]);
   s.slider.fire('keydown', { key: 'Tab' });
   s.slider.fire('keydown', { key: 'ArrowLeft', altKey: true });
@@ -171,4 +169,33 @@ test('broken pictures are hidden even when only one slide exists', () => {
   const s = setup(1);
   s.images[0].fire('error');
   assert.equal(s.images[0].classes.has('is-unavailable'), true);
+});
+
+test('stand time and transition are separate, manual navigation resets a single timer', () => {
+  const s = setup(3);
+  assert.equal(s.delays.at(-1), 4000);
+  s.tick();
+  assert.equal(s.delays.at(-1), 4600);
+  for (let i = 0; i < 20; i++) s.next.fire('click');
+  assert.equal(s.timers.size, 1);
+  assert.equal(s.delays.at(-1), 4600);
+});
+test('reinitialization does not add another timer and leaving the page stops it', () => {
+  const s = setup(3);
+  s.reinitialize();
+  assert.equal(s.timers.size, 1);
+  s.window.fire('pagehide');
+  assert.equal(s.timers.size, 0);
+  s.window.fire('pageshow', { persisted: true });
+  assert.equal(s.timers.size, 1);
+});
+test('persisted settings broadcast immediately restarts with the new seconds value', () => {
+  const s = setup(2);
+  s.window.fire('storage', { key: 'wallstein.slider.settings', newValue: JSON.stringify({ seconds: 2 }) });
+  assert.equal(s.delays.at(-1), 2000);
+  assert.equal(s.timers.size, 1);
+  s.tick();
+  assert.equal(s.delays.at(-1), 2600);
+  s.window.fire('storage', { key: 'wallstein.slider.settings', newValue: 'invalid' });
+  assert.equal(s.timers.size, 1);
 });

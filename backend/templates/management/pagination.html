@@ -1,0 +1,5 @@
+{% if page_obj.has_other_pages %}<nav class="management-pagination d-flex flex-wrap gap-3 align-items-center my-3" aria-label="Seiten">
+    {% if page_obj.has_previous %}<a href="?{{ page_query }}&amp;page={{ page_obj.previous_page_number }}">Zurück</a>{% endif %}
+    <span>Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?{{ page_query }}&amp;page={{ page_obj.next_page_number }}">Weiter</a>{% endif %}
+</nav>{% endif %}

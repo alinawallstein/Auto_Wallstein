@@ -52,6 +52,7 @@ def homepage_edit(request):
 def homepage_preview(request):
     page = Homepage.objects.filter(pk=1).first() or Homepage(pk=1)
     content = homepage_content(page.draft)
+    content["slider_interval"] = page.slider_interval
     response = render(request, 'public/home.html', {
         'hero_slides': homepage_slides(content),
         'site_content': content, 'content_preview': True,

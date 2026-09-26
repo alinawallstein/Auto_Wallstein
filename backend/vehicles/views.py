@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -18,33 +16,9 @@ from .selectors import public_vehicles_with_images
 
 from .content import website_content
 from .slider import homepage_slides
-
-
-def send_customer_inquiry_mails(inquiry):
-    recipients = [address.strip() for address in str(getattr(settings, "INQUIRY_NOTIFICATION_EMAIL", settings.DEFAULT_FROM_EMAIL)).split(",") if address.strip()]
-    subject = f"Neue Kundenanfrage: {inquiry.get_inquiry_type_display()}"
-    vehicle = inquiry.vehicle.__str__() if inquiry.vehicle else "Kein Fahrzeug ausgewählt"
-    body = (
-        "Neue Kundenanfrage\n\n"
-        f"Typ: {inquiry.get_inquiry_type_display()}\n"
-        f"Name: {inquiry.name}\n"
-        f"E-Mail: {inquiry.email}\n"
-        f"Telefon: {inquiry.phone or '-'}\n"
-        f"Fahrzeug: {vehicle}\n\n"
-        "Nachricht:\n"
-        f"{inquiry.message}\n"
-    )
-    if recipients:
-        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, fail_silently=False)
-
-    if inquiry.email:
-        auto_reply = (
-            "Vielen Dank für Ihre Nachricht bei Auto Wallstein.\n\n"
-            "Wir haben Ihre E-Mail erhalten und melden uns in Kürze bei Ihnen.\n\n"
-            "Mit freundlichen Grüßen\n"
-            "Auto Wallstein"
-        )
-        send_mail("Ihre Anfrage bei Auto Wallstein", auto_reply, settings.DEFAULT_FROM_EMAIL, [inquiry.email], fail_silently=True)
+from .inquiry_mail import send_customer_inquiry_mails
+from .management import can_manage
+from django.views.decorators.http import require_POST
 
 
 def public_home(request):
@@ -128,8 +102,10 @@ def contact_page(request):
 
     form = CustomerInquiryForm(request.POST or None, initial=initial)
     if request.method == "POST" and form.is_valid():
-        inquiry = form.save()
-        send_customer_inquiry_mails(inquiry)
+        inquiry = form.save(commit=False)
+        inquiry.subject = inquiry.display_subject
+        inquiry.save()
+        send_customer_inquiry_mails(inquiry, request=request)
         vehicle = inquiry.vehicle
         return render(
             request,
@@ -145,14 +121,8 @@ def contact_page(request):
 
 
 def management_destination(user):
-    for permission, route in [
-        ("vehicles.view_vehicle", "dashboard"),
-        ("vehicles.view_accessory", "management_accessories"),
-        ("vehicles.view_newsarticle", "management_news"),
-        ("vehicles.change_homepage", "homepage_edit"),
-    ]:
-        if user.has_perm(permission):
-            return route
+    if can_manage(user):
+        return 'dashboard'
     raise PermissionDenied
 
 
@@ -171,25 +141,11 @@ def admin_login(request):
 
 
 @login_required(login_url="login")
+@require_POST
 def admin_logout(request):
     logout(request)
     messages.success(request, "Sie wurden erfolgreich abgemeldet.")
     return redirect("login")
-
-
-@login_required(login_url="login")
-@permission_required(('vehicles.view_vehicle',), raise_exception=True)
-def dashboard(request):
-    vehicles = Vehicle.objects.all()
-    stats = {
-        "total": vehicles.count(),
-        "available": vehicles.filter(status=VehicleStatus.AVAILABLE).count(),
-        "in_preparation": vehicles.filter(status=VehicleStatus.IN_PREPARATION).count(),
-        "reserved": vehicles.filter(status=VehicleStatus.RESERVED).count(),
-        "sold": vehicles.filter(status=VehicleStatus.SOLD).count(),
-    }
-    recent = vehicles.order_by("-updated_at")[:5]
-    return render(request, "admin/dashboard.html", {"stats": stats, "recent_vehicles": recent})
 
 
 @login_required(login_url="login")

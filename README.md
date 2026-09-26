@@ -73,7 +73,7 @@ Die kundengerechte Verwaltung bietet drei zusätzliche Bereiche:
   Entwürfe sind nicht öffentlich. Gespeicherte Beiträge können vor der Freigabe
   in einer geschützten Vorschau geprüft werden. Veröffentlichte Beiträge erscheinen
   unter `/neuigkeiten/` und die letzten drei zusätzlich auf der Startseite.
-- `/verwaltung/website/`: vorhandene Startseitentexte, Bildkacheln und bis zu fünf Sliderbilder, Kontaktdaten und Öffnungszeiten. Zuerst **Entwurf speichern**, dann
+- `/verwaltung/website/`: vorhandene Startseitentexte, Bildkacheln, Kontaktdaten und Öffnungszeiten. Zuerst **Entwurf speichern**, dann
   **Gespeicherten Entwurf ansehen**, schließlich **Auf Website veröffentlichen**.
   Veraltete Bearbeitungsstände werden beim Speichern zurückgewiesen.
 
@@ -94,16 +94,85 @@ Uploads werden in `MEDIA_ROOT` gespeichert und müssen zusammen mit der Datenban
 gesichert werden. Bilder dürfen JPEG, PNG oder WebP sein, maximal 10 MB pro Datei.
 
 
-### Startseiten-Slider
+### Zentrale Verwaltung und Homepage-Slider
 
-Unter **Website-Inhalte → Startseiten-Slider** stehen die Bildplätze 1–5 zur
-Verfügung. Bild 1 ist das Startbild; bei leerem ersten Platz wird das bestehende
-Originalbild verwendet. Zusätzliche Plätze sind optional und lassen sich über
-**Bild entfernen** leeren. Die Reihenfolge entspricht den Bildplatznummern.
-Entwurf, Vorschau und Veröffentlichung gelten auch für die Sliderbilder.
+Der zentrale Einstieg ist `/verwaltung/`. Das Dashboard zeigt nur Bereiche,
+für die der angemeldete Benutzer Rechte besitzt. Der technische Django-Admin
+unter `/admin/` bleibt erhalten. Seine Standardtemplates werden nicht mehr durch
+das eigene Verwaltungs-Layout überschrieben.
 
-Der Slider zeigt Bilder proportional und vollständig (ohne Beschnitt), mit
-maximal 380 Pixel Höhe am Desktop bzw. 300 Pixel mobil. Der Text liegt außerhalb
-der Bildfläche. Bei mehreren Bildern erscheinen Vor-/Zurück-Buttons; sie sind
-auch per Tastatur bedienbar. Ab zwei Bildern wechselt der Slider alle sechs Sekunden. Eine Pause-Taste stoppt den Wechsel; bei Mausberührung, Tastaturfokus und in ausgeblendeten Tabs pausiert er ebenfalls. Bei reduzierter Bewegung startet er pausiert. Ohne
-JavaScript bleibt das erste Bild sichtbar.
+Unter **Homepage → Slider** (`/verwaltung/homepage/slider/`) lassen sich Slides
+mit Bild, optionalem Titel/Untertitel, Bildbeschreibung und optionalem Button
+anlegen, bearbeiten, sortieren, aktivieren und löschen. Aktive Slides sind nach
+dem Speichern sofort öffentlich. Kleine Reihenfolgen erscheinen zuerst, bei
+Gleichstand entscheidet die ID. Es gibt keine zweite Liste von Bildplätzen in
+Website-Inhalte. Dort bleiben die Ersatztexte für den Fall ohne aktive Slides.
+
+Die Bildfläche ist auf Desktop maximal 520 px, mobil 280–340 px hoch.
+Der Crossfade dauert 600 ms, unabhängig von der eingestellten Standzeit.
+Gespeicherte Änderungen erreichen offene Homepage-Tabs im selben Browser
+über eine Storage-Nachricht; andere Browser lesen sie beim nächsten Seitenaufruf.
+
+Unter **Homepage → Slider-Einstellungen** kann die Wechselgeschwindigkeit von
+2 bis 15 Sekunden eingestellt werden; Standard sind 4 Sekunden. Kein sichtbarer
+Pause-/Play-Button. Tastaturfokus, Touch-Gesten und unsichtbare Tabs pausieren
+Autoplay. Maus-Hover und Mausklicks auf die Navigation halten es nicht dauerhaft an. Bei reduzierter Bewegung startet kein Autoplay. Pfeile, Dots und
+Touch-Swipe bleiben bedienbar; ohne JavaScript bleibt der erste Slide sichtbar.
+Bei nur einem Slide werden Navigation und Autoplay weggelassen.
+
+Die vorhandenen Bilder werden von Migration 0004 als Slides übernommen:
+veröffentlichte Uploads aktiv, nur im Entwurf gespeicherte Uploads inaktiv.
+Originaldateien und alte JSON-Daten werden nicht gelöscht. Die neuen Slides
+sind die einzige operative Datenquelle. Die eigene Verwaltung und Django-Admin
+verwenden dasselbe Model/Formular. Dateien bleiben beim Löschen eines Slides
+im Speicher erhalten, weil übernommene Bilder noch von archivierten Inhalten
+referenziert werden können.
+
+### Kundenanfragen und Antworten
+
+`/verwaltung/anfragen/` bietet Suche, Statusfilter, Datumsortierung und Seiten.
+Die Originalnachricht ist schreibgeschützt, auch im technischen Admin. Beim Öffnen
+wird eine neue Anfrage für Mitarbeiter mit Änderungsrecht als gelesen markiert.
+Die Statuswerte lauten Neu, Gelesen, In Bearbeitung, Beantwortet und Erledigt.
+Bestehende Anfragen erhalten beim Upgrade zunächst Neu, weil bisher kein
+Lesestatus gespeichert wurde. Der ursprüngliche Fahrzeugbetreff wird archiviert.
+
+Unter **Antworten** sind Empfänger und Betreff vorgegeben. Jede Antwort wird
+als eigener Datensatz mit Text, Mitarbeiter und Versandstatus gespeichert.
+Erfolgreiche SMTP-Übergabe markiert die Anfrage als Beantwortet; sie ist kein
+Nachweis einer tatsächlichen Zustellung beim Empfänger. Fehler erhalten den Text
+im Verlauf und zeigen eine verständliche Meldung. Doppeltes Absenden desselben
+Formulars erzeugt keine zweite Mail. Nach Prozessabbruch kann der Status
+„Ergebnis offen“ verbleiben; vor erneutem Versand den Mailserver prüfen.
+Dies ist ein ausgehender Antwortverlauf, keine Synchronisation eingehender
+E-Mails aus einem Postfach.
+
+Die vorhandene Django-Mailkonfiguration wird verwendet. Konfigurationsschlüssel
+stehen in `backend/.env.example`. Ohne SMTP bleibt Konsolen-/Testbetrieb sichtbar;
+Antworten werden dann nicht als erfolgreich versendet oder beantwortet markiert.
+SMTP-Geheimnisse ausschließlich in der Serverumgebung bzw. `.env` setzen.
+Benachrichtigungsfehler zerstören keine gespeicherte Kontaktanfrage.
+
+Zusätzliche Rechte für Mitarbeiter (nicht zwingend `is_staff`):
+- Kundenanfragen lesen: `view_customerinquiry`.
+- Status ändern: zusätzlich `change_customerinquiry`.
+- Antworten senden: zusätzlich `add_inquiryreply`.
+- Slider: `view_heroslide` und je nach Aufgabe `add/change/delete_heroslide`.
+- Wechselgeschwindigkeit: `change_slider_settings`.
+
+Superuser besitzen alle Rechte. Für `/admin/` ist zusätzlich der Django-Staffstatus
+notwendig. Abmelden und alle schreibenden Aktionen verwenden POST und CSRF.
+
+Nach Übernahme der Änderungen:
+
+```sh
+cd backend
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py check
+.venv/bin/python manage.py test --noinput
+node --test tests_js/*.test.cjs
+```
+
+Datenbank und MEDIA_ROOT vor Deployments gemeinsam sichern. Im Produktivbetrieb
+müssen Medien/Static Files vom Webserver bzw. Storage ausgeliefert werden;
+Djangos Entwicklungsserver ist dafür nicht vorgesehen.

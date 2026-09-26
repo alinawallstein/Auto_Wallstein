@@ -1,0 +1,25 @@
+Guten Tag {{ inquiry.name }},
+
+vielen Dank für Ihr Interesse an unserem {{ vehicle_name }}.
+
+Ihre Anfrage ist bei uns eingegangen. Wir prüfen Ihr Anliegen persönlich und melden uns schnellstmöglich bei Ihnen.
+{% if vehicle %}
+Fahrzeug: {{ vehicle_name }}
+Preis: {{ price }}
+Erstzulassung: {{ registration }}
+Kilometerstand: {{ mileage }} km
+Leistung: {{ power }}
+Kraftstoff: {{ fuel }}
+Getriebe: {{ transmission }}
+{% if vehicle_url %}Fahrzeug ansehen: {{ vehicle_url }}{% endif %}
+{% endif %}
+Im Anhang finden Sie bereits das aktuelle Fahrzeugexposé mit weiteren Informationen und Bildern.
+
+Für Fragen oder zur Vereinbarung eines Besichtigungstermins stehen wir Ihnen gerne zur Verfügung.
+
+Freundliche Grüße
+Ihr Auto-Wallstein-Team
+
+{{ contact_name }}
+{{ contact_address }}
+{{ contact_phone_display }} · {{ contact_email }}

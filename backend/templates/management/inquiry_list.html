@@ -1,0 +1,23 @@
+{% extends 'management/base.html' %}
+{% block title %}Kundenanfragen | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <h1>Kundenanfragen</h1>
+    <p>{{ page_obj.paginator.count }} Anfragen · Originalnachrichten bleiben unverändert erhalten.</p>
+    <form method="get" class="row g-3 mb-4">
+        {% for field in form %}<div class="col-md-4"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}
+        <div class="d-flex gap-3"><button class="btn btn-primary" type="submit">Anzeigen</button><a class="btn btn-outline-secondary" href="{% url 'management_inquiries' %}">Zurücksetzen</a></div>
+    </form>
+    <div class="table-responsive"><table class="table management-table">
+        <caption>Kundenanfragen – Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}</caption>
+        <thead><tr><th scope="col">Eingang</th><th scope="col">Kunde</th><th scope="col">Betreff / Fahrzeug</th><th scope="col">Status</th><th scope="col">Letzte Antwort</th><th scope="col">Aktion</th></tr></thead>
+        <tbody>{% for inquiry in page_obj %}<tr{% if inquiry.status == 'new' %} class="inquiry-new"{% endif %}>
+            <td>{{ inquiry.created_at|date:'d.m.Y H:i' }}</td><td>{{ inquiry.name }}<br><small>{{ inquiry.email }}</small></td>
+            <td>{{ inquiry.display_subject }}</td><td>{{ inquiry.get_status_display }}</td>
+            <td>{% if inquiry.latest_reply_status == 'sent' %}An Mailserver übergeben{% elif inquiry.latest_reply_status == 'failed' %}Fehlgeschlagen{% elif inquiry.latest_reply_status == 'sending' %}Ergebnis offen{% elif inquiry.latest_reply_status == 'test' %}Nur Testbetrieb{% else %}Noch keine{% endif %}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'inquiry_detail' inquiry.pk %}">Öffnen</a></td>
+        </tr>{% empty %}<tr><td colspan="6">Keine passenden Anfragen vorhanden.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% include 'management/pagination.html' %}
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'management/base.html' %}
+{% block title %}Slide bearbeiten | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <a href="{% url 'management_slides' %}">← Alle Slides</a>
+    <h1 class="mt-3">{% if slide.pk %}Slide bearbeiten{% else %}Slide hinzufügen{% endif %}</h1>
+    {% if slide.image %}<img class="content-image-preview" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}">{% endif %}
+    <form method="post" enctype="multipart/form-data" data-unsaved-form{% if form.errors %} data-unsaved-errors{% endif %} novalidate>
+        {% csrf_token %}{{ form.non_field_errors }}
+        <div class="row">{% for field in form %}<div class="col-lg-8 mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="small text-muted">{{ field.help_text }}</p>{% endif %}{{ field.errors }}</div>{% endfor %}</div>
+        <div class="vehicle-save-bar"><button type="submit" class="btn btn-primary">Slide speichern</button><a href="{% url 'home' %}">Website ansehen</a><span data-unsaved-status role="status"></span></div>
+    </form>
+</section>
+{% endblock %}

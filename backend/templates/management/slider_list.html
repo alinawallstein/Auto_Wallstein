@@ -1,0 +1,18 @@
+{% extends 'management/base.html' %}
+{% block title %}Homepage-Slider | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between gap-3 mb-3"><h1>Homepage · Slider</h1>{% if perms.vehicles.add_heroslide %}<a class="btn btn-primary align-self-start" href="{% url 'slide_create' %}">Slide hinzufügen</a>{% endif %}</div>
+    <p>Aktive Slides sind sofort öffentlich sichtbar. Kleinere Reihenfolgen erscheinen zuerst. Ohne aktive Slides erscheint der Ersatzbereich der Startseite.</p>
+    {% if perms.vehicles.change_slider_settings %}<p><a href="{% url 'slider_settings' %}">Wechselgeschwindigkeit einstellen</a></p>{% endif %}
+    <div class="table-responsive"><table class="table management-table">
+        <thead><tr><th scope="col">Bild</th><th scope="col">Titel</th><th scope="col">Reihenfolge</th><th scope="col">Website</th><th scope="col">Aktionen</th></tr></thead>
+        <tbody>{% for slide in page_obj %}<tr>
+            <td>{% if slide.image %}<img class="management-slide-preview" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="160" height="100" loading="lazy">{% endif %}</td>
+            <td>{{ slide.title|default:'Ohne Titel' }}</td><td>{{ slide.sort_order }}</td><td>{% if slide.is_active %}Aktiv{% else %}Inaktiv{% endif %}</td>
+            <td><div class="management-actions">{% if perms.vehicles.change_heroslide %}<a href="{% url 'slide_edit' slide.pk %}">Bearbeiten</a>{% endif %}{% if perms.vehicles.delete_heroslide %}<a href="{% url 'slide_delete' slide.pk %}">Löschen</a>{% endif %}</div></td>
+        </tr>{% empty %}<tr><td colspan="5">Noch keine Slides angelegt.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% include 'management/pagination.html' %}
+</section>
+{% endblock %}

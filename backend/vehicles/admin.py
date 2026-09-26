@@ -1,9 +1,8 @@
-from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .catalog_forms import validate_photo
-from .models import CustomerInquiry, HeroSlide, Vehicle, VehicleAIText, VehicleImage
+from .slider_forms import HeroSlideForm
+from .models import CustomerInquiry, HeroSlide, InquiryReply, Vehicle, VehicleAIText, VehicleImage
 
 
 class VehicleImageInline(admin.TabularInline):
@@ -30,8 +29,13 @@ class VehicleAdmin(admin.ModelAdmin):
 
 @admin.register(CustomerInquiry)
 class CustomerInquiryAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "inquiry_type", "vehicle", "created_at")
-    list_filter = ("inquiry_type", "created_at")
+    list_display = ("name", "email", "inquiry_type", "vehicle", "status", "created_at")
+    list_filter = ("status", "inquiry_type", "created_at")
+    readonly_fields = ("name", "email", "phone", "message", "inquiry_type", "subject", "vehicle", "created_at", "updated_at")
+
+    def has_add_permission(self, request):
+        return False
+
     search_fields = ("name", "email", "vehicle__brand", "vehicle__model")
 
 
@@ -45,19 +49,9 @@ class VehicleAITextAdmin(admin.ModelAdmin):
     list_display = ("vehicle", "text_type", "created_at")
 
 
-class HeroSlideAdminForm(forms.ModelForm):
-    image = forms.ImageField(label='Bild', validators=[validate_photo],
-                             help_text='JPEG, PNG oder WebP, höchstens 10 MB. Querformat empfohlen.')
-
-    class Meta:
-        model = HeroSlide
-        fields = '__all__'
-        widgets = {'subtitle': forms.Textarea(attrs={'rows': 3})}
-
-
 @admin.register(HeroSlide)
 class HeroSlideAdmin(admin.ModelAdmin):
-    form = HeroSlideAdminForm
+    form = HeroSlideForm
     list_display = ('__str__', 'image_preview', 'sort_order', 'is_active', 'updated_at')
     list_editable = ('sort_order', 'is_active')
     list_filter = ('is_active',)
@@ -80,3 +74,20 @@ class HeroSlideAdmin(admin.ModelAdmin):
 
     class Media:
         css = {'all': ('css/hero-admin.css',)}
+
+
+@admin.register(InquiryReply)
+class InquiryReplyAdmin(admin.ModelAdmin):
+    list_display = ('inquiry', 'recipient', 'status', 'created_at', 'sent_at', 'author')
+    list_filter = ('status',)
+    search_fields = ('recipient', 'subject')
+    readonly_fields = ('inquiry', 'body', 'recipient', 'subject', 'status', 'request_id', 'author', 'created_at', 'sent_at')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

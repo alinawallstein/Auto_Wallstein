@@ -1,0 +1,46 @@
+{% extends 'management/base.html' %}
+{% block title %}Kundenanfrage | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4">
+    <a href="{% url 'management_inquiries' %}">← Alle Kundenanfragen</a>
+    <h1 class="h3 mt-3">{{ inquiry.display_subject }}</h1>
+    <p>{{ inquiry.created_at|date:'d.m.Y H:i' }} · {{ inquiry.get_status_display }}</p>
+    <div class="row g-4">
+        <div class="col-xl-8 inquiry-thread">
+            <article class="card p-4 mb-3"><h2 class="h5">Originalnachricht von {{ inquiry.name }}</h2>
+                <dl class="row mb-3"><dt class="col-sm-3">E-Mail</dt><dd class="col-sm-9">{{ inquiry.email }}</dd>
+                {% if inquiry.phone %}<dt class="col-sm-3">Telefon</dt><dd class="col-sm-9">{{ inquiry.phone }}</dd>{% endif %}
+                {% if inquiry.vehicle %}<dt class="col-sm-3">Fahrzeug</dt><dd class="col-sm-9">{{ inquiry.vehicle.brand }} {{ inquiry.vehicle.model }} · {{ inquiry.vehicle.internal_number }}</dd>{% endif %}</dl>
+                <div class="inquiry-original">{{ inquiry.message }}</div>
+            </article>
+            {% if perms.vehicles.change_customerinquiry and perms.vehicles.add_inquiryreply %}<a class="btn btn-primary mb-4" href="#reply">Antworten</a>{% endif %}
+            <h2 class="h5">Antwortverlauf</h2>
+            {% for reply in replies %}<article class="card p-3 mb-3">
+                <h3 class="h6">Auto Wallstein · {{ reply.author.get_full_name|default:reply.author.username|default:'Ehemaliger Mitarbeiter' }}</h3>
+                <p class="small">{{ reply.created_at|date:'d.m.Y H:i' }} · <strong>{{ reply.get_status_display }}</strong>{% if reply.sent_at %}<br>Versand: {{ reply.sent_at|date:'d.m.Y H:i' }}{% endif %}<br>An: {{ reply.recipient }}<br>{{ reply.subject }}</p>
+                <div class="inquiry-reply">{{ reply.body }}</div>
+                {% if reply.status == 'sending' %}<p class="mt-3">Der Versand wurde begonnen; das Ergebnis ist noch offen. Bitte vor erneutem Versand den Mailserver prüfen.</p>{% endif %}
+            </article>{% empty %}<p>Noch keine Mitarbeiterantwort vorhanden.</p>{% endfor %}
+            {% if perms.vehicles.change_customerinquiry and perms.vehicles.add_inquiryreply %}
+            <section id="reply" class="card p-4 mt-4"><h2 class="h5">Antworten</h2>
+                {% if mail_test_mode %}<p class="alert alert-warning">Testbetrieb: E-Mails werden derzeit nur protokolliert. Für echten Versand muss SMTP in der Serverkonfiguration eingerichtet werden.</p>{% endif %}
+                <p><strong>An:</strong> {{ inquiry.email }}<br><strong>Betreff:</strong> Re: {{ inquiry.display_subject }}</p>
+                <form method="post" action="{% url 'inquiry_reply' inquiry.pk %}" data-unsaved-form{% if reply_form.errors %} data-unsaved-errors{% endif %}>
+                    {% csrf_token %}{{ reply_form.request_id }}{{ reply_form.request_id.errors }}{{ reply_form.non_field_errors }}
+                    <label class="form-label" for="{{ reply_form.body.id_for_label }}">{{ reply_form.body.label }}</label>
+                    {{ reply_form.body }}{{ reply_form.body.errors }}
+                    <button class="btn btn-primary mt-3" type="submit">{% if mail_test_mode %}Testantwort protokollieren{% else %}Antwort per E-Mail senden{% endif %}</button>
+                    <span data-unsaved-status role="status"></span>
+                </form>
+            </section>{% endif %}
+        </div>
+        {% if perms.vehicles.change_customerinquiry %}<aside class="col-xl-4"><div class="card p-3">
+            <h2 class="h5">Bearbeitungsstatus</h2>
+            <form method="post" action="{% url 'inquiry_status' inquiry.pk %}">
+                {% csrf_token %}{{ status_form.as_p }}<button class="btn btn-outline-primary" type="submit">Status speichern</button>
+            </form>
+            <p class="small text-muted mt-3 mb-0">Beim Öffnen wird eine neue Anfrage als gelesen markiert. Originalnachricht und Kontaktdaten sind schreibgeschützt.</p>
+        </div></aside>{% endif %}
+    </div>
+</section>
+{% endblock %}

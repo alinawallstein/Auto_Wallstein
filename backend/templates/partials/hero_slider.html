@@ -1,4 +1,4 @@
-<section class="hero-slider" data-hero-slider aria-label="Aktuelles von Auto Wallstein" aria-roledescription="Karussell">
+<section class="hero-slider" data-hero-slider data-interval="{{ site_content.slider_interval }}" aria-label="Aktuelles von Auto Wallstein" aria-roledescription="Karussell">
     <div class="hero-slider__stage">
         {% for slide in hero_slides %}
             <article class="hero-slider__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide id="hero-slide-{{ forloop.counter }}" aria-roledescription="Folie" aria-label="{{ forloop.counter }} von {{ hero_slides|length }}"{% if not forloop.first %} hidden{% endif %}>
@@ -18,7 +18,6 @@
                 {% for slide in hero_slides %}<button type="button" class="hero-slider__dot" data-hero-dot aria-label="Slide {{ forloop.counter }} anzeigen" aria-controls="hero-slide-{{ forloop.counter }}"{% if forloop.first %} aria-current="true"{% endif %}><span></span></button>{% endfor %}
             </div>
             <button type="button" data-hero-next aria-label="Nächster Slide">→</button>
-            <button type="button" class="hero-slider__toggle" data-hero-toggle>Pause</button>
             <p class="hero-slider__sr-only" data-hero-status role="status" aria-live="off" aria-atomic="true">Slide 1 von {{ hero_slides|length }}</p>
         </div>
     {% endif %}

@@ -176,7 +176,7 @@ class ContentAccessTests(VehicleTestCase):
         user = get_user_model().objects.create_user('content_editor', password='test-editor-password')
         user.user_permissions.add(Permission.objects.get(codename='change_homepage'))
         response = self.client.post(reverse('login'), {'username': 'content_editor', 'password': 'test-editor-password'}, follow=True)
-        self.assertRedirects(response, reverse('homepage_edit'))
+        self.assertRedirects(response, reverse('dashboard'))
         self.assertContains(response, 'Website-Inhalte')
         self.assertNotContains(response, 'href="' + reverse('management_vehicles') + '"')
 

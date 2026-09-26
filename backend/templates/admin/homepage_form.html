@@ -3,8 +3,8 @@
 {% block content %}
 <section class="container py-4">
     <h1>Website-Inhalte</h1>
-    <p>Sliderbilder und deren Texte werden jetzt separat im Django-Admin verwaltet. Aktive Slides sind dort nach dem Speichern sofort öffentlich. Die Ersatztexte im Startbereich erscheinen, wenn kein Slide aktiv ist.</p>
-    {% if user.is_staff and perms.vehicles.view_heroslide %}<p><a class="btn btn-outline-primary" href="{% url 'admin:vehicles_heroslide_changelist' %}">Startseiten-Slides verwalten</a></p>{% endif %}
+    <p>Sliderbilder und deren Texte werden jetzt separat unter Homepage → Slider verwaltet. Aktive Slides sind nach dem Speichern sofort öffentlich. Die Ersatztexte im Startbereich erscheinen, wenn kein Slide aktiv ist.</p>
+    {% if perms.vehicles.view_heroslide %}<p><a class="btn btn-outline-primary" href="{% url 'management_slides' %}">Startseiten-Slides verwalten</a></p>{% endif %}
     <p>Bearbeiten Sie die Startseite abschnittsweise. Entwürfe sind nicht öffentlich. Die Vorschau zeigt den zuletzt gespeicherten Entwurf.</p>
     <p>Kontaktdaten werden auch in Navigation, Fußbereich und Kontaktinformationen übernommen. Layout, rechtliche Seiten und technische Verknüpfungen werden hier nicht verändert.</p>
     <p><a href="{% url 'homepage_preview' %}">Gespeicherten Entwurf ansehen</a> · <a href="{% url 'home' %}">Öffentliche Startseite</a></p>

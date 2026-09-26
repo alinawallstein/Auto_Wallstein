@@ -1,0 +1,6 @@
+{% extends 'management/base.html' %}
+{% block content %}
+<section class="container py-4"><h1>Slide löschen?</h1><p>„{{ slide }}“ wird aus dem Slider entfernt.</p>
+    <form method="post">{% csrf_token %}<button class="btn btn-danger" type="submit">Slide endgültig löschen</button> <a class="btn btn-outline-secondary" href="{% url 'management_slides' %}">Abbrechen</a></form>
+</section>
+{% endblock %}

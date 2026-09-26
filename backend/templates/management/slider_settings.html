@@ -1,0 +1,15 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% block title %}Slider-Einstellungen | Auto Wallstein{% endblock %}
+{% block content %}
+<section class="container py-4"><h1>Slider-Einstellungen</h1>
+    <p>Die Standzeit bestimmt, wie lange das Bild vor dem nächsten Übergang sichtbar bleibt. Der kurze Übergang dauert unabhängig davon 0,6 Sekunden.</p>
+    <p>Die Wechselgeschwindigkeit gilt für alle aktiven Slides. Bei nur einem Slide findet kein automatischer Wechsel statt.</p>
+    <form method="post" class="card p-4" data-unsaved-form{% if form.errors %} data-unsaved-errors{% endif %}>
+        {% csrf_token %}{{ form.as_p }}<div><button class="btn btn-primary" type="submit">Einstellungen speichern</button> <span data-unsaved-status role="status"></span></div>
+    </form>
+    {% if perms.vehicles.view_heroslide %}<p class="mt-3"><a href="{% url 'management_slides' %}">Sliderbilder verwalten</a></p>{% endif %}
+    {% if not form.is_bound %}<span hidden data-slider-saved-interval="{{ form.instance.slider_interval }}"></span>
+    <script src="{% static 'js/slider-settings.js' %}" defer></script>{% endif %}
+</section>
+{% endblock %}

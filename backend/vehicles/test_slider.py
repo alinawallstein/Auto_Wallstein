@@ -10,7 +10,7 @@ from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
-from .admin import HeroSlideAdminForm
+from .slider_forms import HeroSlideForm
 from .content import homepage_content
 from .models import HeroSlide, Homepage, HomepageImage
 from .slider import homepage_slides
@@ -125,12 +125,12 @@ class HeroSlideTests(VehicleTestCase):
 
     def test_invalid_uploads_are_rejected(self):
         for upload in (SimpleUploadedFile('fake.png', b'not an image'),):
-            form = HeroSlideAdminForm(data={'sort_order': 0}, files={'image': upload})
+            form = HeroSlideForm(data={'sort_order': 0}, files={'image': upload})
             self.assertFalse(form.is_valid())
             self.assertIn('image', form.errors)
         upload = self.image_upload()
         upload.size = 11 * 1024 * 1024
-        form = HeroSlideAdminForm(data={'sort_order': 0}, files={'image': upload})
+        form = HeroSlideForm(data={'sort_order': 0}, files={'image': upload})
         self.assertFalse(form.is_valid())
         self.assertIn('image', form.errors)
 
@@ -144,7 +144,7 @@ class HeroSlideTests(VehicleTestCase):
     def test_old_editor_has_no_competing_slider_uploads(self):
         self.login_admin()
         response = self.client.get(reverse('homepage_edit'))
-        self.assertContains(response, reverse('admin:vehicles_heroslide_changelist'))
+        self.assertContains(response, reverse('management_slides'))
         self.assertNotIn('hero_image', response.context['form'].fields)
 
     def test_data_import_preserves_files_and_draft_visibility(self):

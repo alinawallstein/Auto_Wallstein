@@ -1,7 +1,7 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ site_content.page_title }}{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-4"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-4"><script src="{% static 'js/hero-slider.js' %}?v=slider-4" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-6"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-6"><script src="{% static 'js/hero-slider.js' %}?v=slider-6" defer></script>{% endblock %}
 {% block content %}
     {% if content_preview %}<aside class="notice">Entwurfsvorschau – nicht öffentlich. <a href="{% url 'homepage_edit' %}">Zur Bearbeitung</a></aside>{% endif %}
     <h1 class="hero-slider__sr-only">{{ site_content.hero_title }}</h1>

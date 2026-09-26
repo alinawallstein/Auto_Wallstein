@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from django.conf import settings
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+import uuid
 from django.utils import timezone
 
 from .slider_validation import validate_slide_link
@@ -80,7 +82,17 @@ class VehicleImage(models.Model):
         return f"{self.vehicle} - Bild {self.sort_order}"
 
 
+class InquiryStatus(models.TextChoices):
+    NEW = 'new', 'Neu'
+    READ = 'read', 'Gelesen'
+    IN_PROGRESS = 'in_progress', 'In Bearbeitung'
+    ANSWERED = 'answered', 'Beantwortet'
+    DONE = 'done', 'Erledigt'
+
+
 class CustomerInquiry(models.Model):
+    status = models.CharField('Status', max_length=20, choices=InquiryStatus.choices, default=InquiryStatus.NEW, db_index=True)
+    subject = models.CharField('Betreff', max_length=300, blank=True, editable=False)
     inquiry_type = models.CharField(
         max_length=30,
         choices=[("vehicle_request", "Fahrzeug anfragen"), ("test_drive", "Probefahrt anfragen")],
@@ -101,6 +113,13 @@ class CustomerInquiry(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} - {self.inquiry_type}"
+
+    @property
+    def display_subject(self):
+        if self.subject:
+            return self.subject
+        vehicle = f'{self.vehicle.brand} {self.vehicle.model}' if self.vehicle else ''
+        return f'{self.get_inquiry_type_display()}{": " + vehicle if vehicle else ""}'[:300]
 
 
 class VehicleAIText(models.Model):
@@ -171,6 +190,9 @@ class AccessoryImage(models.Model):
 
 
 class Homepage(models.Model):
+    slider_interval = models.PositiveSmallIntegerField('Wechselgeschwindigkeit in Sekunden', default=4,
+        validators=[MinValueValidator(2), MaxValueValidator(15)],
+        help_text='Zwischen 2 und 15 Sekunden. Änderungen gelten sofort für den Slider.')
     id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
     draft = models.JSONField(default=dict)
     published = models.JSONField(default=dict)
@@ -180,7 +202,9 @@ class Homepage(models.Model):
     class Meta:
         verbose_name = 'Startseite'
         verbose_name_plural = 'Startseite'
-        constraints = [models.CheckConstraint(condition=models.Q(id=1), name='homepage_singleton')]
+        constraints = [models.CheckConstraint(condition=models.Q(id=1), name='homepage_singleton'),
+                       models.CheckConstraint(condition=models.Q(slider_interval__gte=2, slider_interval__lte=15), name='homepage_slider_interval_range')]
+        permissions = [('change_slider_settings', 'Kann Slider-Einstellungen ändern')]
 
 
 class HomepageImage(models.Model):
@@ -237,3 +261,29 @@ class HeroSlide(models.Model):
         super().clean()
         if bool(self.button_text) != bool(self.button_url):
             raise ValidationError('Für einen Button bitte Text und Link ausfüllen oder beide Felder leer lassen.')
+
+
+class InquiryReply(models.Model):
+    class Status(models.TextChoices):
+        SENDING = 'sending', 'Versand läuft / Ergebnis offen'
+        SENT = 'sent', 'An Mailserver übergeben'
+        FAILED = 'failed', 'Versand fehlgeschlagen'
+        TEST = 'test', 'Nur im Testbetrieb protokolliert'
+
+    inquiry = models.ForeignKey(CustomerInquiry, on_delete=models.CASCADE, related_name='replies')
+    body = models.TextField('Antworttext', max_length=10000)
+    recipient = models.EmailField('Empfänger', editable=False)
+    subject = models.CharField('Betreff', max_length=320, editable=False)
+    status = models.CharField('Versandstatus', max_length=16, choices=Status.choices, default=Status.SENDING)
+    request_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField('Erstellt', auto_now_add=True)
+    sent_at = models.DateTimeField('Versanddatum', null=True, blank=True)
+
+    class Meta:
+        ordering = ['created_at', 'pk']
+        verbose_name = 'Antwort auf Kundenanfrage'
+        verbose_name_plural = 'Antwortverlauf'
+
+    def __str__(self):
+        return f'Antwort zu Anfrage {self.inquiry_id}'

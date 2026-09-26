@@ -1,8 +1,17 @@
 from django.urls import path
 
-from . import views, catalog_views, content_views
+from . import views, catalog_views, content_views, inquiry_views, slider_views, management
 
 urlpatterns = [
+    path('anfragen/', inquiry_views.inquiries, name='management_inquiries'),
+    path('anfragen/<int:pk>/', inquiry_views.inquiry_detail, name='inquiry_detail'),
+    path('anfragen/<int:pk>/status/', inquiry_views.inquiry_status, name='inquiry_status'),
+    path('anfragen/<int:pk>/antworten/', inquiry_views.inquiry_reply, name='inquiry_reply'),
+    path('homepage/slider/', slider_views.slides, name='management_slides'),
+    path('homepage/slider/neu/', slider_views.slide_edit, name='slide_create'),
+    path('homepage/slider/<int:pk>/', slider_views.slide_edit, name='slide_edit'),
+    path('homepage/slider/<int:pk>/loeschen/', slider_views.slide_delete, name='slide_delete'),
+    path('homepage/slider/einstellungen/', slider_views.slider_settings, name='slider_settings'),
     path("zubehoer/<int:pk>/vorschau/", catalog_views.accessory_preview, name="accessory_preview"),
     path("neuigkeiten/<int:pk>/vorschau/", catalog_views.news_preview, name="news_preview"),
     path("zubehoer/", catalog_views.accessories, name="management_accessories"),
@@ -15,7 +24,7 @@ urlpatterns = [
     path("neuigkeiten/<int:pk>/loeschen/", catalog_views.news_delete, name="news_delete"),
     path("website/", content_views.homepage_edit, name="homepage_edit"),
     path("website/vorschau/", content_views.homepage_preview, name="homepage_preview"),
-    path("", views.dashboard, name="dashboard"),
+    path("", management.dashboard, name="dashboard"),
     path("anmelden/", views.admin_login, name="login"),
     path("abmelden/", views.admin_logout, name="logout"),
     path("fahrzeuge/", views.management_vehicles, name="management_vehicles"),

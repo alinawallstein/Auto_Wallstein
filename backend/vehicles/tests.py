@@ -316,9 +316,30 @@ class InquiryRegressionTests(VehicleTestCase):
         response = self.client.post(reverse("kontakt"), self.payload())
         self.assertContains(response, "Vielen Dank")
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[0].subject, "Neue Kundenanfrage: Probefahrt anfragen")
-        self.assertIn("erika@example.com", mail.outbox[1].to)
-        self.assertIn("wir haben ihre e-mail erhalten", mail.outbox[1].body.lower())
+        notification = next(message for message in mail.outbox if message.subject.startswith("Neue Kundenanfrage:"))
+        confirmation = next(message for message in mail.outbox if message.subject == "Ihre Anfrage bei Auto Wallstein")
+        self.assertEqual(notification.subject, "Neue Kundenanfrage: Probefahrt anfragen")
+        self.assertIn("erika@example.com", confirmation.to)
+        self.assertIn("Ihre Anfrage ist bei uns eingegangen", confirmation.body)
+        self.assertTrue(confirmation.alternatives)
+        self.assertEqual(confirmation.attachments[0][2], "application/pdf")
+        self.assertTrue(confirmation.attachments[0][0].startswith("Auto-Wallstein_Expose_BMW_3er"))
+
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_confirmation_without_vehicle_has_no_expose_and_missing_optional_data_is_safe(self):
+        response = self.client.post(reverse("kontakt"), self.payload(vehicle="", phone=""))
+        self.assertContains(response, "Vielen Dank")
+        confirmation = next(message for message in mail.outbox if message.subject == "Ihre Anfrage bei Auto Wallstein")
+        self.assertEqual(confirmation.attachments, [])
+        self.assertNotIn("None", confirmation.body)
+
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_smtp_failure_does_not_lose_saved_inquiry(self):
+        from unittest.mock import patch
+        from smtplib import SMTPException
+        with patch("vehicles.inquiry_mail.EmailMultiAlternatives.send", side_effect=SMTPException("not logged")):
+            self.client.post(reverse("kontakt"), self.payload())
+        self.assertTrue(CustomerInquiry.objects.filter(email="erika@example.com").exists())
 
     def test_general_contact_without_vehicle(self):
         response = self.client.post(reverse("kontakt"), self.payload(vehicle="", inquiry_type="vehicle_request"))
