@@ -17,6 +17,6 @@
             <li>{{ vehicle.power_kw }} kW / {{ vehicle.power_ps }} PS</li>
         </ul>
         <p class="price">{{ vehicle.sale_price|floatformat:"2g" }} €</p>
-        <a class="aw-button aw-button--outline" href="{% url 'vehicle_detail' vehicle.pk %}">Details ansehen</a>
+        <a class="aw-button aw-button--outline" href="{% url 'vehicle_detail' vehicle.pk %}#finanzierung">Finanzierung anfragen</a>
     </div>
 </article>
