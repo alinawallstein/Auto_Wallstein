@@ -90,30 +90,27 @@ def build_vehicle_expose(vehicle, *, contact="06104 406770 · verkauf@auto-walls
     pages.extend(prepared[1:])
     if not pages:
         pages = [None]
-    objects = []
-    objects.append(b"<< /Type /Catalog /Pages 2 0 R >>")
+    objects = [b"<< /Type /Catalog /Pages 2 0 R >>", None,
+               b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+               b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>"]
     page_refs = []
     next_id = 5
     logo_size, logo_bytes = _image_bytes(type("Logo", (), {"path": Path(settings.BASE_DIR) / "static" / "images" / "logo.png"})(), 270, 76)
     logo_ref = None
     if logo_bytes:
-        logo_ref = next_id
-        next_id += 1
+        logo_ref = len(objects) + 1
         width, height = logo_size
         objects.append(f"<< /Type /XObject /Subtype /Image /Width {width} /Height {height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length {len(logo_bytes)} >>\nstream\n".encode() + logo_bytes + b"\nendstream")
     for index, image in enumerate(pages):
         image_ref = None
         if image:
-            image_ref = next_id
-            next_id += 1
+            image_ref = len(objects) + 1
             (width, height), data = image
             objects.append(f"<< /Type /XObject /Subtype /Image /Width {width} /Height {height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length {len(data)} >>\nstream\n".encode() + data + b"\nendstream")
-        content_ref = next_id
-        next_id += 1
+        content_ref = len(objects) + 1
         content = _page_content(vehicle, (image_ref, image[0]) if image else None, index + 1, len(pages), contact, logo_ref)
         objects.append(f"<< /Length {len(content)} >>\nstream\n".encode() + content + b"\nendstream")
-        page_ref = next_id
-        next_id += 1
+        page_ref = len(objects) + 1
         xobjects = []
         if image_ref:
             xobjects.append(f"/Im{image_ref} {image_ref} 0 R")
@@ -122,10 +119,9 @@ def build_vehicle_expose(vehicle, *, contact="06104 406770 · verkauf@auto-walls
         resources = f"/XObject << {' '.join(xobjects)} >>" if xobjects else ""
         objects.append(f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {PAGE_W} {PAGE_H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> {resources} >> /Contents {content_ref} 0 R >>".encode())
         page_refs.append(page_ref)
-    objects.insert(1, f"<< /Type /Pages /Count {len(page_refs)} /Kids [{''.join(f'{ref} 0 R ' for ref in page_refs)}] >>".encode())
-    objects.insert(2, b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
-    objects.insert(3, b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>")
-    output = BytesIO(b"%PDF-1.4\n")
+    objects[1] = f"<< /Type /Pages /Count {len(page_refs)} /Kids [{''.join(f'{ref} 0 R ' for ref in page_refs)}] >>".encode()
+    output = BytesIO()
+    output.write(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
     offsets = [0]
     for object_id, obj in enumerate(objects, 1):
         offsets.append(output.tell())
