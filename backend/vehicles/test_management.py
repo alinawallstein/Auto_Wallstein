@@ -227,14 +227,26 @@ class InquiryManagementTests(VehicleTestCase):
 class SliderManagementTests(VehicleTestCase):
     def test_upload_edit_delete_and_order(self):
         self.login_admin()
-        data = {'title': 'Erster Slide', 'image': self.image_upload(), 'sort_order': 20, 'is_active': 'on'}
+        data = {'title': 'Erster Slide', 'image': self.image_upload(), 'crop_x': 0, 'crop_y': 0, 'crop_width': 100, 'crop_height': 100, 'image_scale': 1, 'image_offset_x': 0, 'image_offset_y': 0, 'mobile_crop_x': 0, 'mobile_crop_y': 0, 'mobile_crop_width': 100, 'mobile_crop_height': 100, 'mobile_image_scale': 1, 'mobile_image_offset_x': 0, 'mobile_image_offset_y': 0, 'sort_order': 20, 'is_active': 'on'}
         self.assertEqual(self.client.post(reverse('slide_create'), data).status_code, 302)
         slide = HeroSlide.objects.get()
+        editor = self.client.get(reverse('slide_edit', args=[slide.pk]))
+        self.assertContains(editor, 'cropper.min.js')
+        self.assertContains(editor, 'data-crop-prefix="crop"')
+        self.assertContains(editor, 'data-crop-prefix="mobile_crop"')
+        self.assertContains(editor, 'data-editor-zoom', count=2)
+        self.assertContains(editor, 'Bildgröße')
+        self.assertContains(editor, 'data-scale-field="image_scale"')
+        self.assertContains(editor, 'data-scale-field="mobile_image_scale"')
+        self.assertContains(editor, f'name="crop_x" value="{slide.crop_x:.3f}"')
         self.assertContains(self.client.get(reverse('home')), 'Erster Slide')
-        self.client.post(reverse('slide_create'), {'title': 'Zweiter Slide', 'image': self.image_upload(), 'sort_order': 10, 'is_active': 'on'})
+        self.client.post(reverse('slide_create'), {'title': 'Zweiter Slide', 'image': self.image_upload(), 'crop_x': 0, 'crop_y': 0, 'crop_width': 100, 'crop_height': 100, 'image_scale': 1, 'image_offset_x': 0, 'image_offset_y': 0, 'mobile_crop_x': 0, 'mobile_crop_y': 0, 'mobile_crop_width': 100, 'mobile_crop_height': 100, 'mobile_image_scale': 1, 'mobile_image_offset_x': 0, 'mobile_image_offset_y': 0, 'sort_order': 10, 'is_active': 'on'})
         slides = self.client.get(reverse('home')).context['hero_slides']
         self.assertEqual([s['title'] for s in slides], ['Zweiter Slide', 'Erster Slide'])
-        self.client.post(reverse('slide_edit', args=[slide.pk]), {'title': 'Geändert', 'sort_order': 0})
+        self.client.post(reverse('slide_edit', args=[slide.pk]), {'title': 'Geändert', 'crop_x': 0, 'crop_y': 0, 'crop_width': 100, 'crop_height': 100, 'image_scale': 0.8, 'image_offset_x': 4, 'image_offset_y': 0, 'mobile_crop_x': 0, 'mobile_crop_y': 0, 'mobile_crop_width': 100, 'mobile_crop_height': 100, 'mobile_image_scale': 1, 'mobile_image_offset_x': 0, 'mobile_image_offset_y': 0, 'sort_order': 0})
+        slide.refresh_from_db()
+        self.assertEqual(float(slide.image_scale), 0.8)
+        self.assertEqual(float(slide.image_offset_x), 4)
         slide.refresh_from_db()
         self.assertFalse(slide.is_active)
         self.assertTrue(slide.image)

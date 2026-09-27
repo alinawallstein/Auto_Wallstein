@@ -2,7 +2,7 @@
     <div class="hero-slider__stage">
         {% for slide in hero_slides %}
             <article class="hero-slider__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide id="hero-slide-{{ forloop.counter }}" aria-roledescription="Folie" aria-label="{{ forloop.counter }} von {{ hero_slides|length }}"{% if not forloop.first %} hidden{% endif %}>
-                {% if slide.image_url %}<img class="hero-slider__image" data-hero-image src="{{ slide.image_url }}" alt="{{ slide.image_alt }}" width="1600" height="900" decoding="async" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>{% endif %}
+                {% if slide.image_url %}<picture class="hero-slider__picture"><source media="(max-width: 40rem)" srcset="{{ slide.mobile_image_url|default:slide.image_url }}"><img class="hero-slider__image" data-hero-image src="{{ slide.image_url }}" alt="{{ slide.image_alt }}" width="1600" height="900" decoding="async" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}></picture>{% endif %}
                 <div class="hero-slider__content">
                     {% if slide.title %}<h2 class="hero-slider__title">{{ slide.title }}</h2>{% endif %}
                     {% if slide.subtitle %}<p class="hero-slider__subtitle">{{ slide.subtitle }}</p>{% endif %}

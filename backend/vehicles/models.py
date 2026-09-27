@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 from django.utils import timezone
 from django.utils.text import slugify
+from io import BytesIO
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 
 from .slider_validation import validate_slide_link
 
@@ -272,10 +274,42 @@ class NewsArticle(models.Model):
 
 
 class HeroSlide(models.Model):
+    CROP_ASPECT = 50 / 17
+    MOBILE_CROP_ASPECT = 1.22
     title = models.CharField('Titel', max_length=180, blank=True)
     subtitle = models.TextField('Untertitel', max_length=500, blank=True)
     image = models.ImageField('Bild', upload_to='homepage/slides/%Y/%m/',
-                              help_text='JPEG, PNG oder WebP, höchstens 10 MB. Querformat empfohlen.')
+                              help_text='JPEG, PNG oder WebP, höchstens 10 MB. Querformat empfohlen; Desktop- und Smartphoneausschnitt im Editor einstellbar.')
+    crop_x = models.DecimalField('Crop links (%)', max_digits=6, decimal_places=3, default=0,
+                                 validators=[MinValueValidator(0), MaxValueValidator(100)])
+    crop_y = models.DecimalField('Crop oben (%)', max_digits=6, decimal_places=3, default=0,
+                                 validators=[MinValueValidator(0), MaxValueValidator(100)])
+    crop_width = models.DecimalField('Crop-Breite (%)', max_digits=6, decimal_places=3, default=100,
+                                     validators=[MinValueValidator(0.1), MaxValueValidator(100)])
+    crop_height = models.DecimalField('Crop-Höhe (%)', max_digits=6, decimal_places=3, default=100,
+                                      validators=[MinValueValidator(0.1), MaxValueValidator(100)])
+    crop_rendered = models.ImageField('Slider-Crop', upload_to='homepage/slides/crops/%Y/%m/', blank=True)
+    image_scale = models.DecimalField('Bildgröße (%)', max_digits=4, decimal_places=2, default=1,
+                                      validators=[MinValueValidator(0.6), MaxValueValidator(1.3)])
+    image_offset_x = models.DecimalField('Bildposition horizontal (%)', max_digits=5, decimal_places=2, default=0,
+                                         validators=[MinValueValidator(-50), MaxValueValidator(50)])
+    image_offset_y = models.DecimalField('Bildposition vertikal (%)', max_digits=5, decimal_places=2, default=0,
+                                         validators=[MinValueValidator(-50), MaxValueValidator(50)])
+    mobile_crop_x = models.DecimalField('Smartphone-Crop links (%)', max_digits=6, decimal_places=3, default=0,
+                                        validators=[MinValueValidator(0), MaxValueValidator(100)])
+    mobile_crop_y = models.DecimalField('Smartphone-Crop oben (%)', max_digits=6, decimal_places=3, default=0,
+                                        validators=[MinValueValidator(0), MaxValueValidator(100)])
+    mobile_crop_width = models.DecimalField('Smartphone-Crop-Breite (%)', max_digits=6, decimal_places=3, default=100,
+                                            validators=[MinValueValidator(0.1), MaxValueValidator(100)])
+    mobile_crop_height = models.DecimalField('Smartphone-Crop-Höhe (%)', max_digits=6, decimal_places=3, default=100,
+                                             validators=[MinValueValidator(0.1), MaxValueValidator(100)])
+    mobile_crop_rendered = models.ImageField('Smartphone-Slider-Crop', upload_to='homepage/slides/crops/%Y/%m/', blank=True)
+    mobile_image_scale = models.DecimalField('Smartphone-Bildgröße (%)', max_digits=4, decimal_places=2, default=1,
+                                             validators=[MinValueValidator(0.6), MaxValueValidator(1.3)])
+    mobile_image_offset_x = models.DecimalField('Smartphone-Bildposition horizontal (%)', max_digits=5, decimal_places=2, default=0,
+                                                validators=[MinValueValidator(-50), MaxValueValidator(50)])
+    mobile_image_offset_y = models.DecimalField('Smartphone-Bildposition vertikal (%)', max_digits=5, decimal_places=2, default=0,
+                                                validators=[MinValueValidator(-50), MaxValueValidator(50)])
     image_alt = models.CharField('Bildbeschreibung', max_length=200, blank=True,
                                  help_text='Beschreiben Sie das Motiv. Bei rein dekorativen Bildern leer lassen.')
     button_text = models.CharField('Button-Text', max_length=60, blank=True)
@@ -297,11 +331,97 @@ class HeroSlide(models.Model):
     def __str__(self):
         return self.title or f'Slide {self.pk or "(neu)"}'
 
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        image_available = bool(self.image and (not self.image._committed or self.image.storage.exists(self.image.name)))
+        crop_sets = (
+            ('crop', 'crop_rendered', self.CROP_ASPECT, 'slider', 'image_scale', 'image_offset_x', 'image_offset_y'),
+            ('mobile_crop', 'mobile_crop_rendered', self.MOBILE_CROP_ASPECT, 'mobile', 'mobile_image_scale', 'mobile_image_offset_x', 'mobile_image_offset_y'),
+        )
+        crop_value_fields = tuple(f'{prefix}_{suffix}' for prefix, *_ in crop_sets for suffix in ('x', 'y', 'width', 'height'))
+        scale_value_fields = tuple(name for _, _, _, _, scale, offset_x, offset_y in crop_sets for name in (scale, offset_x, offset_y))
+        value_fields = crop_value_fields + scale_value_fields
+        previous = type(self).objects.filter(pk=self.pk).values('image', *value_fields,
+            *(field_name for _, field_name, *_ in crop_sets)).first() if self.pk else None
+        old_crop_names = {field_name: getattr(self, field_name).name for _, field_name, *_ in crop_sets}
+        changed_fields = not previous or str(previous['image']) != str(self.image) or any(
+            str(previous[name]) != str(getattr(self, name)) for name in value_fields
+        ) or not self.crop_rendered or not self.mobile_crop_rendered
+        if previous and image_available:
+            changed_fields = changed_fields or any(
+                not getattr(self, field_name) or not getattr(self, field_name).storage.exists(getattr(self, field_name).name)
+                for _, field_name, *_ in crop_sets
+            )
+        if image_available and changed_fields:
+            self.image.seek(0)
+            original = ImageOps.exif_transpose(Image.open(self.image)).convert('RGB')
+            width, height = original.size
+            base = self.image.name.rsplit('.', 1)[0].split('/')[-1]
+            from django.core.files.base import ContentFile
+            for prefix, field_name, aspect, suffix, scale_name, offset_x_name, offset_y_name in crop_sets:
+                x_name, y_name, w_name, h_name = (f'{prefix}_{part}' for part in ('x', 'y', 'width', 'height'))
+                crop_x, crop_y, crop_w, crop_h = (getattr(self, name) for name in (x_name, y_name, w_name, h_name))
+                saved_ratio = float(crop_w / crop_h) * width / height
+                if (crop_w == 100 and crop_h == 100) or abs(saved_ratio - aspect) > 0.02:
+                    if width / height > aspect:
+                        crop_w, crop_h = height * aspect / width * 100, 100
+                        crop_x, crop_y = (100 - crop_w) / 2, 0
+                    else:
+                        crop_w, crop_h = 100, width / aspect / height * 100
+                        crop_x, crop_y = 0, (100 - crop_h) / 2
+                    for name, value in ((x_name, crop_x), (y_name, crop_y), (w_name, crop_w), (h_name, crop_h)):
+                        setattr(self, name, value)
+                left, top = round(width * float(crop_x) / 100), round(height * float(crop_y) / 100)
+                crop_width, crop_height = min(width - left, round(width * float(crop_w) / 100)), min(height - top, round(height * float(crop_h) / 100))
+                rendered = original.crop((left, top, left + crop_width, top + crop_height))
+                target_width = min(2400, max(1200, rendered.width))
+                target_height = round(target_width / aspect)
+                rendered = ImageOps.fit(rendered, (target_width, target_height), method=Image.Resampling.LANCZOS)
+                scale = float(getattr(self, scale_name))
+                foreground_width = max(1, round(target_width * scale))
+                foreground_height = max(1, round(target_height * scale))
+                offset_x = round(target_width * float(getattr(self, offset_x_name)) / 100)
+                offset_y = round(target_height * float(getattr(self, offset_y_name)) / 100)
+                position_x = (target_width - foreground_width) // 2 + offset_x
+                position_y = (target_height - foreground_height) // 2 + offset_y
+                needs_background = (
+                    position_x > 0 or position_y > 0 or
+                    position_x + foreground_width < target_width or
+                    position_y + foreground_height < target_height
+                )
+                if needs_background:
+                    background = ImageEnhance.Brightness(rendered.filter(
+                        ImageFilter.GaussianBlur(max(16, target_width * 0.025))
+                    )).enhance(0.62)
+                else:
+                    background = Image.new('RGB', (target_width, target_height), 'black')
+                foreground = rendered.resize((foreground_width, foreground_height), Image.Resampling.LANCZOS)
+                background.paste(foreground, (position_x, position_y))
+                output = BytesIO()
+                background.save(output, format='WEBP', quality=90, method=6)
+                output.seek(0)
+                getattr(self, field_name).save(f'{base}-{suffix}.webp', ContentFile(output.read()), save=False)
+        super().save(*args, **kwargs)
+        for _, field_name, *_ in crop_sets:
+            old_name = old_crop_names[field_name]
+            current = getattr(self, field_name)
+            if old_name and current.name != old_name:
+                current.storage.delete(old_name)
+
     def clean(self):
         from django.core.exceptions import ValidationError
         super().clean()
         if bool(self.button_text) != bool(self.button_url):
             raise ValidationError('Für einen Button bitte Text und Link ausfüllen oder beide Felder leer lassen.')
+        for prefix in ('crop', 'mobile_crop'):
+            if getattr(self, f'{prefix}_x') + getattr(self, f'{prefix}_width') > 100 or getattr(self, f'{prefix}_y') + getattr(self, f'{prefix}_height') > 100:
+                raise ValidationError('Der Ausschnitt muss innerhalb des Originalbildes liegen.')
+        for field_name in ('image_scale', 'mobile_image_scale'):
+            if not 0.6 <= getattr(self, field_name) <= 1.3:
+                raise ValidationError({field_name: 'Die Bildgröße muss zwischen 60 und 130 Prozent liegen.'})
+        for field_name in ('image_offset_x', 'image_offset_y', 'mobile_image_offset_x', 'mobile_image_offset_y'):
+            if not -50 <= getattr(self, field_name) <= 50:
+                raise ValidationError({field_name: 'Die Bildposition muss zwischen -50 und +50 Prozent liegen.'})
 
 
 class InquiryReply(models.Model):

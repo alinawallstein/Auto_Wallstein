@@ -1,14 +1,39 @@
 {% extends 'management/base.html' %}
+{% load static %}
 {% block title %}Slide bearbeiten | Auto Wallstein{% endblock %}
 {% block content %}
 <section class="container py-4">
     <a href="{% url 'management_slides' %}">← Alle Slides</a>
     <h1 class="mt-3">{% if slide.pk %}Slide bearbeiten{% else %}Slide hinzufügen{% endif %}</h1>
-    {% if slide.image %}<img class="content-image-preview" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}">{% endif %}
     <form method="post" enctype="multipart/form-data" data-unsaved-form{% if form.errors %} data-unsaved-errors{% endif %} novalidate>
         {% csrf_token %}{{ form.non_field_errors }}
-        <div class="row">{% for field in form %}<div class="col-lg-8 mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="small text-muted">{{ field.help_text }}</p>{% endif %}{{ field.errors }}</div>{% endfor %}</div>
+        <div class="row">
+            {% for field in form %}<div class="col-lg-8 mb-3"{% if field.is_hidden %} hidden{% endif %}><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="small text-muted">{{ field.help_text }}</p>{% endif %}{{ field.errors }}</div>{% endfor %}
+            {% for variant, aspect, prefix, heading, scale_field, offset_x_field, offset_y_field in crop_editors %}
+            <div class="col-12 mb-4" data-slide-editor data-crop-prefix="{{ prefix }}" data-scale-field="{{ scale_field }}" data-offset-x-field="{{ offset_x_field }}" data-offset-y-field="{{ offset_y_field }}" data-aspect="{{ aspect }}" data-image-url="{% if slide.image %}{{ slide.image.url }}{% endif %}">
+                <h2 class="h4">{{ heading }}</h2>
+                <p>Positionieren Sie den Rahmen im vollständigen Originalbild und skalieren Sie ihn an den Ecken. Seitenverhältnis {{ aspect }}.</p>
+                <div class="slide-editor__workspace"><img data-editor-image alt="Vorschau des ausgewählten Sliderbildes"></div>
+                <p class="small mt-2">Dieser Bereich wird später im Slider sichtbar.</p><p class="small text-muted slide-editor__status" data-editor-status aria-live="polite">Bild hochladen, um den Ausschnitt festzulegen.</p>
+                <div class="slide-editor__zoom-control">
+                    <label class="form-label" for="{{ prefix }}-image-zoom">Bildgröße <span data-zoom-value>100&nbsp;%</span></label>
+                    <div class="slide-editor__zoom-row">
+                        <button class="btn btn-outline-secondary" type="button" data-zoom-step="-0.05" aria-label="Bild verkleinern">−</button>
+                        <input class="form-range" id="{{ prefix }}-image-zoom" type="range" min="0.60" max="1.30" step="0.01" value="1.00" data-editor-zoom aria-label="Bildgröße">
+                        <button class="btn btn-outline-secondary" type="button" data-zoom-step="0.05" aria-label="Bild vergrößern">+</button>
+                    </div>
+                    <p class="small text-muted mb-2">Das Foto lässt sich im festen Ausschnitt verschieben. Freie Bereiche füllt ein weichgezeichneter Hintergrund aus demselben Bild.</p>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" type="button" data-editor-reset>Zurücksetzen</button>
+                <label class="form-check mt-3"><input class="form-check-input" type="checkbox" checked data-editor-overlay><span class="form-check-label">Overlay anzeigen</span></label>
+                <h3 class="h5 mt-3">Vorschau im Slider</h3>
+                <div class="hero-slider slide-editor__preview" data-editor-preview><img class="hero-slider__image" data-preview-image alt=""><div class="hero-slider__overlay"></div><div class="slide-editor__copy"><strong>{{ form.title.value|default:'Mercedes-Benz entdecken' }}</strong><span>{{ form.subtitle.value|default:'Vorschautext im Slider' }}</span></div></div>
+            </div>
+            {% endfor %}
+        </div>
         <div class="vehicle-save-bar"><button type="submit" class="btn btn-primary">Slide speichern</button><a href="{% url 'home' %}">Website ansehen</a><span data-unsaved-status role="status"></span></div>
     </form>
 </section>
+<script src="{% static 'vendor/cropperjs/cropper.min.js' %}" defer></script>
+<script src="{% static 'js/slider-image-editor.js' %}?v=6" defer></script>
 {% endblock %}

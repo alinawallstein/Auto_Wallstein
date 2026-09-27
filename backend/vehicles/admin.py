@@ -68,7 +68,7 @@ class HeroSlideAdmin(admin.ModelAdmin):
     ordering = ('sort_order', 'pk')
     readonly_fields = ('image_preview', 'created_at', 'updated_at')
     fieldsets = (
-        ('Inhalt', {'fields': ('title', 'subtitle', 'image', 'image_alt', 'image_preview')}),
+        ('Inhalt', {'fields': ('title', 'subtitle', 'image', 'crop_x', 'crop_y', 'crop_width', 'crop_height', 'image_scale', 'image_offset_x', 'image_offset_y', 'mobile_crop_x', 'mobile_crop_y', 'mobile_crop_width', 'mobile_crop_height', 'mobile_image_scale', 'mobile_image_offset_x', 'mobile_image_offset_y', 'image_alt', 'image_preview')}),
         ('Optionaler Button', {'fields': ('button_text', 'button_url')}),
         ('Veröffentlichung', {'fields': ('sort_order', 'is_active')}),
         ('Zeitstempel', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),

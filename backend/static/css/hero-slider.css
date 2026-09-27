@@ -8,6 +8,7 @@
   touch-action: pan-y;
 }
 .hero-slider__stage, .hero-slider__slide { position: absolute; inset: 0; }
+.hero-slider__picture { position: absolute; inset: 0; z-index: -2; }
 .hero-slider__slide {
   isolation: isolate;
   display: flex;
@@ -41,8 +42,11 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(90deg, rgb(10 14 18 / 82%), rgb(10 14 18 / 12%)),
-              linear-gradient(0deg, rgb(10 14 18 / 55%), transparent 70%);
+  background: linear-gradient(90deg,
+                rgb(10 14 18 / 62%) 0%,
+                rgb(10 14 18 / 43%) 30%,
+                rgb(10 14 18 / 14%) 62%,
+                transparent 100%);
 }
 .hero-slider__content {
   width: min(1160px, calc(100% - 112px));
@@ -59,6 +63,7 @@
   line-height: 1.12;
   text-wrap: balance;
   margin-bottom: 1rem;
+  text-shadow: 0 1px 8px rgb(10 14 18 / 22%);
 }
 .hero-slider__subtitle {
   max-width: 52ch;

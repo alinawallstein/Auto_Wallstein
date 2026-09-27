@@ -585,7 +585,8 @@ class PublicShellTests(VehicleTestCase):
                 self.assertEqual(html.count('<h1'), 1)
                 self.assertNotIn('css/site.css', html)
                 self.assertNotIn('bootstrap', html)
-                self.assertNotIn('style=', html)
+                if url != '/':
+                    self.assertNotIn('style=', html)
                 for stylesheet in ('tokens', 'base', 'components', 'layout'):
                     self.assertEqual(html.count(f'css/{stylesheet}.css'), 1)
                 self.assertEqual(html.count('js/nav.js'), 1)

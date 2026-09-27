@@ -18,7 +18,8 @@ def homepage_slides(content):
         slides.append({
             'title': slide.title,
             'subtitle': slide.subtitle,
-            'image_url': slide.image.url if slide.image else '',
+            'image_url': slide.crop_rendered.url if slide.crop_rendered else (slide.image.url if slide.image else ''),
+            'mobile_image_url': slide.mobile_crop_rendered.url if slide.mobile_crop_rendered else (slide.crop_rendered.url if slide.crop_rendered else (slide.image.url if slide.image else '')),
             'image_alt': slide.image_alt,
             'button_text': slide.button_text if link else '',
             'button_url': link,
@@ -27,6 +28,7 @@ def homepage_slides(content):
         'title': content['hero_title'],
         'subtitle': content['hero_text'],
         'image_url': static('images/titelbild.jpeg'),
+        'mobile_image_url': static('images/titelbild.jpeg'),
         'image_alt': '',
         'button_text': content['hero_button'],
         'button_url': reverse('public_vehicles'),

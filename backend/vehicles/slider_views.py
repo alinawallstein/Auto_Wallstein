@@ -31,7 +31,7 @@ def slide_edit(request, pk=None):
         slide = form.save()
         messages.success(request, 'Slide gespeichert. Aktive Slides sind sofort öffentlich sichtbar.')
         return redirect('slide_edit', pk=slide.pk) if request.user.has_perm('vehicles.change_heroslide') else redirect('management_slides')
-    return render(request, 'management/slider_form.html', {'form': form, 'slide': slide})
+    return render(request, 'management/slider_form.html', {'form': form, 'slide': slide, 'crop_editors': [('Desktop', '50:17', 'crop', 'Desktop-Ausschnitt festlegen', 'image_scale', 'image_offset_x', 'image_offset_y'), ('Mobil', '1.22:1', 'mobile_crop', 'Smartphone-Ausschnitt festlegen', 'mobile_image_scale', 'mobile_image_offset_x', 'mobile_image_offset_y')]})
 
 
 @never_cache
