@@ -264,15 +264,19 @@ class SliderManagementTests(VehicleTestCase):
             response = self.client.post(url, {'slider_interval': value})
             self.assertIn('slider_interval', response.context['form'].errors)
             self.assertNotContains(response, 'data-slider-saved-interval')
-        response = self.client.post(url, {'slider_interval': 3})
+        response = self.client.post(url, {'slider_interval': 3, 'slider_height': 760, 'slider_mobile_height': 480})
         self.assertRedirects(response, url)
         page.refresh_from_db()
         self.assertEqual(page.slider_interval, 3)
+        self.assertEqual(page.slider_height, 760)
+        self.assertEqual(page.slider_mobile_height, 480)
         self.assertEqual(page.draft, {'welcome_title': 'Entwurf'})
         self.assertEqual(page.revision, 7)
         for route in ('home', 'homepage_preview'):
             response = self.client.get(reverse(route))
             self.assertContains(response, 'data-interval="3"')
+            self.assertContains(response, '--hero-height: 760px')
+            self.assertContains(response, '--hero-mobile-height: 480px')
             self.assertNotContains(response, 'data-hero-toggle')
 
     def test_settings_have_separate_permission(self):
@@ -283,5 +287,5 @@ class SliderManagementTests(VehicleTestCase):
         self.assertEqual(self.client.get(reverse('slider_settings')).status_code, 403)
         self.assertEqual(self.client.post(reverse('slide_create'), {}).status_code, 403)
         user.user_permissions.add(Permission.objects.get(codename='change_slider_settings'))
-        self.assertEqual(self.client.post(reverse('slider_settings'), {'slider_interval': 5}).status_code, 302)
+        self.assertEqual(self.client.post(reverse('slider_settings'), {'slider_interval': 5, 'slider_height': 640, 'slider_mobile_height': 420}).status_code, 302)
         self.assertEqual(Homepage.objects.get().slider_interval, 5)

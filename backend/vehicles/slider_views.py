@@ -55,7 +55,9 @@ def slider_settings(request):
     if request.method == 'POST' and form.is_valid():
         # Update only settings, never overwrite a concurrently edited content draft.
         Homepage.objects.get_or_create(pk=1)
-        Homepage.objects.filter(pk=1).update(slider_interval=form.cleaned_data['slider_interval'])
-        messages.success(request, 'Wechselgeschwindigkeit gespeichert.')
+        Homepage.objects.filter(pk=1).update(**{
+            name: form.cleaned_data[name] for name in SliderSettingsForm.Meta.fields
+        })
+        messages.success(request, 'Sliderhöhe und Wechselgeschwindigkeit gespeichert.')
         return redirect('slider_settings')
     return render(request, 'management/slider_settings.html', {'form': form})

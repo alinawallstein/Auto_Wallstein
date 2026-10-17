@@ -1,4 +1,4 @@
-<section class="hero-slider" data-hero-slider data-interval="{{ site_content.slider_interval }}" role="region" aria-label="Aktuelles von Auto Wallstein" aria-roledescription="Karussell">
+<section class="hero-slider" style="--hero-height: {{ site_content.slider_height }}px; --hero-mobile-height: {{ site_content.slider_mobile_height }}px" data-hero-slider data-interval="{{ site_content.slider_interval }}" role="region" aria-label="Aktuelles von Auto Wallstein" aria-roledescription="Karussell">
     <div class="hero-slider__stage">
         {% for slide in hero_slides %}
             <article class="hero-slider__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide id="hero-slide-{{ forloop.counter }}" role="group" aria-roledescription="Folie" aria-label="{{ forloop.counter }} von {{ hero_slides|length }}"{% if not forloop.first %} hidden{% endif %}>

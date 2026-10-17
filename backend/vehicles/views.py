@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from io import BytesIO
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -7,8 +9,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
+from django.utils.text import slugify
 
 from .content import website_content
 from .forms import (
@@ -20,6 +24,7 @@ from .forms import (
     VehiclePublicationForm,
 )
 from .inquiry_mail import send_customer_inquiry_mails
+from .expose_pdf import build_vehicle_expose
 from .management import can_manage
 from .models import Homepage, Vehicle, VehicleImage, VehicleStatus
 from .selectors import public_news_items, public_vehicles_with_images
@@ -73,6 +78,17 @@ def vehicle_detail(request, pk):
     vehicle = get_object_or_404(public_vehicles_with_images(), pk=pk)
     gallery = vehicle.public_images
     return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery})
+
+
+@require_GET
+def vehicle_expose(request, pk):
+    vehicle = get_object_or_404(public_vehicles_with_images(), pk=pk)
+    filename = slugify(f'Auto Wallstein Expose {vehicle.brand} {vehicle.model} {vehicle.display_number}') + '.pdf'
+    response = FileResponse(BytesIO(build_vehicle_expose(vehicle)),
+                            content_type='application/pdf', filename=filename, as_attachment=False)
+    response['Cache-Control'] = 'no-store'
+    response['X-Robots-Tag'] = 'noindex'
+    return response
 
 
 @login_required(login_url="login")

@@ -11,6 +11,7 @@ urlpatterns = [
     path("", views.public_home, name="home"),
     path("fahrzeuge/", views.public_vehicles, name="public_vehicles"),
     path("fahrzeuge/<int:pk>/", views.vehicle_detail, name="vehicle_detail"),
+    path("fahrzeuge/<int:pk>/expose.pdf", views.vehicle_expose, name="vehicle_expose"),
     path("ueberuns/", views.about_page, name="ueberuns"),
     path("finanzierung/", views.financing_page, name="finanzierung"),
     path("oeffnungszeiten/", views.openings_page, name="oeffnungszeiten"),

@@ -48,5 +48,6 @@ class HeroSlideForm(forms.ModelForm):
 class SliderSettingsForm(forms.ModelForm):
     class Meta:
         model = Homepage
-        fields = ['slider_interval']
-        widgets = {'slider_interval': forms.NumberInput(attrs={'class': 'form-control'})}
+        fields = ['slider_interval', 'slider_height', 'slider_mobile_height']
+        widgets = {name: forms.NumberInput(attrs={'class': 'form-control'})
+                   for name in ['slider_interval', 'slider_height', 'slider_mobile_height']}

@@ -2,7 +2,7 @@
   --hero-fade: 600ms;
   position: relative;
   isolation: isolate;
-  height: clamp(26.25rem, 34vw, 32.5rem);
+  height: var(--hero-height, 520px);
   color: var(--color-on-dark);
   background: var(--color-surface-dark);
   touch-action: pan-y;
@@ -133,11 +133,8 @@
   white-space: nowrap;
   border: 0;
 }
-@media (max-width: 64rem) {
-  .hero-slider { height: clamp(22.5rem, 45vw, 26.25rem); }
-}
 @media (max-width: 40rem) {
-  .hero-slider { height: clamp(17.5rem, 82vw, 21.25rem); }
+  .hero-slider { height: var(--hero-mobile-height, 340px); }
   .hero-slider__content { width: calc(100% - 32px); padding-block: 2.75rem; }
   .hero-slider__title { font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: .75rem; }
   .hero-slider__controls > button { display: none; }

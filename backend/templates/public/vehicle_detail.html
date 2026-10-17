@@ -41,6 +41,7 @@
             <div class="action-row">
                 {% if not vehicle_preview %}
                 <a href="{% url 'kontakt' %}?inquiry_type=vehicle_request&vehicle={{ vehicle.pk }}" class="aw-button">Fahrzeug anfragen</a>
+                {% if vehicle.is_publicly_listed %}<a href="{% url 'vehicle_expose' vehicle.pk %}" class="aw-button aw-button--outline" target="_blank" rel="noopener" aria-label="Exposé öffnen und drucken (PDF, neuer Tab)">Exposé öffnen &amp; drucken</a>{% endif %}
                 {% endif %}
             </div>
         </div>

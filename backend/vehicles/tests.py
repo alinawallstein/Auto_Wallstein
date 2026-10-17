@@ -63,6 +63,29 @@ class VehicleTestCase(TestCase):
 
 
 class InquiryFlowTests(VehicleTestCase):
+    def test_public_vehicle_expose_can_be_opened_from_detail_page(self):
+        url = reverse('vehicle_expose', args=[self.vehicle.pk])
+        self.assertNotContains(self.client.get(reverse('public_vehicles')), url)
+        self.assertContains(self.client.get(reverse('vehicle_detail', args=[self.vehicle.pk])), url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response['Content-Disposition'].startswith('inline;'))
+        pdf = b''.join(response.streaming_content)
+        self.assertTrue(pdf.startswith(b'%PDF'))
+        self.assertNotIn(self.vehicle.vin.encode(), pdf)
+        self.assertEqual(self.client.post(url).status_code, 405)
+
+    def test_expose_is_unavailable_for_nonpublic_or_missing_vehicles(self):
+        url = reverse('vehicle_expose', args=[self.vehicle.pk])
+        for changes in ({'is_published': False}, {'public_visible': False}, {'status': VehicleStatus.SOLD}):
+            Vehicle.objects.filter(pk=self.vehicle.pk).update(
+                is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE,
+            )
+            Vehicle.objects.filter(pk=self.vehicle.pk).update(**changes)
+            self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertEqual(self.client.get(reverse('vehicle_expose', args=[999999])).status_code, 404)
+
     def test_dealer_reference_is_used_in_contact_and_vehicle_cards(self):
         from webmobil24_integration.models import ImportedListing
 

@@ -12,7 +12,7 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from PIL import Image
 
-from .slider_forms import HeroSlideForm
+from .slider_forms import HeroSlideForm, SliderSettingsForm
 from .content import homepage_content
 from .models import HeroSlide, Homepage, HomepageImage
 from .slider import homepage_slides
@@ -21,6 +21,20 @@ from .tests import VehicleTestCase
 
 
 class HeroSlideTests(VehicleTestCase):
+    def test_slider_heights_accept_custom_sizes_and_reject_nonpositive_values(self):
+        for value in (1, 150, 350, 1200, 2400):
+            form = SliderSettingsForm(data={
+                'slider_interval': 4, 'slider_height': value, 'slider_mobile_height': value,
+            })
+            self.assertTrue(form.is_valid(), form.errors)
+        for value in (0, -1, '2.5'):
+            form = SliderSettingsForm(data={
+                'slider_interval': 4, 'slider_height': value, 'slider_mobile_height': value,
+            })
+            self.assertFalse(form.is_valid())
+            self.assertIn('slider_height', form.errors)
+            self.assertIn('slider_mobile_height', form.errors)
+
     def slide(self, **changes):
         values = dict(title='Mercedes-Benz entdecken', image=self.image_upload(), is_active=True)
         values.update(changes)

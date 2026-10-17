@@ -218,6 +218,12 @@ class AccessoryImage(models.Model):
 
 
 class Homepage(models.Model):
+    slider_height = models.PositiveIntegerField('Sliderhöhe Desktop in Pixeln', default=520,
+        validators=[MinValueValidator(1)],
+        help_text='Beliebige positive ganze Pixelzahl. Die Höhe wird direkt auf Desktop und Tablet übernommen.')
+    slider_mobile_height = models.PositiveIntegerField('Sliderhöhe Smartphone in Pixeln', default=340,
+        validators=[MinValueValidator(1)],
+        help_text='Beliebige positive ganze Pixelzahl. Gilt für Bildschirmbreiten bis 640 Pixel.')
     financing_annual_rate = models.DecimalField('Effektiver Jahreszins in Prozent', max_digits=5, decimal_places=2, default='6.99', validators=[MinValueValidator(0), MaxValueValidator(50)], help_text='Zentrale Einstellung für fahrzeugbezogene Finanzierungsrechner.')
     slider_interval = models.PositiveSmallIntegerField('Wechselgeschwindigkeit in Sekunden', default=4,
         validators=[MinValueValidator(2), MaxValueValidator(15)],
