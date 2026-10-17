@@ -19,14 +19,9 @@
 .grid-label {
   padding: var(--space-2);
 }
-.fahrzeuge-section, .history-section {
+.history-section {
   width: var(--container-width);
   margin: var(--space-6) auto;
-}
-.fahrzeuge-section iframe {
-  width: 100%;
-  min-height: 980px;
-  background: var(--color-surface);
 }
 .timeline-nav ul {
   display: flex;

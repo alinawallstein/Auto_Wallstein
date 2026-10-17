@@ -1,7 +1,7 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ site_content.page_title }}{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/logo-reveal.css' %}?v=logo-reveal-1"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}"><script src="{% static 'js/hero-slider.js' %}?v=slider-6" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}"><script src="{% static 'js/hero-slider.js' %}?v=slider-6" defer></script>{% endblock %}
 {% block content %}
     {% if content_preview %}<aside class="notice">Entwurfsvorschau – nicht öffentlich. <a href="{% url 'homepage_edit' %}">Zur Bearbeitung</a></aside>{% endif %}
     <h1 class="hero-slider__sr-only">{{ site_content.hero_title }}</h1>
@@ -29,14 +29,7 @@
         </div>
 
 
-        <section class="fahrzeuge-section" id="fahrzeuge">
-            <h2 class="fahrzeuge-title"> {{ site_content.inventory_title }} </h2>
-            <div class="iframe-container-large">
-                <iframe src="https://auto-wallstein.qualitaetshaendler.de/fahrzeugangebote/" title="Externer Fahrzeugbestand" loading="lazy" allowfullscreen></iframe>
-            </div>
-        </section>
-
-        <section class="page-section">
+        <section class="page-section" id="fahrzeuge">
             <div class="section-heading">
                 <h2 class="section-title"> {{ site_content.featured_title }} </h2>
                 <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline"> {{ site_content.featured_button }} </a>
