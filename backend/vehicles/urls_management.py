@@ -3,6 +3,7 @@ from django.urls import path
 from . import views, catalog_views, content_views, inquiry_views, slider_views, management, financing_views
 
 urlpatterns = [
+    path('fahrzeuge/<int:pk>/vorschau/', views.vehicle_preview, name='vehicle_preview'),
     path('anfragen/', inquiry_views.inquiries, name='management_inquiries'),
     path('anfragen/<int:pk>/', inquiry_views.inquiry_detail, name='inquiry_detail'),
     path('anfragen/<int:pk>/status/', inquiry_views.inquiry_status, name='inquiry_status'),

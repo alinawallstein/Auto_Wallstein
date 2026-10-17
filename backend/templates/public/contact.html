@@ -10,15 +10,18 @@
             <p>Ihre Anfrage wurde erfolgreich gesendet. Wir melden uns schnellstmöglich bei Ihnen.</p>
         </div>
     {% else %}<h1>Kontakt aufnehmen</h1>{% endif %}
-    <form method="post" class="contact-form" novalidate>
+    {% if form.errors %}<div class="form-errors" id="contact-error-summary" data-error-summary role="region" aria-labelledby="contact-error-heading" tabindex="-1">
+        <h2 id="contact-error-heading">Bitte prüfen Sie Ihre Angaben</h2>
+        <ul>{% for field in form %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|join:', ' }}</a></li>{% endif %}{% endfor %}{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    </div>{% endif %}
+    <form method="post" class="contact-form"{% if form.errors %} aria-describedby="contact-error-summary"{% endif %} novalidate>
         {% csrf_token %}
-        {{ form.non_field_errors }}
         <div class="contact-fields">
             {% for field in form %}
                 <div class="form-field{% if field.name == 'message' %} full-width{% endif %}">
                     <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} (Pflichtfeld){% endif %}</label>
                     {{ field }}
-                    {{ field.errors }}
+                    {% if field.errors %}<ul class="errorlist" id="{{ field.id_for_label }}-errors">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                 </div>
             {% endfor %}
         </div>

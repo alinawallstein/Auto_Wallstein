@@ -441,6 +441,14 @@ class ImageRegressionTests(VehicleTestCase):
         self.assertTrue(first.is_main)
         self.assertEqual(first.sort_order, 1)
 
+    def test_vehicle_image_alternative_text_can_be_saved(self):
+        image = VehicleImage.objects.create(vehicle=self.vehicle, image=self.image_upload(), sort_order=1, is_main=True)
+        response = self.client.post(self.url, {'action': 'update_alt_text', 'image_id': image.pk,
+                                               'alt_text': 'Schwarze BMW Limousine von vorn'})
+        self.assertRedirects(response, self.url)
+        image.refresh_from_db()
+        self.assertEqual(image.alt_text, 'Schwarze BMW Limousine von vorn')
+
     def test_image_actions_cannot_modify_another_vehicle(self):
         other = self.another_vehicle()
         image = VehicleImage.objects.create(vehicle=other, image=self.image_upload(), is_main=True, sort_order=1)
@@ -591,6 +599,12 @@ class PublicShellTests(VehicleTestCase):
                     self.assertEqual(html.count(f'css/{stylesheet}.css'), 1)
                 self.assertEqual(html.count('js/nav.js'), 1)
                 self.assertContains(response, 'href="#main-content"')
+                self.assertContains(response, 'data-accessibility-widget', count=1)
+                self.assertContains(response, 'aria-label="Barrierefreiheit öffnen"')
+                self.assertContains(response, 'css/accessibility-widget.css')
+                self.assertContains(response, 'js/accessibility-widget.js')
+                self.assertNotContains(response, 'data-hero-toggle')
+                self.assertNotContains(response, 'Wiedergabe pausieren')
                 self.assertContains(response, 'aria-controls="site-menu"')
                 nav = html.split('<nav class="site-nav"')[1].split('</nav>')[0]
                 for route in ('public_vehicles', 'finanzierung', 'service', 'ueberuns', 'kontakt'):
@@ -619,7 +633,18 @@ class PublicComponentTests(VehicleTestCase):
         for field in ('vehicle', 'inquiry_type'):
             for error in response.context['form'].errors[field]:
                 self.assertContains(response, error)
+            self.assertContains(response, 'aria-invalid="true"')
+            self.assertContains(response, f'aria-describedby="id_{field}-errors"')
+        self.assertContains(response, 'id="contact-error-summary"')
+        self.assertContains(response, 'href="#id_vehicle"')
         self.assertFalse(CustomerInquiry.objects.exists())
+
+    def test_vehicle_filter_errors_are_linked_to_invalid_fields(self):
+        response = self.client.get(reverse('public_vehicles'), {'price_min': 'not-a-number'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="filter-errors"')
+        self.assertContains(response, 'id="filter_price_min"')
+        self.assertContains(response, 'aria-invalid="true" aria-describedby="filter-errors"')
 
     def test_public_stylesheet_files_exist(self):
         from django.contrib.staticfiles import finders

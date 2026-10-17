@@ -141,6 +141,8 @@ class VehicleImageUploadForm(forms.Form):
 class VehicleImageActionForm(forms.Form):
     action = forms.CharField(widget=forms.HiddenInput())
     image_id = forms.IntegerField(widget=forms.HiddenInput())
+    alt_text = forms.CharField(required=False, max_length=200, label="Alternativtext",
+        help_text="Beschreiben Sie das Fahrzeug und den relevanten Blickwinkel kurz. Lassen Sie das Feld leer, wenn das Bild dekorativ ist.")
 
 
 class CustomerInquiryForm(forms.ModelForm):
@@ -167,3 +169,10 @@ class CustomerInquiryForm(forms.ModelForm):
         self.fields["message"].label = "Nachricht"
         self.fields["email"].label = "E-Mail"
         self.fields["phone"].label = "Telefon"
+        if self.is_bound:
+            for name, field in self.fields.items():
+                if name in self.errors:
+                    field.widget.attrs.update({
+                        "aria-invalid": "true",
+                        "aria-describedby": f"id_{name}-errors",
+                    })

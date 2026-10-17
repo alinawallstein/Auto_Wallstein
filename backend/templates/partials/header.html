@@ -2,9 +2,9 @@
 <header class="site-header">
     <nav class="site-nav" aria-label="Hauptnavigation">
         <a class="site-brand" href="{% url 'home' %}" aria-label="Auto Wallstein – Startseite">
-            <img class="site-brand-logo" src="{% static 'images/logo.png' %}" alt="Auto Wallstein" width="72" height="72">
+            <img class="site-brand-logo" src="{% static 'images/logo.png' %}" alt="" width="72" height="72">
         </a>
-        <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menü</button>
+        <button class="site-menu-toggle" type="button" aria-label="Hauptmenü öffnen" aria-expanded="false" aria-controls="site-menu" hidden>Menü</button>
         <ul class="site-menu" id="site-menu">
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'public_vehicles' %}">Fahrzeuge</a></li>

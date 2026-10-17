@@ -1,7 +1,7 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ site_content.page_title }}{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}"><script src="{% static 'js/hero-slider.js' %}?v=slider-6" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-9"><link rel="stylesheet" href="{% static 'css/logo-reveal.css' %}?v=logo-reveal-1"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}"><script src="{% static 'js/hero-slider.js' %}?v=slider-6" defer></script>{% endblock %}
 {% block content %}
     {% if content_preview %}<aside class="notice">Entwurfsvorschau – nicht öffentlich. <a href="{% url 'homepage_edit' %}">Zur Bearbeitung</a></aside>{% endif %}
     <h1 class="hero-slider__sr-only">{{ site_content.hero_title }}</h1>
@@ -68,16 +68,17 @@
                 <div class="hours-card">
                     <h3> {{ site_content.hours_title }} </h3>
                     <table class="hours-table">
+                        <caption class="visually-hidden">Öffnungszeiten von Auto Wallstein</caption>
                         <tr>
-                            <td>Montag – Freitag</td>
+                            <th scope="row">Montag bis Freitag</th>
                             <td>{{ site_content.weekdays }}</td>
                         </tr>
                         <tr>
-                            <td>Samstag</td>
+                            <th scope="row">Samstag</th>
                             <td>{{ site_content.saturday }}</td>
                         </tr>
                         <tr>
-                            <td>Sonntag</td>
+                            <th scope="row">Sonntag</th>
                             <td>{{ site_content.sunday }}</td>
                         </tr>
                     </table>

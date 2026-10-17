@@ -5,20 +5,20 @@
             <p class="footer-text">
                 © {% now "Y" %} <strong>{{ site_content.business_name }}</strong> — {{ site_content.street }}, {{ site_content.city }}
             </p>
-                <p class="footer-links">
+                <nav class="footer-links" aria-label="Weiterführende Seiten">
                     <a href="{% url 'public_accessories' %}">Teile & Zubehör</a>
                     <a href="{% url 'public_news' %}">Neuigkeiten</a>
                     <a href="{% url 'impressum' %}">Impressum</a>
-                    <span class="divider">|</span>
+                    <span class="divider" aria-hidden="true">|</span>
                     <a href="{% url 'datenschutz' %}">Datenschutz</a>
-                    <span class="divider">|</span>
+                    <span class="divider" aria-hidden="true">|</span>
                     <a href="{% url 'kontakt' %}">Kontakt</a>
-                    <span class="divider">|</span>
+                    <span class="divider" aria-hidden="true">|</span>
                     <a href="{% url 'oeffnungszeiten' %}">Öffnungszeiten</a>
-                </p>
+                </nav>
                 <p class="footer-ctas">
-                    <a href="tel:{{ site_content.phone|cut:' ' }}" aria-label="Telefon"><img src="{% static 'images/icons/phone.svg' %}" alt="Telefon" class="icon-svg"/></a>
-                    <a href="mailto:{{ site_content.email }}" aria-label="E-Mail"><img src="{% static 'images/icons/mail.svg' %}" alt="E-Mail" class="icon-svg"/></a>
+                    <a href="tel:{{ site_content.phone|cut:' ' }}" aria-label="Auto Wallstein anrufen: {{ site_content.phone }}"><img src="{% static 'images/icons/phone.svg' %}" alt="" class="icon-svg"/></a>
+                    <a href="mailto:{{ site_content.email }}" aria-label="E-Mail an Auto Wallstein schreiben: {{ site_content.email }}"><img src="{% static 'images/icons/mail.svg' %}" alt="" class="icon-svg"/></a>
                 </p>
         </div>
         <div class="footer-bottom">

@@ -1,0 +1,20 @@
+<div class="aw-accessibility" data-accessibility-widget>
+    <section class="aw-accessibility__panel" id="accessibility-panel" aria-labelledby="accessibility-title" hidden>
+        <h2 id="accessibility-title">Anzeige &amp; Bewegung</h2>
+        <div class="aw-accessibility__text-controls">
+            <button type="button" data-a11y-action="text-smaller" aria-label="Schrift verkleinern">A−</button>
+            <span data-a11y-text-size aria-live="polite">100&nbsp;%</span>
+            <button type="button" data-a11y-action="text-larger" aria-label="Schrift vergrößern">A+</button>
+        </div>
+        <button type="button" class="aw-accessibility__option" data-a11y-action="contrast" aria-pressed="false">Hoher Kontrast</button>
+        <button type="button" class="aw-accessibility__option" data-a11y-action="links" aria-pressed="false">Links hervorheben</button>
+        <button type="button" class="aw-accessibility__option" data-a11y-action="motion" aria-pressed="false">Bewegungen reduzieren</button>
+        <button type="button" class="aw-accessibility__reset" data-a11y-action="reset">Einstellungen zurücksetzen</button>
+    </section>
+    <button type="button" class="aw-accessibility__trigger" data-a11y-trigger aria-expanded="false" aria-controls="accessibility-panel" aria-label="Barrierefreiheit öffnen">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="4.2" r="2" fill="currentColor"/>
+            <path d="M4.2 8.2h15.6M12 6.6v7.1m0-4.4-4.1 4.1m4.1-4.1 4.1 4.1M12 13.7l-3.1 6m3.1-6 3.1 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+        </svg>
+    </button>
+</div>

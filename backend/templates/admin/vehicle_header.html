@@ -3,10 +3,12 @@
     {% if vehicle %}
         <h1 class="h3 mt-3 mb-2">{{ vehicle.brand }} {{ vehicle.model }}{% if vehicle.variant %} · {{ vehicle.variant }}{% endif %}</h1>
         <p>{{ vehicle.internal_number }} · {{ vehicle.get_status_display }} · {% if vehicle.is_publicly_listed %}Auf der Website sichtbar{% else %}Nicht auf der Website sichtbar{% endif %}</p>
+        {% if vehicle.webmobil24_source %}<p>Aus Webmobil24 übernommen. Letzter Import: {{ vehicle.webmobil24_source.imported_at|date:"d.m.Y H:i" }}. Manuelle Änderungen bleiben beim erneuten Import erhalten.</p>{% endif %}
         <nav class="vehicle-sections" aria-label="Fahrzeug bearbeiten">
             <a href="{% url 'vehicle_update' vehicle.pk %}"{% if active_section == 'data' %} aria-current="page"{% endif %}>Fahrzeugdaten</a>
             <a href="{% url 'vehicle_images' vehicle.pk %}"{% if active_section == 'images' %} aria-current="page"{% endif %}>Bilder</a>
             <a href="{% url 'vehicle_publication' vehicle.pk %}"{% if active_section == 'publication' %} aria-current="page"{% endif %}>Veröffentlichung</a>
+            {% if perms.vehicles.change_vehicle %}<a href="{% url 'vehicle_preview' vehicle.pk %}">Vorschau</a>{% endif %}
         </nav>
     {% else %}
         <h1 class="h3 mt-3">Neues Fahrzeug</h1>

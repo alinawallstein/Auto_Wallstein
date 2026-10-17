@@ -13,6 +13,7 @@ class Element {
     this.classList = {
       add: name => this.classes.add(name),
       toggle: (name, enabled) => enabled ? this.classes.add(name) : this.classes.delete(name),
+      contains: name => this.classes.has(name),
     };
   }
   matches() { return Boolean(this.keyboardFocus); }
@@ -46,7 +47,7 @@ function setup(count, reducedMotion = false, interval = 4) {
     selectors: { '[data-hero-controls]': count > 1 ? controls : null },
     groups: { '[data-hero-slide]': slides, '[data-hero-image]': images },
   });
-  const document = Object.assign(new Element(), { hidden: false, activeElement: null, groups: { '[data-hero-slider]': [slider] } });
+  const document = Object.assign(new Element(), { hidden: false, activeElement: null, documentElement: new Element(), groups: { '[data-hero-slider]': [slider] } });
   next.focus = () => { document.activeElement = next; next.keyboardFocus = true; slider.fire('focusin', { target: next }); };
   const motion = Object.assign(new Element(), { matches: reducedMotion });
   const delays = [];
@@ -95,7 +96,7 @@ test('automatic rotation wraps with exactly one scheduled change and no live ann
   assert.deepEqual(active(s), [true, false]);
   assert.equal(s.timers.size, 1);
 });
-test('hover and mouse focus do not stop autoplay; keyboard focus and background tabs do', () => {
+test('keyboard focus pauses autoplay while the visitor uses slider controls', () => {
   const s = setup(2);
   s.slider.fire('mouseenter');
   s.slider.fire('focusin', { target: s.next });
@@ -126,6 +127,13 @@ test('database interval is used, invalid or missing intervals disable autoplay',
   for (const interval of [2, 5, 15]) assert.equal(setup(2, false, interval).timers.size, 1);
   for (const interval of [0, 1, 16, 31, NaN]) assert.equal(setup(2, false, interval).timers.size, 0);
   assert.equal(source.includes('data-hero-toggle'), false);
+});
+test('accessibility motion preference stops and resumes automatic slide changes', () => {
+  const s = setup(2);
+  s.window.fire('wallstein:motion-preference', { detail: { reduced: true } });
+  assert.equal(s.timers.size, 0);
+  s.window.fire('wallstein:motion-preference', { detail: { reduced: false } });
+  assert.equal(s.timers.size, 1);
 });
 test('arrow keys work and focus is moved out of a departing slide', () => {
   const s = setup(2);

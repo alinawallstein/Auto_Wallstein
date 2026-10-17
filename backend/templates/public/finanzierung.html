@@ -26,13 +26,13 @@
             <div class="calculator-grid">
                 <div class="calculator-form">
                     <label for="finance-price">
-                        Fahrzeugpreis (€)
-                        <input id="finance-price" type="number" min="0.01" step="0.01" value="25000" required inputmode="decimal">
+                        Fahrzeugpreis (€) (Pflichtfeld)
+                        <input id="finance-price" type="number" min="0.01" step="0.01" value="25000" required inputmode="decimal" aria-describedby="finance-error">
                     </label>
 
                     <label for="finance-downpayment">
-                        Anzahlung (€)
-                        <input id="finance-downpayment" type="number" min="0" step="0.01" value="5000" required inputmode="decimal">
+                        Anzahlung (€) (Pflichtfeld)
+                        <input id="finance-downpayment" type="number" min="0" step="0.01" value="5000" required inputmode="decimal" aria-describedby="finance-error">
                     </label>
 
                     <div class="calculator-rate">
@@ -43,19 +43,21 @@
                     </div>
 
                     <label for="finance-term">
-                        Laufzeit (Monate)
-                        <input id="finance-term" type="number" min="1" max="120" step="1" value="60" required inputmode="numeric">
+                        Laufzeit (Monate) (Pflichtfeld)
+                        <input id="finance-term" type="number" min="1" max="120" step="1" value="60" required inputmode="numeric" aria-describedby="finance-error">
                     </label>
                 </div>
 
-                <div class="calculator-result" aria-live="polite">
+                <section class="calculator-result" aria-labelledby="finance-result-title">
+                    <h3 class="visually-hidden" id="finance-result-title">Berechnungsergebnis</h3>
+                    <p class="calculator-error" id="finance-error" role="status" hidden></p>
                     <div class="result-row">
                         <span>Finanzierungsbetrag</span>
                         <strong id="finance-amount">—</strong>
                     </div>
                     <div class="result-row">
                         <span>Monatsrate</span>
-                        <strong id="finance-monthly">—</strong>
+                        <strong id="finance-monthly" aria-live="polite" aria-atomic="true">—</strong>
                     </div>
                     <div class="result-row">
                         <span>Gesamtbetrag</span>
@@ -66,7 +68,7 @@
                         <strong id="finance-interest">—</strong>
                     </div>
                     <p class="calculator-note">Unverbindliche Beispielberechnung. Die endgültigen Konditionen werden individuell vereinbart.</p>
-                </div>
+                </section>
             </div>
         </div>
     </section>
@@ -84,6 +86,7 @@
         document.getElementById('finance-total'),
         document.getElementById('finance-interest')
     ];
+    const errorMessage = document.getElementById('finance-error');
     const formatCurrency = new Intl.NumberFormat('de-DE', {
         style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2
     });
@@ -98,11 +101,18 @@
         const termMonths = Number(termInput.value);
         const annualRate = Number(rateElement.dataset.value);
 
-        if (!priceInput.value || !downPaymentInput.value || !termInput.value ||
-            !Number.isFinite(price) || price <= 0 ||
-            !Number.isFinite(downPayment) || downPayment < 0 || downPayment > price ||
-            !Number.isInteger(termMonths) || termMonths < Number(termInput.min) || termMonths > Number(termInput.max) ||
-            !rateElement.dataset.value || !Number.isFinite(annualRate) || annualRate < 0) {
+        const validPrice = Boolean(priceInput.value) && Number.isFinite(price) && price > 0;
+        const validDownPayment = Boolean(downPaymentInput.value) && Number.isFinite(downPayment) && downPayment >= 0 && downPayment <= price;
+        const validTerm = Boolean(termInput.value) && Number.isInteger(termMonths) && termMonths >= Number(termInput.min) && termMonths <= Number(termInput.max);
+        priceInput.setAttribute('aria-invalid', String(!validPrice));
+        downPaymentInput.setAttribute('aria-invalid', String(!validDownPayment));
+        termInput.setAttribute('aria-invalid', String(!validTerm));
+        const validRate = Boolean(rateElement.dataset.value) && Number.isFinite(annualRate) && annualRate >= 0;
+        errorMessage.textContent = !validPrice || !validDownPayment || !validTerm
+            ? 'Bitte prüfen Sie Fahrzeugpreis, Anzahlung und Laufzeit. Die Anzahlung darf den Fahrzeugpreis nicht übersteigen.'
+            : 'Die Finanzierungskonditionen wurden noch nicht festgelegt. Bitte fragen Sie unser Verkaufsteam.';
+        errorMessage.hidden = validPrice && validDownPayment && validTerm && validRate;
+        if (!validPrice || !validDownPayment || !validTerm || !validRate) {
             clearResults();
             return;
         }

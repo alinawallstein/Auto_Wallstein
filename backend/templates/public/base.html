@@ -11,8 +11,11 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/components.css' %}">
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accessibility-widget.css' %}">
     {% block page_css %}{% endblock %}
     <script src="{% static 'js/nav.js' %}" defer></script>
+    <script src="{% static 'js/form-error-focus.js' %}" defer></script>
+    <script src="{% static 'js/accessibility-widget.js' %}" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Zum Inhalt</a>
@@ -23,5 +26,6 @@
     </main>
 
     {% include 'partials/footer.html' %}
+    {% include 'partials/accessibility_widget.html' %}
 </body>
 </html>

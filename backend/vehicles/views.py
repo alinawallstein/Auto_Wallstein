@@ -70,6 +70,19 @@ def vehicle_detail(request, pk):
     return render(request, "public/vehicle_detail.html", {"vehicle": vehicle, "gallery": gallery})
 
 
+@login_required(login_url="login")
+@permission_required(('vehicles.view_vehicle', 'vehicles.change_vehicle'), raise_exception=True)
+def vehicle_preview(request, pk):
+    vehicle = get_object_or_404(Vehicle.objects.prefetch_related('images'), pk=pk)
+    response = render(request, 'public/vehicle_detail.html', {
+        'vehicle': vehicle, 'gallery': list(vehicle.images.order_by('-is_main', 'sort_order', 'pk')),
+        'content_preview': True, 'vehicle_preview': True,
+    })
+    response['X-Robots-Tag'] = 'noindex, nofollow'
+    response['Cache-Control'] = 'private, no-store'
+    return response
+
+
 def about_page(request):
     return render(request, "public/about.html")
 
@@ -226,6 +239,10 @@ def vehicle_images(request, pk):
                 image.is_main = True
                 image.save()
                 messages.success(request, "Hauptbild wurde aktualisiert.")
+            elif action == "update_alt_text":
+                image.alt_text = action_form.cleaned_data["alt_text"]
+                image.save(update_fields=["alt_text"])
+                messages.success(request, "Bildbeschreibung wurde gespeichert.")
             elif action == "delete":
                 image.delete()
                 remaining = vehicle.images.order_by("sort_order", "created_at")

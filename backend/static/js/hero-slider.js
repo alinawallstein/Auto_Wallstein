@@ -20,6 +20,7 @@
     if (!previous || !next || !status || dots.length !== slides.length) return;
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let userReducedMotion = document.documentElement.classList.contains('user-reduced-motion');
     let interval = secondsToMilliseconds(slider.dataset.interval);
     let index = 0;
     let timer = null;
@@ -34,7 +35,7 @@
     function schedule(transition = 0) {
       stop();
       const running = Number.isFinite(interval) && interval >= 2000 && interval <= 15000 &&
-        !motion.matches && !document.hidden && !keyboardFocus && !pointer;
+        !motion.matches && !userReducedMotion && !document.hidden && !keyboardFocus && !pointer;
       status.setAttribute('aria-live', running ? 'off' : 'polite');
       if (running) timer = window.setTimeout(() => show(index + 1), interval + transition);
     }
@@ -108,6 +109,10 @@
     }, true);
     document.addEventListener('visibilitychange', () => { pointer = null; schedule(); });
     motion.addEventListener('change', () => schedule());
+    window.addEventListener('wallstein:motion-preference', event => {
+      userReducedMotion = Boolean(event.detail?.reduced);
+      schedule();
+    });
     window.addEventListener('pagehide', stop);
     window.addEventListener('pageshow', event => { if (event.persisted) schedule(); });
     window.addEventListener('storage', event => {

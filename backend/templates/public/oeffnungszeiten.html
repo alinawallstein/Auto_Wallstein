@@ -12,9 +12,10 @@
         <div class="hours-card">
             <h3>Öffnungszeiten</h3>
             <table class="hours-table">
-                <tr><td>Montag – Freitag</td><td>{{ site_content.weekdays }}</td></tr>
-                <tr><td>Samstag</td><td>{{ site_content.saturday }}</td></tr>
-                <tr><td>Sonntag</td><td>{{ site_content.sunday }}</td></tr>
+                <caption class="visually-hidden">Öffnungszeiten von Auto Wallstein</caption>
+                <tr><th scope="row">Montag bis Freitag</th><td>{{ site_content.weekdays }}</td></tr>
+                <tr><th scope="row">Samstag</th><td>{{ site_content.saturday }}</td></tr>
+                <tr><th scope="row">Sonntag</th><td>{{ site_content.sunday }}</td></tr>
             </table>
         </div>
         <div class="hours-card">

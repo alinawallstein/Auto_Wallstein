@@ -16,7 +16,7 @@
             <div class="filter-body">
                 <form method="get" class="filter-grid">
                     {% if filter_form.errors %}
-                        <div class="full-width" role="alert">
+                        <div class="full-width" id="filter-errors" role="alert">
                             <p>Bitte korrigieren Sie die Filterangaben.</p>
                             <ul>
                                 {% for field in filter_form %}
@@ -42,11 +42,11 @@
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_price_min">Preis von</label>
-                        <input type="number" id="filter_price_min" name="price_min" value="{{ active_filters.price_min }}" class="aw-input">
+                        <input type="number" id="filter_price_min" name="price_min" value="{{ active_filters.price_min }}" class="aw-input"{% if filter_form.price_min.errors %} aria-invalid="true" aria-describedby="filter-errors"{% endif %}>
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_price_max">Preis bis</label>
-                        <input type="number" id="filter_price_max" name="price_max" value="{{ active_filters.price_max }}" class="aw-input">
+                        <input type="number" id="filter_price_max" name="price_max" value="{{ active_filters.price_max }}" class="aw-input"{% if filter_form.price_max.errors %} aria-invalid="true" aria-describedby="filter-errors"{% endif %}>
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_sort">Sortierung</label>
@@ -59,11 +59,11 @@
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_year_min">Baujahr von</label>
-                        <input type="number" id="filter_year_min" name="year_min" value="{{ active_filters.year_min }}" class="aw-input">
+                        <input type="number" id="filter_year_min" name="year_min" value="{{ active_filters.year_min }}" class="aw-input"{% if filter_form.year_min.errors %} aria-invalid="true" aria-describedby="filter-errors"{% endif %}>
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_year_max">Baujahr bis</label>
-                        <input type="number" id="filter_year_max" name="year_max" value="{{ active_filters.year_max }}" class="aw-input">
+                        <input type="number" id="filter_year_max" name="year_max" value="{{ active_filters.year_max }}" class="aw-input"{% if filter_form.year_max.errors %} aria-invalid="true" aria-describedby="filter-errors"{% endif %}>
                     </div>
                     <div class="form-field">
                         <label class="field-label" for="filter_mileage_max">Km bis</label>
@@ -95,7 +95,7 @@
             </div>
         </details>
 
-        {% if not filter_form.errors %}<p>{{ vehicles|length }} Fahrzeuge gefunden</p>{% endif %}
+        {% if not filter_form.errors %}<p role="status" aria-live="polite">{{ vehicles|length }} Fahrzeuge gefunden</p>{% endif %}
         <div class="vehicle-grid">
             {% for vehicle in vehicles %}
                 {% include 'partials/vehicle_card.html' with vehicle=vehicle %}

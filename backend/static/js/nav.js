@@ -5,6 +5,7 @@
   const mobile = window.matchMedia('(max-width: 60rem)');
   function closeMenu() {
     toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Hauptmenü öffnen');
     menu.hidden = mobile.matches;
   }
   function updateLayout() {
@@ -17,6 +18,7 @@
   toggle.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Hauptmenü schließen' : 'Hauptmenü öffnen');
     menu.hidden = !open;
   });
   document.addEventListener('keydown', event => {

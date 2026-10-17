@@ -11,7 +11,7 @@
     {% if article.published_at %}<time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:'d. F Y' }}</time>{% endif %}
     {% if article.end_date %}<p>Gültig bis {{ article.end_date|date:'d. F Y' }}</p>{% endif %}
     {% if article.event_date %}<p>Veranstaltung: {{ article.event_date|date:'d. F Y' }}{% if article.event_time %}, {{ article.event_time|time:'H:i' }} Uhr{% endif %}{% if article.event_location %} · {{ article.event_location }}{% endif %}</p>{% endif %}
-    {% if article.image %}<img class="news-detail__image" src="{{ article.image.url }}" alt="{{ article.image_alt|default:article.title }}" width="1200" height="800">{% endif %}
+    {% if article.image %}<img class="news-detail__image" src="{{ article.image.url }}" alt="{{ article.image_alt }}" width="1200" height="800">{% endif %}
     <p class="news-detail__excerpt">{{ article.excerpt }}</p>
     {% if article.body %}<div class="article-copy">{{ article.body|linebreaks }}</div>{% endif %}
     {% if article.vehicle %}<a class="aw-button" href="{% url 'vehicle_detail' article.vehicle.pk %}">Passendes Fahrzeug ansehen</a>{% endif %}

@@ -1,25 +1,30 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ vehicle.brand }} {{ vehicle.model }} | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}"><script src="{% static 'js/gallery.js' %}" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}?v=20261012-gallery"><script src="{% static 'js/gallery.js' %}?v=20261012-gallery" defer></script>{% endblock %}
 {% block content %}
 <div class="page-section">
+    {% if vehicle_preview %}<p class="notice">Geschützte Vorschau: Dieses Fahrzeug wird dadurch nicht veröffentlicht. <a href="{% url 'vehicle_update' vehicle.pk %}">Zurück zur Verwaltung</a></p>{% endif %}
     <div class="vehicle-overview">
         <div class="vehicle-gallery" data-gallery>
             {% if gallery %}
-                <a data-gallery-link href="{{ gallery.0.image.url }}" aria-label="Ausgewähltes Bild in voller Größe öffnen">
-                    <img class="vehicle-gallery__main" data-gallery-main src="{{ gallery.0.image.url }}" width="960" height="720" alt="{% if gallery.0.alt_text %}{{ gallery.0.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}">
-                </a>
-                {% if gallery|length > 1 %}
-                    <p data-gallery-status role="status">Bild 1 von {{ gallery|length }}</p>
-                    <div class="vehicle-gallery__thumbs">
-                        {% for image in gallery %}
-                            <a data-gallery-choice href="{{ image.image.url }}" aria-label="Fahrzeugbild {{ forloop.counter }} in voller Größe öffnen">
-                                <img src="{{ image.image.url }}" alt="{% if image.alt_text %}{{ image.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}" loading="lazy" width="240" height="180">
-                            </a>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <div class="vehicle-gallery__stage" data-gallery-stage>
+                    <a data-gallery-link href="{{ gallery.0.image.url }}" aria-label="Ausgewähltes Bild in voller Größe öffnen">
+                        <img class="vehicle-gallery__main" data-gallery-main src="{{ gallery.0.image.url }}" width="960" height="720" alt="{% if gallery.0.alt_text %}{{ gallery.0.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}">
+                    </a>
+                    {% if gallery|length > 1 %}
+                        <button class="vehicle-gallery__arrow vehicle-gallery__arrow--previous" data-gallery-previous type="button" aria-label="Vorheriges Fahrzeugbild" hidden>‹</button>
+                        <button class="vehicle-gallery__arrow vehicle-gallery__arrow--next" data-gallery-next type="button" aria-label="Nächstes Fahrzeugbild" hidden>›</button>
+                    {% endif %}
+                </div>
+                <div class="vehicle-gallery__caption">
+                    <span data-gallery-status role="status" aria-live="polite" aria-atomic="true">Bild 1 von {{ gallery|length }}</span>
+                    <span>Bild anklicken zum Vergrößern</span>
+                </div>
+                <div data-gallery-items hidden>
+                    {% for image in gallery %}<a data-gallery-choice href="{{ image.image.url }}" data-alt="{% if image.alt_text %}{{ image.alt_text }}{% else %}{{ vehicle.brand }} {{ vehicle.model }}{% endif %}">Bild {{ forloop.counter }}</a>{% endfor %}
+                </div>
+                <noscript><details><summary>Alle Fahrzeugbilder öffnen</summary>{% for image in gallery %}<a href="{{ image.image.url }}">Bild {{ forloop.counter }}</a> {% endfor %}</details></noscript>
             {% else %}<div class="vehicle-card__placeholder">Kein Bild vorhanden.</div>{% endif %}
         </div>
         <div class="vehicle-identity">
@@ -34,14 +39,16 @@
                 <div><dt>Getriebe</dt><dd>{{ vehicle.transmission }}</dd></div>
             </dl>
             <div class="action-row">
+                {% if not vehicle_preview %}
                 <a href="{% url 'kontakt' %}?inquiry_type=vehicle_request&vehicle={{ vehicle.pk }}" class="aw-button">Fahrzeug anfragen</a>
                 <a href="{% url 'kontakt' %}?inquiry_type=test_drive&vehicle={{ vehicle.pk }}" class="aw-button aw-button--outline">Probefahrt anfragen</a>
+                {% endif %}
             </div>
         </div>
     </div>
 
     <div class="vehicle-information">
-        <section>
+        <section class="vehicle-technical">
             <h2>Technische Daten</h2>
             <dl class="specifications">
                 <div><dt>Marke</dt><dd>{{ vehicle.brand }}</dd></div>
@@ -49,7 +56,7 @@
                 <div><dt>Variante</dt><dd>{{ vehicle.variant|default:"-" }}</dd></div>
                 <div><dt>Fahrzeugtyp</dt><dd>{{ vehicle.vehicle_type }}</dd></div>
                 <div><dt>Erstzulassung</dt><dd>{{ vehicle.first_registration|date:"d.m.Y" }}</dd></div>
-                <div><dt>Baujahr</dt><dd>{{ vehicle.year }}</dd></div>
+                <div><dt>Baujahr</dt><dd>{{ vehicle.year|default_if_none:"Keine Angabe" }}</dd></div>
                 <div><dt>Kilometerstand</dt><dd>{{ vehicle.mileage|floatformat:0 }} km</dd></div>
                 <div><dt>Leistung</dt><dd>{{ vehicle.power_kw }} kW / {{ vehicle.power_ps }} PS</dd></div>
                 <div><dt>Kraftstoff</dt><dd>{{ vehicle.fuel_type }}</dd></div>
@@ -60,13 +67,18 @@
                 <div><dt>Außenfarbe</dt><dd>{{ vehicle.exterior_color }}</dd></div>
             </dl>
         </section>
-        <section>
-            <h2>Beschreibung</h2>
-            <p class="vehicle-copy">{{ vehicle.description|default:"Noch keine Beschreibung vorhanden." }}</p>
-            <h2>Ausstattung</h2>
-            <p class="vehicle-copy">{{ vehicle.equipment|default:"Keine Angaben." }}</p>
+    </div>
+    <div class="vehicle-editorial">
+        <section class="vehicle-description" aria-labelledby="vehicle-description-title">
+            <h2 id="vehicle-description-title">Beschreibung</h2>
+            <div class="vehicle-copy">{{ vehicle.description|default:"Noch keine Beschreibung vorhanden." }}</div>
+        </section>
+        <section class="vehicle-equipment" aria-labelledby="vehicle-equipment-title">
+            <h2 id="vehicle-equipment-title">Ausstattung</h2>
+            {% if vehicle.equipment %}
+                <ul class="vehicle-equipment__list">{% for item in vehicle.equipment.splitlines %}{% if item %}<li>{{ item }}</li>{% endif %}{% endfor %}</ul>
+            {% else %}<p>Keine Angaben.</p>{% endif %}
         </section>
     </div>
-
 </div>
 {% endblock %}

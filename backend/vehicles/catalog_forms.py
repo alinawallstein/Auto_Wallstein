@@ -36,6 +36,10 @@ class AccessoryImageForm(forms.ModelForm):
         model = AccessoryImage
         fields = ['image', 'alt_text', 'sort_order']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['alt_text'].help_text = 'Beschreiben Sie das Motiv kurz. Lassen Sie das Feld leer, wenn das Bild nur dekorativ ist.'
+
     def clean(self):
         data = super().clean()
         if not data.get('DELETE') and not data.get('image'):
@@ -66,3 +70,5 @@ class NewsArticleForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-check-input' if isinstance(field.widget, forms.CheckboxInput) else 'form-control'
+        self.fields['image_alt'].help_text = 'Beschreiben Sie das Motiv kurz. Lassen Sie das Feld leer, wenn das Bild nur dekorativ ist.'
+        self.fields['image_alt'].widget.attrs['aria-describedby'] = 'id_image_alt_helptext'
