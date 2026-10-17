@@ -113,25 +113,22 @@ test('keyboard focus pauses autoplay while the visitor uses slider controls', ()
   s.document.fire('visibilitychange');
   assert.equal(s.timers.size, 1);
 });
-test('reduced motion disables autoplay and follows changed preferences', () => {
+test('reduced motion keeps automatic changes with no fade delay', () => {
   const s = setup(2, true);
-  assert.equal(s.timers.size, 0);
-  s.motion.matches = false;
-  s.motion.fire('change');
   assert.equal(s.timers.size, 1);
-  s.motion.matches = true;
-  s.motion.fire('change');
-  assert.equal(s.timers.size, 0);
+  s.tick();
+  assert.deepEqual(active(s), [false, true]);
+  assert.equal(s.delays.at(-1), 4000);
 });
 test('database interval is used, invalid or missing intervals disable autoplay', () => {
   for (const interval of [2, 5, 15]) assert.equal(setup(2, false, interval).timers.size, 1);
   for (const interval of [0, 1, 16, 31, NaN]) assert.equal(setup(2, false, interval).timers.size, 0);
   assert.equal(source.includes('data-hero-toggle'), false);
 });
-test('accessibility motion preference stops and resumes automatic slide changes', () => {
+test('accessibility motion preference keeps exactly one automatic timer', () => {
   const s = setup(2);
   s.window.fire('wallstein:motion-preference', { detail: { reduced: true } });
-  assert.equal(s.timers.size, 0);
+  assert.equal(s.timers.size, 1);
   s.window.fire('wallstein:motion-preference', { detail: { reduced: false } });
   assert.equal(s.timers.size, 1);
 });
