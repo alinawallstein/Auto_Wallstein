@@ -161,9 +161,15 @@ class CustomerInquiryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial = kwargs.get("initial", {})
         inquiry_type = initial.get("inquiry_type")
+        if inquiry_type == "test_drive":
+            inquiry_type = "vehicle_request"
         if inquiry_type:
             kwargs["initial"] = {**initial, "inquiry_type": inquiry_type}
         super().__init__(*args, **kwargs)
+        self.fields["inquiry_type"].choices = [
+            (value, label) for value, label in self.fields["inquiry_type"].choices
+            if value != "test_drive"
+        ]
         self.fields["inquiry_type"].label = "Ihr Anliegen"
         self.fields["vehicle"].label = "Fahrzeug (optional)"
         self.fields["vehicle"].required = False

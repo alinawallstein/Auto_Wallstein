@@ -242,10 +242,10 @@ class PublicInventoryTests(VehicleTestCase):
                         else:
                             self.assertEqual(detail.status_code, 404)
 
-    def test_public_detail_offers_both_inquiry_types_without_internal_price(self):
+    def test_public_detail_offers_vehicle_inquiry_without_test_drive_or_internal_price(self):
         response = self.client.get(reverse("vehicle_detail", args=[self.vehicle.pk]))
         self.assertContains(response, f"?inquiry_type=vehicle_request&vehicle={self.vehicle.pk}")
-        self.assertContains(response, f"?inquiry_type=test_drive&vehicle={self.vehicle.pk}")
+        self.assertNotContains(response, "inquiry_type=test_drive")
         self.assertNotContains(response, "Einkaufspreis")
         self.assertNotContains(response, self.vehicle.vin)
 
@@ -292,22 +292,23 @@ class PublicInventoryTests(VehicleTestCase):
 
 class InquiryRegressionTests(VehicleTestCase):
     def payload(self, **changes):
-        data = {"inquiry_type": "test_drive", "vehicle": self.vehicle.pk,
+        data = {"inquiry_type": "vehicle_request", "vehicle": self.vehicle.pk,
                 "name": "Erika Muster", "email": "erika@example.com", "message": "Bitte um Probefahrt."}
         data.update(changes)
         return data
 
-    def test_test_drive_prefill_and_submission(self):
+    def test_old_test_drive_link_prefills_vehicle_request(self):
         response = self.client.get(reverse("kontakt"), {"vehicle": self.vehicle.pk, "inquiry_type": "test_drive"})
         self.assertEqual(str(response.context["form"]["vehicle"].value()), str(self.vehicle.pk))
-        self.assertEqual(response.context["form"]["inquiry_type"].value(), "test_drive")
+        self.assertEqual(response.context["form"]["inquiry_type"].value(), "vehicle_request")
+        self.assertNotContains(response, 'value="test_drive"')
         response = self.client.post(reverse("kontakt"), self.payload())
         self.assertContains(response, "Vielen Dank")
         self.assertContains(response, 'id="contact-success"')
         self.assertContains(response, "Ihre Anfrage ist eingegangen")
         self.assertNotContains(response, 'class="contact-form"')
         inquiry = CustomerInquiry.objects.get()
-        self.assertEqual(inquiry.inquiry_type, "test_drive")
+        self.assertEqual(inquiry.inquiry_type, "vehicle_request")
         self.assertEqual(inquiry.vehicle, self.vehicle)
 
     @override_settings(
@@ -321,7 +322,7 @@ class InquiryRegressionTests(VehicleTestCase):
         self.assertEqual(len(mail.outbox), 2)
         notification = next(message for message in mail.outbox if message.subject.startswith("Neue Kundenanfrage:"))
         confirmation = next(message for message in mail.outbox if message.subject == "Ihre Anfrage bei Auto Wallstein")
-        self.assertEqual(notification.subject, "Neue Kundenanfrage: Probefahrt anfragen")
+        self.assertEqual(notification.subject, "Neue Kundenanfrage: Fahrzeug anfragen")
         self.assertIn("erika@example.com", confirmation.to)
         self.assertIn("Ihre Anfrage ist bei uns eingegangen", confirmation.body)
         self.assertTrue(confirmation.alternatives)
@@ -703,7 +704,7 @@ class CanonicalRouteTests(VehicleTestCase):
 
     def test_old_contact_post_preserves_body_and_saves_once(self):
         data = {'name': 'Max', 'email': 'max@example.com', 'message': 'Probefahrt bitte',
-                'inquiry_type': 'test_drive', 'vehicle': self.vehicle.pk}
+                'inquiry_type': 'vehicle_request', 'vehicle': self.vehicle.pk}
         url = f'/contact/?vehicle={self.vehicle.pk}&inquiry_type=test_drive'
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 307)
@@ -711,7 +712,7 @@ class CanonicalRouteTests(VehicleTestCase):
         response = self.client.post(url, data, follow=True)
         self.assertContains(response, 'Vielen Dank')
         inquiry = CustomerInquiry.objects.get()
-        self.assertEqual(inquiry.inquiry_type, 'test_drive')
+        self.assertEqual(inquiry.inquiry_type, 'vehicle_request')
         self.assertEqual(inquiry.vehicle, self.vehicle)
 
     def test_old_management_post_preserves_permission_checks(self):

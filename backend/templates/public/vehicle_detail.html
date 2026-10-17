@@ -41,7 +41,6 @@
             <div class="action-row">
                 {% if not vehicle_preview %}
                 <a href="{% url 'kontakt' %}?inquiry_type=vehicle_request&vehicle={{ vehicle.pk }}" class="aw-button">Fahrzeug anfragen</a>
-                <a href="{% url 'kontakt' %}?inquiry_type=test_drive&vehicle={{ vehicle.pk }}" class="aw-button aw-button--outline">Probefahrt anfragen</a>
                 {% endif %}
             </div>
         </div>
