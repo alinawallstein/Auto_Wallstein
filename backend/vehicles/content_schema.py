@@ -9,7 +9,6 @@ TEXT_FIELDS = [
     ('tile_vehicles', 'Fahrzeugsuche – Beschriftung', 'Fahrzeugsuche', 'Bildkacheln'),
     ('tile_service', 'Service – Beschriftung', 'Export & Zulassung', 'Bildkacheln'),
     ('tile_finance', 'Finanzierung – Beschriftung', 'Finanzieren Sie bequem', 'Bildkacheln'),
-    ('inventory_title', 'Externer Bestand – Überschrift', 'Unser Fahrzeugbestand', 'Angebote'),
     ('featured_title', 'Interne Angebote – Überschrift', 'Aktuelle Angebote', 'Angebote'),
     ('featured_button', 'Button zum Bestand', 'Alle Fahrzeuge', 'Angebote'),
     ('featured_empty', 'Text bei leerem Bestand', 'Derzeit sind keine veröffentlichten Fahrzeuge verfügbar.', 'Angebote'),

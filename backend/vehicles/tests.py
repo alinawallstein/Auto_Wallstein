@@ -342,6 +342,22 @@ class InquiryRegressionTests(VehicleTestCase):
             self.client.post(reverse("kontakt"), self.payload())
         self.assertTrue(CustomerInquiry.objects.filter(email="erika@example.com").exists())
 
+    def test_service_and_visit_inquiries_are_preselected_and_saved_without_vehicle(self):
+        for inquiry_type in (
+            "service_request", "short_term_plate", "export_plate",
+            "appointment", "general_request",
+        ):
+            with self.subTest(inquiry_type=inquiry_type):
+                response = self.client.get(reverse("kontakt"), {"inquiry_type": inquiry_type})
+                self.assertEqual(response.context["form"]["inquiry_type"].value(), inquiry_type)
+                response = self.client.post(
+                    reverse("kontakt"), self.payload(vehicle="", inquiry_type=inquiry_type),
+                )
+                self.assertContains(response, "Vielen Dank")
+                inquiry = CustomerInquiry.objects.filter(inquiry_type=inquiry_type).get()
+                self.assertIsNone(inquiry.vehicle)
+                self.assertEqual(inquiry.subject, inquiry.get_inquiry_type_display())
+
     def test_general_contact_without_vehicle(self):
         response = self.client.post(reverse("kontakt"), self.payload(vehicle="", inquiry_type="vehicle_request"))
         self.assertContains(response, "Vielen Dank")

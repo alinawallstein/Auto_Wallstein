@@ -2,45 +2,58 @@
 {% load static %}
 
 {% block title %}Über uns | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}">{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/about.css' %}">{% endblock %}
 
 {% block content %}
-<div class="page-section">
-    <section class="welcome-section">
-        <h1>Über uns</h1>
-        <p>Wir bieten hochwertige Fahrzeuge mit persönlicher Beratung und fairen Preisen.</p>
-        <p>Als familiengeführter Mercedes-Benz Fachhandel in Heusenstamm begleiten wir unsere Kunden von der Fahrzeugauswahl bis zur Finanzierung und Übergabe mit klarer Kommunikation und fairen Konditionen.</p>
+<div class="page-section about-page">
+    <header class="about-intro">
+        <div class="about-intro-copy">
+            <p class="about-eyebrow">Auto Wallstein · Heusenstamm</p>
+            <h1>Automobile mit Charakter.<br>Beratung mit Persönlichkeit.</h1>
+            <p class="about-lead">Ein gutes Fahrzeug ist der Anfang. Das Vertrauen in die Menschen dahinter macht den Unterschied.</p>
+            <p>Als familiengeführter Mercedes-Benz Fachhandel begleiten wir Sie von der Fahrzeugauswahl über die Finanzierung bis zur Übergabe. Persönlich, verständlich und mit einem offenen Ohr für Ihre Wünsche.</p>
+            <a href="{% url 'kontakt' %}?inquiry_type=general_request" class="aw-button">Lernen wir uns kennen <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="about-location">
+            <img src="{% static 'images/vonoben.jpg' %}" alt="Auto Wallstein in Heusenstamm aus der Luft" fetchpriority="high">
+            <figcaption><span>Hier sind wir zu Hause.</span> Heusenstamm bei Frankfurt am Main</figcaption>
+        </figure>
+    </header>
+
+    <section class="about-values" aria-labelledby="values-title">
+        <div class="about-section-heading">
+            <p class="about-eyebrow">Was uns wichtig ist</p>
+            <h2 id="values-title">Ein gutes Gefühl.<br>Vom ersten Gespräch an.</h2>
+        </div>
+        <div class="about-value-grid">
+            <article><span class="about-number" aria-hidden="true">01</span><h3>Persönlich beraten</h3><p>Wir hören zu und nehmen uns Zeit. Gemeinsam schauen wir, welches Fahrzeug zu Ihren Vorstellungen und Ihrem Alltag passt.</p></article>
+            <article><span class="about-number" aria-hidden="true">02</span><h3>Klar kommunizieren</h3><p>Fahrzeug, Ausstattung und Finanzierung: Wir besprechen die Details verständlich, damit Sie Ihre Entscheidung gut informiert treffen können.</p></article>
+            <article><span class="about-number" aria-hidden="true">03</span><h3>Weiter begleiten</h3><p>Auch bei Zulassung, Überführung und Export sind wir an Ihrer Seite. Die nächsten Schritte stimmen wir direkt mit Ihnen ab.</p></article>
+        </div>
     </section>
 
-    <section class="history-section">
-        <div class="timeline-nav">
-            <ul>
-                <li><span aria-current="date">1955</span></li>
-                <li>Heute</li>
-            </ul>
+    <section class="about-history" aria-labelledby="history-title">
+        <div class="about-history-copy">
+            <p class="about-eyebrow">Unsere Geschichte</p>
+            <h2 id="history-title">Seit 1970 in Düsseldorf.</h2>
+            <p>Automobile und die Menschen, die sie bewegen, stehen bei Auto Wallstein im Mittelpunkt. Unsere historischen Aufnahmen geben einen Einblick in die Anfänge.</p>
+            <p class="about-history-note">Damals wie heute zählt für uns die persönliche Verbindung zu unseren Kunden.</p>
         </div>
-
-        <div class="history-item">
-            <div class="history-text">
-                <span class="year-label">1955</span>
-                <h2>Der Grundstein <br>für Leidenschaft.</h2>
-                <p>Auto Wallstein wurde mit einer klaren Vision gegründet: Erstklassige Mercedes-Benz Fahrzeuge für Liebhaber zugänglich zu machen.</p>
-            </div>
-            <div class="history-image">
-                <img loading="lazy" src="{% static 'images/1955.jpg' %}" alt="Historische Aufnahme aus den Anfängen von Auto Wallstein">
-                <img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Historisches Auto-Wallstein-Gebäude">
-            </div>
+        <div class="about-archive">
+            <figure><img loading="lazy" src="{% static 'images/1955.jpg' %}" alt="Historische Aufnahme aus den Anfängen von Auto Wallstein"><figcaption>Ein Blick in unser Archiv</figcaption></figure>
+            <figure><img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Historisches Auto-Wallstein-Gebäude"><figcaption>Erinnerungen an frühere Zeiten</figcaption></figure>
         </div>
+    </section>
 
-        <div class="history-item reverse">
-            <div class="history-text">
-                <span class="year-label">Heute</span>
-                <h2>Ihr Partner für <br>Premium-Automobile.</h2>
-                <p>Mit Zugriff auf über 5.000 Fahrzeuge der Mercedes-Benz AG finden wir heute für jeden Kunden den perfekten Jahreswagen.</p>
-            </div>
-            <div class="history-image">
-                <img loading="lazy" src="{% static 'images/vonoben.jpg' %}" alt="Luftaufnahme des heutigen Auto-Wallstein-Standorts">
-            </div>
+    <section class="about-visit" aria-labelledby="visit-title">
+        <div>
+            <p class="about-eyebrow">Wir freuen uns auf Sie</p>
+            <h2 id="visit-title">Am besten lernen wir uns persönlich kennen.</h2>
+            <p>{{ site_content.business_name }}<br>{{ site_content.street }} · {{ site_content.city }}</p>
+        </div>
+        <div class="about-visit-actions">
+            <a href="{% url 'kontakt' %}?inquiry_type=appointment" class="aw-button">Besuch vereinbaren</a>
+            <a href="{% url 'oeffnungszeiten' %}">Unsere Öffnungszeiten <span aria-hidden="true">↗</span></a>
         </div>
     </section>
 </div>

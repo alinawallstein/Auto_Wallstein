@@ -89,7 +89,7 @@
             <div class="hours-footer">
                 <h3> {{ site_content.appointment_title }} </h3>
                 <p> {{ site_content.appointment_text }} </p>
-                <a href="#kontakt" class="aw-button"> {{ site_content.appointment_button }} </a>
+                <a href="{% url 'kontakt' %}?inquiry_type=test_drive" class="aw-button"> {{ site_content.appointment_button }} </a>
             </div>
         </section>
 

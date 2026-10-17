@@ -164,6 +164,8 @@ class CustomerInquiryForm(forms.ModelForm):
         if inquiry_type:
             kwargs["initial"] = {**initial, "inquiry_type": inquiry_type}
         super().__init__(*args, **kwargs)
+        self.fields["inquiry_type"].label = "Ihr Anliegen"
+        self.fields["vehicle"].label = "Fahrzeug (optional)"
         self.fields["vehicle"].required = False
         self.fields["vehicle"].queryset = public_vehicles()
         self.fields["message"].label = "Nachricht"

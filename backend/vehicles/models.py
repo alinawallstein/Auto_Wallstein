@@ -98,7 +98,16 @@ class CustomerInquiry(models.Model):
     subject = models.CharField('Betreff', max_length=300, blank=True, editable=False)
     inquiry_type = models.CharField(
         max_length=30,
-        choices=[("vehicle_request", "Fahrzeug anfragen"), ("test_drive", "Probefahrt anfragen"), ("financing_request", "Finanzierung anfragen")],
+        choices=[
+            ("vehicle_request", "Fahrzeug anfragen"),
+            ("test_drive", "Probefahrt anfragen"),
+            ("financing_request", "Finanzierung anfragen"),
+            ("service_request", "Service & Zulassung"),
+            ("short_term_plate", "Kurzzeitkennzeichen anfragen"),
+            ("export_plate", "Exportkennzeichen anfragen"),
+            ("appointment", "Besuch vereinbaren"),
+            ("general_request", "Allgemeine Anfrage"),
+        ],
         default="vehicle_request",
     )
     vehicle = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, blank=True, null=True, related_name="inquiries")
