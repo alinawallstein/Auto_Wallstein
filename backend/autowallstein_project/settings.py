@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+# Optional private server file outside the checkout; process environment wins.
+if os.getenv("MAIL_ENV_FILE"):
+    load_dotenv(os.environ["MAIL_ENV_FILE"], override=False)
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
@@ -25,11 +28,15 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@autowallstein.local")
 SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
-INQUIRY_NOTIFICATION_EMAIL = os.getenv("INQUIRY_NOTIFICATION_EMAIL", DEFAULT_FROM_EMAIL)
+INQUIRY_NOTIFICATION_EMAIL = os.getenv("INQUIRY_NOTIFICATION_EMAIL", "verkauf@auto-wallstein.de")
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
     "django.core.mail.backends.smtp.EmailBackend" if EMAIL_HOST else "django.core.mail.backends.console.EmailBackend",
 )
+MS_GRAPH_TENANT_ID = os.getenv("MS_GRAPH_TENANT_ID", "")
+MS_GRAPH_CLIENT_ID = os.getenv("MS_GRAPH_CLIENT_ID", "")
+MS_GRAPH_CLIENT_SECRET = os.getenv("MS_GRAPH_CLIENT_SECRET", "")
+MS_GRAPH_MAILBOX = os.getenv("MS_GRAPH_MAILBOX", "verkauf@auto-wallstein.de")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
