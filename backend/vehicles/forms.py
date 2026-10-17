@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django import forms
 
-from .models import CustomerInquiry, Vehicle, VehicleAIText, VehicleImage, VehicleStatus
+from .models import CustomerInquiry, Vehicle
 from .selectors import public_vehicles
 
 

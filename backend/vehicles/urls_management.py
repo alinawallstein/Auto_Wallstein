@@ -1,6 +1,14 @@
 from django.urls import path
 
-from . import views, catalog_views, content_views, inquiry_views, slider_views, management, financing_views
+from . import (
+    catalog_views,
+    content_views,
+    financing_views,
+    inquiry_views,
+    management,
+    slider_views,
+    views,
+)
 
 urlpatterns = [
     path('fahrzeuge/<int:pk>/vorschau/', views.vehicle_preview, name='vehicle_preview'),
