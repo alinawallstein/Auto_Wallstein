@@ -63,6 +63,28 @@ class VehicleTestCase(TestCase):
 
 
 class InquiryFlowTests(VehicleTestCase):
+    def test_dealer_reference_is_used_in_contact_and_vehicle_cards(self):
+        from webmobil24_integration.models import ImportedListing
+
+        source = ImportedListing.objects.create(
+            vehicle=self.vehicle, environment="production", dealer_id=3664,
+            listing_id=157468844, source_data={"offerReferenceId": "25071"},
+        )
+        contact = self.client.get(reverse("kontakt"))
+        self.assertContains(contact, "BMW 3er (25071)")
+        self.assertNotContains(contact, "BMW 3er (V-001)")
+        cards = self.client.get(reverse("public_vehicles"))
+        self.assertContains(cards, "Fahrzeugnummer: 25071")
+        self.vehicle.refresh_from_db()
+        self.assertEqual(self.vehicle.internal_number, "V-001")
+        source.source_data = {"offerReferenceId": " "}
+        source.save()
+        self.assertContains(self.client.get(reverse("kontakt")), "BMW 3er (V-001)")
+
+    def test_vehicle_without_import_uses_internal_number(self):
+        self.assertEqual(self.vehicle.display_number, "V-001")
+        self.assertContains(self.client.get(reverse("public_vehicles")), "Fahrzeugnummer: V-001")
+
     def test_vehicle_inquiry_can_be_submitted(self):
         response = self.client.post(
             reverse("kontakt"),
@@ -305,8 +327,9 @@ class InquiryRegressionTests(VehicleTestCase):
         response = self.client.post(reverse("kontakt"), self.payload())
         self.assertContains(response, "Vielen Dank")
         self.assertContains(response, 'id="contact-success"')
-        self.assertContains(response, "Ihre Anfrage ist eingegangen")
-        self.assertNotContains(response, 'class="contact-form"')
+        self.assertContains(response, "Ihre Anfrage ist bei uns eingegangen")
+        self.assertContains(response, 'class="contact-fieldset" disabled')
+        self.assertContains(response, "Weitere Anfrage stellen")
         inquiry = CustomerInquiry.objects.get()
         self.assertEqual(inquiry.inquiry_type, "vehicle_request")
         self.assertEqual(inquiry.vehicle, self.vehicle)

@@ -64,6 +64,16 @@ class Vehicle(models.Model):
         return f"{self.brand} {self.model} ({self.internal_number})"
 
     @property
+    def display_number(self):
+        source = getattr(self, "webmobil24_source", None)
+        reference = source.source_data.get("offerReferenceId") if source else None
+        if isinstance(reference, (str, int)) and not isinstance(reference, bool):
+            reference = str(reference).strip()
+            if reference:
+                return reference
+        return self.internal_number
+
+    @property
     def is_publicly_listed(self) -> bool:
         return self.is_published and self.public_visible and self.status == VehicleStatus.AVAILABLE
 

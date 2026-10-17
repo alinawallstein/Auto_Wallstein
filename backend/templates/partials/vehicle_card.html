@@ -9,6 +9,7 @@
     <div class="vehicle-card__body">
         {% if heading_level == 'h3' %}<h3 class="vehicle-card__title">{{ vehicle.brand }} {{ vehicle.model }}</h3>{% else %}<h2 class="vehicle-card__title">{{ vehicle.brand }} {{ vehicle.model }}</h2>{% endif %}
         {% if vehicle.variant %}<p class="vehicle-card__variant">{{ vehicle.variant }}</p>{% endif %}
+        <p class="vehicle-card__variant">Fahrzeugnummer: {{ vehicle.display_number }}</p>
         <ul class="vehicle-card__facts">
             <li>EZ {{ vehicle.first_registration|date:"m/Y" }}</li>
             <li>{{ vehicle.mileage|floatformat:"0g" }} km</li>

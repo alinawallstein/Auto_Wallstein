@@ -4,7 +4,14 @@
 .contact-form {
   margin-top: var(--space-4);
 }
+.contact-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
 .contact-success {
+  margin-top: var(--space-3);
   padding: var(--space-4);
   border: 2px solid #287342;
   border-radius: 8px;
@@ -12,7 +19,7 @@
   color: #183e25;
   scroll-margin-top: 8rem;
 }
-.contact-form button:disabled {
+.contact-form[aria-busy="true"] button:disabled {
   opacity: .7;
   cursor: wait;
 }

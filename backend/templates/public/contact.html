@@ -4,23 +4,14 @@
 {% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/contact.css' %}"><script src="{% static 'js/contact.js' %}" defer></script>{% endblock %}
 {% block content %}
 <section class="page-section contact-page">
-    {% if success %}
-        <div class="contact-success" id="contact-success" role="status" tabindex="-1" aria-labelledby="contact-success-heading">
-            <h1 id="contact-success-heading">Vielen Dank! Ihre Anfrage ist eingegangen.</h1>
-            <p>Wir haben Ihre Anfrage erhalten und melden uns schnellstmöglich bei Ihnen. Sie müssen das Formular nicht erneut absenden.</p>
-            <div class="action-row">
-                <a href="{% url 'public_vehicles' %}" class="aw-button">Zur Fahrzeugliste</a>
-                <a href="{% url 'kontakt' %}" class="aw-button aw-button--outline">Weitere Anfrage stellen</a>
-            </div>
-        </div>
-    {% else %}<h1>Kontakt aufnehmen</h1>{% endif %}
+    <h1>Kontakt aufnehmen</h1>
     {% if form.errors %}<div class="form-errors" id="contact-error-summary" data-error-summary role="region" aria-labelledby="contact-error-heading" tabindex="-1">
         <h2 id="contact-error-heading">Bitte prüfen Sie Ihre Angaben</h2>
         <ul>{% for field in form %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|join:', ' }}</a></li>{% endif %}{% endfor %}{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
     </div>{% endif %}
-    {% if not success %}
     <form method="post" class="contact-form"{% if form.errors %} aria-describedby="contact-error-summary"{% endif %} novalidate>
         {% csrf_token %}
+        <fieldset class="contact-fieldset"{% if success %} disabled{% endif %}>
         <div class="contact-fields">
             {% for field in form %}
                 <div class="form-field{% if field.name == 'message' %} full-width{% endif %}">
@@ -30,12 +21,19 @@
                 </div>
             {% endfor %}
         </div>
+        </fieldset>
         <div class="action-row">
-            <button type="submit" class="aw-button">Anfrage senden</button>
+            <button type="submit" class="aw-button"{% if success %} disabled{% endif %}>{% if success %}Anfrage eingegangen{% else %}Anfrage senden{% endif %}</button>
             <a href="{% url 'public_vehicles' %}" class="aw-button aw-button--outline">Zur Fahrzeugliste</a>
         </div>
+        {% if success %}
+        <div class="contact-success" id="contact-success" role="status" tabindex="-1" aria-labelledby="contact-success-heading">
+            <p id="contact-success-heading"><strong>Vielen Dank! Ihre Anfrage ist bei uns eingegangen!</strong></p>
+            <p>Wir melden uns schnellstmöglich bei Ihnen.</p>
+            <a href="{% url 'kontakt' %}">Weitere Anfrage stellen</a>
+        </div>
+        {% endif %}
     </form>
-    {% endif %}
     <div class="contact-details">
         <h2>Persönlich für Sie da</h2>
         <p>{{ site_content.business_name }} · {{ site_content.street }} · {{ site_content.city }}</p>

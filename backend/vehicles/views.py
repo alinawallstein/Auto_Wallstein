@@ -132,7 +132,7 @@ def contact_page(request):
             request,
             "public/contact.html",
             {
-                "form": CustomerInquiryForm(initial={"inquiry_type": inquiry_type, "vehicle": vehicle.pk if vehicle else None}),
+                "form": form,
                 "success": True,
                 "submitted_vehicle": vehicle,
             },

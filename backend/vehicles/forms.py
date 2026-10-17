@@ -174,6 +174,9 @@ class CustomerInquiryForm(forms.ModelForm):
         self.fields["vehicle"].label = "Fahrzeug (optional)"
         self.fields["vehicle"].required = False
         self.fields["vehicle"].queryset = public_vehicles()
+        self.fields["vehicle"].label_from_instance = lambda vehicle: (
+            f"{vehicle.brand} {vehicle.model} ({vehicle.display_number})"
+        )
         self.fields["message"].label = "Nachricht"
         self.fields["email"].label = "E-Mail"
         self.fields["phone"].label = "Telefon"

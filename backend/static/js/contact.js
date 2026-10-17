@@ -1,6 +1,9 @@
 (() => {
   const success = document.getElementById('contact-success');
-  if (success) success.focus();
+  if (success) {
+    success.focus();
+    return;
+  }
 
   const form = document.querySelector('.contact-form');
   const button = form?.querySelector('button[type="submit"]');

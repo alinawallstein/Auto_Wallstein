@@ -5,7 +5,9 @@ from .models import NewsArticle, Vehicle, VehicleImage, VehicleStatus
 
 
 def public_vehicles():
-    return Vehicle.objects.filter(is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE)
+    return Vehicle.objects.select_related("webmobil24_source").filter(
+        is_published=True, public_visible=True, status=VehicleStatus.AVAILABLE,
+    )
 
 
 def public_vehicles_with_images():
