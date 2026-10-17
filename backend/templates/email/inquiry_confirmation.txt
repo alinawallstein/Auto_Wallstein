@@ -5,6 +5,7 @@ vielen Dank für Ihr Interesse an unserem {{ vehicle_name }}.
 Ihre Anfrage ist bei uns eingegangen. Wir prüfen Ihr Anliegen persönlich und melden uns schnellstmöglich bei Ihnen.
 {% if vehicle %}
 Fahrzeug: {{ vehicle_name }}
+Fahrzeugnummer: {{ vehicle.display_number }}
 Preis: {{ price }}
 Erstzulassung: {{ registration }}
 Kilometerstand: {{ mileage }} km

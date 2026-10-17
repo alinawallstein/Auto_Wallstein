@@ -76,7 +76,8 @@ def _vehicle_context(inquiry, request=None):
 
 def send_customer_inquiry_mails(inquiry, request=None):
     recipients = [address.strip() for address in str(settings.INQUIRY_NOTIFICATION_EMAIL).split(',') if address.strip()]
-    vehicle = str(inquiry.vehicle) if inquiry.vehicle else 'Kein Fahrzeug ausgewählt'
+    vehicle = (f'{inquiry.vehicle.brand} {inquiry.vehicle.model} ({inquiry.vehicle.display_number})'
+               if inquiry.vehicle else 'Kein Fahrzeug ausgewählt')
     body = (f'Neue Kundenanfrage\n\nTyp: {inquiry.get_inquiry_type_display()}\nName: {inquiry.name}\n'
             f'E-Mail: {inquiry.email}\nTelefon: {inquiry.phone or "-"}\nFahrzeug: {vehicle}\n\nNachricht:\n{inquiry.message}\n')
     messages = []

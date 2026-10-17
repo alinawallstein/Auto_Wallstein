@@ -313,6 +313,26 @@ class PublicInventoryTests(VehicleTestCase):
 
 
 class InquiryRegressionTests(VehicleTestCase):
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_emails_use_dealer_reference_instead_of_technical_import_number(self):
+        from webmobil24_integration.models import ImportedListing
+
+        self.vehicle.internal_number = "WM24-production-3664-157468844"
+        self.vehicle.save()
+        ImportedListing.objects.create(
+            vehicle=self.vehicle, environment="production", dealer_id=3664,
+            listing_id=157468844, source_data={"offerReferenceId": "25071"},
+        )
+        self.client.post(reverse("kontakt"), self.payload())
+        self.assertEqual(len(mail.outbox), 2)
+        notification = next(m for m in mail.outbox if m.subject.startswith("Neue Kundenanfrage:"))
+        confirmation = next(m for m in mail.outbox if m.subject == "Ihre Anfrage bei Auto Wallstein")
+        self.assertIn("BMW 3er (25071)", notification.body)
+        self.assertIn("Fahrzeugnummer: 25071", confirmation.body)
+        self.assertIn("Fahrzeugnummer: 25071", confirmation.alternatives[0][0])
+        for body in (notification.body, confirmation.body, confirmation.alternatives[0][0]):
+            self.assertNotIn(self.vehicle.internal_number, body)
+
     def payload(self, **changes):
         data = {"inquiry_type": "vehicle_request", "vehicle": self.vehicle.pk,
                 "name": "Erika Muster", "email": "erika@example.com", "message": "Bitte um Probefahrt."}
