@@ -1,0 +1,159 @@
+/* Shared appearance for the management workspace and sign-in. */
+body {
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  --bs-secondary-color: var(--color-text-muted);
+  --bs-border-color: var(--color-border);
+  --bs-tertiary-bg: var(--color-accent-soft);
+  --bs-link-color: var(--color-accent-foreground, var(--color-accent));
+  --bs-link-hover-color: var(--color-accent-foreground, var(--color-accent-hover));
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+h1, h2, h3 { letter-spacing: -.035em; font-weight: 700; }
+h1 { font-size: clamp(1.75rem, 3vw, 2.4rem); }
+a { text-underline-offset: .2em; }
+:focus-visible { outline: 3px solid var(--color-accent-foreground, var(--color-accent)); outline-offset: 3px; }
+.management-header {
+  margin: 16px;
+  border-radius: 24px;
+  background: #171a27;
+  color: #f5f5fa;
+  box-shadow: var(--shadow-soft);
+}
+.management-brand img { width: 168px; padding: 10px; border-radius: 14px; }
+.management-logout { border-radius: 999px; padding-inline: 18px; }
+.management-header a:not(.management-brand) { text-decoration: none; }
+.management-header a:not(.management-brand):hover { text-decoration: underline; }
+.management-layout { gap: 8px; padding: 0 16px 24px; grid-template-columns: 248px minmax(0, 1fr); }
+.management-sidebar {
+  align-self: start;
+  padding: 20px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-soft);
+}
+.management-sidebar h2 { color: var(--color-text-muted); margin: 24px 12px 8px; }
+.management-layout .management-sidebar a { padding: 10px 14px; border-radius: 12px; color: var(--color-text); }
+.management-sidebar a:hover, .management-sidebar a[aria-current="page"] { background: var(--color-accent-soft); color: var(--color-accent-foreground, var(--color-accent)); }
+.management-sidebar a[aria-current="page"] { font-weight: 700; box-shadow: inset 3px 0 var(--color-accent); }
+.management-layout a:not(.btn) { color: var(--color-accent-foreground, var(--color-accent)); }
+.card, .stat-card, .dashboard-kpi, .dashboard-panel {
+  --bs-card-bg: var(--color-surface);
+  --bs-card-color: var(--color-text);
+  --bs-card-border-color: var(--color-border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-soft);
+}
+.dashboard-header h1 { font-weight: 700; }
+.dashboard-kpi strong { color: var(--color-accent-foreground, var(--color-accent)); }
+.dashboard-panel { padding: 24px; }
+.btn { border-radius: 999px; min-height: 44px; padding: 10px 20px; font-weight: 600; }
+.btn-primary, .management-layout .btn-primary {
+  --bs-btn-bg: var(--color-accent);
+  --bs-btn-border-color: var(--color-accent);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-bg: var(--color-accent-hover);
+  --bs-btn-hover-border-color: var(--color-accent-hover);
+  --bs-btn-active-bg: var(--color-accent-hover);
+  --bs-btn-active-border-color: var(--color-accent-hover);
+  --bs-btn-disabled-bg: var(--color-accent);
+  --bs-btn-disabled-border-color: var(--color-accent);
+}
+.btn-outline-primary, .management-layout .btn-outline-primary {
+  --bs-btn-color: var(--color-accent-foreground, var(--color-accent));
+  --bs-btn-border-color: var(--color-accent-foreground, var(--color-accent));
+  --bs-btn-hover-bg: var(--color-accent);
+  --bs-btn-hover-border-color: var(--color-accent);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--color-accent);
+  --bs-btn-active-border-color: var(--color-accent);
+  --bs-btn-active-color: #fff;
+}
+.form-control, .form-select, .login-shell input:not([type="checkbox"]):not([type="hidden"]) {
+  width: 100%; min-height: 46px; padding: 10px 14px;
+  background-color: var(--color-surface); color: var(--color-text);
+  border: 1px solid var(--color-border); border-radius: 14px;
+}
+textarea.form-control { min-height: 120px; }
+.form-control:focus, .form-select:focus, .login-shell input:focus {
+  background-color: var(--color-surface); color: var(--color-text);
+  border-color: var(--color-accent-foreground, var(--color-accent));
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+.form-control::placeholder { color: var(--color-text-muted); opacity: 1; }
+.form-check-input:checked { background-color: var(--color-accent); border-color: var(--color-accent); }
+.form-check-input:focus { box-shadow: 0 0 0 3px var(--color-accent-soft); }
+.form-range { accent-color: var(--color-accent); }
+.table {
+  --bs-table-bg: var(--color-surface);
+  --bs-table-color: var(--color-text);
+  --bs-table-border-color: var(--color-border);
+  --bs-table-striped-bg: var(--color-accent-soft);
+  --bs-table-striped-color: var(--color-text);
+  --bs-table-hover-bg: var(--color-accent-soft);
+  --bs-table-hover-color: var(--color-text);
+}
+.management-table th, .management-table td { padding: 16px; }
+.management-table thead th { background: var(--color-accent-soft); font-size: .875rem; }
+.inquiry-new td { background: var(--color-accent-soft); }
+.vehicle-sections { border-color: var(--color-border); gap: 12px; }
+.vehicle-sections a { padding-inline: 12px; }
+.vehicle-sections a[aria-current="page"] { border-color: var(--color-accent-foreground, var(--color-accent)); }
+.vehicle-save-bar { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 20px; box-shadow: var(--shadow-soft); }
+.management-recent { border-color: var(--color-border); }
+.stat-label, .text-muted, .helptext { color: var(--color-text-muted) !important; }
+.alert { border-radius: 16px; }
+.content-image-preview, .management-preview, .management-slide-preview { border-radius: 14px; }
+.errorlist { color: var(--color-error); }
+.management-login { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
+.login-shell { width: min(100%, 480px); padding: clamp(24px, 5vw, 48px); border: 1px solid var(--color-border); border-radius: 28px; background: var(--color-surface); box-shadow: var(--shadow-soft); }
+.login-brand { display: inline-block; padding: 12px; border-radius: 14px; background: white; margin-bottom: 32px; }
+.login-brand img { display: block; max-width: 100%; height: auto; }
+.login-eyebrow { color: var(--color-accent-foreground, var(--color-accent)); font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+.login-shell label { display: block; font-weight: 600; margin-bottom: 8px; }
+.login-back { display: block; margin-top: 24px; text-align: center; }
+html[data-theme="dark"] .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23eeeef5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+html[data-theme="dark"] .dashboard-status--new,
+html[data-theme="dark"] .dashboard-status--read,
+html[data-theme="dark"] .dashboard-status--in_progress { color: #f3cf82; }
+html[data-theme="dark"] .dashboard-status--answered,
+html[data-theme="dark"] .dashboard-status--done { color: #a5dfbb; }
+@media (max-width: 60rem) {
+  .management-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .management-sidebar { display: flex; flex-wrap: wrap; }
+  .management-sidebar h2 { margin: 16px 12px 4px; }
+}
+@media (max-width: 40rem) {
+  .management-header { margin: 8px; border-radius: 20px; }
+  .management-layout { padding: 0 8px 16px; }
+  .dashboard-panel { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+[hidden] { display: none !important; }
+html[data-theme="dark"] .management-layout :is(.bg-white, .bg-light) {
+  background-color: var(--color-surface) !important;
+}
+html[data-theme="dark"] .management-layout .text-dark { color: var(--color-text) !important; }
+html[data-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color: #cdcddc;
+  --bs-btn-border-color: #a3a3bf;
+  --bs-btn-hover-bg: #30303f;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-border-color: #cdcddc;
+}
+html[data-theme="dark"] .btn-outline-danger {
+  --bs-btn-color: #ffaaaa;
+  --bs-btn-border-color: #ffaaaa;
+}
+html[data-theme="dark"] .alert-info {
+  --bs-alert-color: #d5d5f0;
+  --bs-alert-bg: #30303f;
+  --bs-alert-border-color: #79798f;
+}

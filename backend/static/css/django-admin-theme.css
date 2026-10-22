@@ -1,0 +1,49 @@
+/* Keep Django's own theme selection and admin interactions. */
+:root, html[data-theme="light"] {
+  --primary: #292c51;
+  --secondary: #171a27;
+  --accent: #eeeef5;
+  --primary-fg: #fff;
+  --body-bg: #f6f6fa;
+  --body-fg: #252638;
+  --body-quiet-color: #636477;
+  --body-loud-color: #252638;
+  --darkened-bg: #eeeef5;
+  --selected-bg: #e5e5f0;
+  --selected-row: #eeeef5;
+  --border-color: #dedee9;
+  --link-fg: #292c51;
+  --link-hover-color: #1e203d;
+  --breadcrumbs-bg: #292c51;
+  --default-button-bg: #292c51;
+  --default-button-hover-bg: #1e203d;
+  --button-bg: #454970;
+  --button-hover-bg: #292c51;
+}
+html[data-theme="dark"] {
+  --primary: #50537e;
+  --secondary: #171a27;
+  --accent: #d5d5f0;
+  --body-bg: #181820;
+  --body-fg: #f6f6fa;
+  --body-quiet-color: #cdcddc;
+  --body-loud-color: #f6f6fa;
+  --darkened-bg: #252530;
+  --selected-bg: #30303f;
+  --selected-row: #30303f;
+  --border-color: #79798f;
+  --link-fg: #d5d5f0;
+  --link-hover-color: #fff;
+  --default-button-bg: #50537e;
+  --default-button-hover-bg: #42456c;
+  --button-bg: #50537e;
+  --button-hover-bg: #42456c;
+}
+#header { background: #171a27; }
+#content h1 { font-weight: 600; letter-spacing: -.025em; }
+.module { border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
+.module h2, .module caption { background: var(--primary); }
+input:not([type="checkbox"]):not([type="radio"]), select, textarea { border-radius: 10px; }
+.button, input[type="submit"], .submit-row input, a.button { border-radius: 999px; }
+.submit-row { border-radius: 16px; }
+.object-tools a { background: var(--primary); }
