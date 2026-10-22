@@ -6,6 +6,9 @@ h1, h2, h3 {
 }
 
 .site-header {
+  position: sticky;
+  top: 16px;
+  z-index: 950;
   margin: 16px auto 0;
   width: var(--container-width);
   border: 0;
@@ -104,11 +107,15 @@ h1, h2, h3 {
 .footer-container { width: calc(100% - 32px); }
 
 @media (max-width: 60rem) {
+  .site-header {
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
   .site-nav { padding: 16px; }
   .site-menu a { padding-inline: 16px; }
 }
 @media (max-width: 40rem) {
-  .site-header { margin-top: 8px; }
+  .site-header { margin-top: 8px; top: 8px; }
   .hero-slider { margin-top: 16px; }
   .hero-slider__content { width: calc(100% - 64px); }
   .main-footer { border-radius: var(--radius-2); }
