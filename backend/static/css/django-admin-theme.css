@@ -47,3 +47,17 @@ input:not([type="checkbox"]):not([type="radio"]), select, textarea { border-radi
 .button, input[type="submit"], .submit-row input, a.button { border-radius: 999px; }
 .submit-row { border-radius: 16px; }
 .object-tools a { background: var(--primary); }
+html[data-theme="dark"] {
+  --body-fg: #ffffff;
+  --body-quiet-color: #eeeef5;
+  --body-medium-color: #eeeef5;
+  --body-loud-color: #ffffff;
+  --link-fg: #ffffff;
+  --link-hover-color: #eeeef5;
+  --link-selected-fg: #ffffff;
+  --header-color: #ffffff;
+  --header-link-color: #ffffff;
+}
+html[data-theme="dark"] :is(label, .help, .helptext, .readonly, .form-row p, .paginator, #changelist-filter h3) {
+  color: var(--body-fg);
+}

@@ -157,3 +157,25 @@ html[data-theme="dark"] .alert-info {
   --bs-alert-bg: #30303f;
   --bs-alert-border-color: #79798f;
 }
+/* Bootstrap headings, labels and utility colors must use the dark palette too. */
+html[data-theme="dark"] body {
+  --color-text: #ffffff;
+  --color-text-muted: #eeeeF5;
+  --bs-heading-color: #ffffff;
+  --bs-emphasis-color: #ffffff;
+  --bs-emphasis-color-rgb: 255, 255, 255;
+  --bs-secondary-color: #eeeef5;
+  --bs-secondary-color-rgb: 238, 238, 245;
+  --bs-tertiary-color: #dedeea;
+  --bs-tertiary-color-rgb: 222, 222, 234;
+  --bs-dark-rgb: 255, 255, 255;
+  --bs-link-color-rgb: 255, 255, 255;
+  --bs-link-hover-color-rgb: 238, 238, 245;
+}
+html[data-theme="dark"] :is(.management-layout, .login-shell) :is(h1, h2, h3, h4, h5, h6, label, legend, .form-text, .form-check-label, .card-title, .card-subtitle) {
+  color: var(--color-text);
+}
+html[data-theme="dark"] .management-layout a:not(.btn),
+html[data-theme="dark"] :is(.login-eyebrow, .login-back) { color: #ffffff; }
+html[data-theme="dark"] .management-sidebar a[aria-current="page"] { color: #ffffff; }
+html[data-theme="dark"] .dashboard-kpi strong { color: #ffffff; }
