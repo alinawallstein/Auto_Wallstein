@@ -1,0 +1,115 @@
+/* Public design layer, shared by the home page and all detail pages. */
+h1, h2, h3 {
+  letter-spacing: -.035em;
+  font-weight: 900;
+  text-wrap: balance;
+}
+
+.site-header {
+  margin: 16px auto 0;
+  width: var(--container-width);
+  border: 0;
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-soft);
+}
+.site-nav {
+  width: 100%;
+  padding: 16px 24px;
+  gap: 16px;
+}
+.site-brand-logo { width: clamp(140px, 13vw, 180px); }
+.site-menu { gap: 4px; }
+.site-menu a {
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  transition: background var(--transition-fast);
+}
+.site-menu a:hover, .site-menu a:focus-visible {
+  background: rgb(255 255 255 / 12%);
+  text-decoration: none;
+}
+.site-phone { padding-left: 16px; font-size: .875rem; }
+
+.aw-button, .hero-slider__button {
+  border-radius: var(--radius-pill);
+  padding-inline: 26px;
+  font-weight: 900;
+}
+.aw-button {
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.aw-button:hover { box-shadow: 0 6px 18px rgb(41 44 81 / 15%); }
+.aw-input { transition: border-color var(--transition-fast); }
+.aw-input:hover { border-color: var(--color-accent); }
+
+.vehicle-card, .news-card, .hours-card, .contact-card,
+.service-offer, .notice, .filter-panel, .calculator-wrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+.vehicle-card__image, .vehicle-card__placeholder {
+  border-radius: calc(var(--radius-2) - 1px) calc(var(--radius-2) - 1px) 0 0;
+}
+.contact-card { transition: border-color var(--transition-fast), box-shadow var(--transition-fast); }
+.contact-card:hover { box-shadow: 0 16px 40px rgb(41 44 81 / 11%); }
+.service-offer { overflow: hidden; }
+.grid-item {
+  background: var(--color-accent);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-soft);
+  text-decoration: none;
+}
+.grid-label { padding: 20px 24px; font-size: 1.15rem; font-weight: 900; }
+.grid-item img { transition: transform 250ms ease; }
+@media (hover: hover) {
+  .grid-item:hover img { transform: scale(1.035); }
+}
+
+.hero-slider {
+  width: 100%;
+  margin: 24px 0 0;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+.welcome-section > h2 { max-width: 24ch; }
+.welcome-section > p { color: var(--color-text-muted); font-size: 1.125rem; }
+.finance-intro {
+  padding: clamp(24px, 5vw, 56px);
+  border: 1px solid var(--color-border);
+  border-radius: 32px;
+  background: var(--color-accent-soft);
+}
+.finance-intro p:last-child { margin-bottom: 0; }
+.hours-footer {
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: var(--radius-2);
+  background: var(--color-accent-soft);
+}
+.map-container { overflow: hidden; border-radius: var(--radius-2); }
+.about-location, .about-visit, .service-contact,
+.vehicle-gallery__stage, .calculator-result, .contact-success {
+  border-radius: var(--radius-2);
+}
+.about-location { overflow: hidden; }
+.about-archive img, .history-image img, .news-hero { border-radius: var(--radius-1); }
+.calculator-form input { border-radius: var(--radius-1); }
+.main-footer {
+  width: var(--container-width);
+  margin: var(--space-6) auto 16px;
+  border-radius: 32px;
+}
+.footer-container { width: calc(100% - 32px); }
+
+@media (max-width: 60rem) {
+  .site-nav { padding: 16px; }
+  .site-menu a { padding-inline: 16px; }
+}
+@media (max-width: 40rem) {
+  .site-header { margin-top: 8px; }
+  .hero-slider { margin-top: 16px; }
+  .hero-slider__content { width: calc(100% - 64px); }
+  .main-footer { border-radius: var(--radius-2); }
+}

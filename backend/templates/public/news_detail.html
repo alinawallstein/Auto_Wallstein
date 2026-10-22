@@ -1,7 +1,7 @@
 {% extends 'public/base.html' %}
 {% load static %}
 {% block title %}{{ article.title }} | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/news.css' %}">{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/news.css' %}?v=palette-indigo-3">{% endblock %}
 {% block content %}
 {% if content_preview %}<aside class="notice">Interne Vorschau – <a href="{% url 'news_edit' article.pk %}">Zur Bearbeitung</a></aside>{% endif %}
 <article class="page-section news-detail">

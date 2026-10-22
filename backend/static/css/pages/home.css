@@ -1,3 +1,10 @@
+#welcome {
+  text-align: center;
+}
+#welcome > h2,
+#welcome > p {
+  margin-inline: auto;
+}
 .image-grid {
   width: var(--container-width);
   margin: var(--space-5) auto;
@@ -63,4 +70,40 @@
   .history-item.reverse .history-text {
     order: initial;
   }
+}
+
+.home-shortcuts {
+  width: var(--container-width);
+  margin: var(--space-5) auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.home-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  box-shadow: var(--shadow-soft);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.home-shortcut:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.home-shortcut__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-foreground, var(--color-accent));
+}
+.home-shortcut__label { font-weight: 900; font-size: 1.1rem; line-height: 1.4; overflow-wrap: anywhere; }
+@media (max-width: 60rem) {
+  .home-shortcuts { grid-template-columns: 1fr; gap: 16px; }
+  .home-shortcut { padding: 20px 24px; }
 }

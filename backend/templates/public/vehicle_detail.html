@@ -1,7 +1,7 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ vehicle.brand }} {{ vehicle.model }} | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}?v=20261017-copy-3"><script src="{% static 'js/gallery.js' %}?v=20261012-gallery" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}?v=palette-indigo-3"><script src="{% static 'js/gallery.js' %}?v=20261012-gallery" defer></script>{% endblock %}
 {% block content %}
 <div class="page-section">
     {% if vehicle_preview %}<p class="notice">Geschützte Vorschau: Dieses Fahrzeug wird dadurch nicht veröffentlicht. <a href="{% url 'vehicle_update' vehicle.pk %}">Zurück zur Verwaltung</a></p>{% endif %}

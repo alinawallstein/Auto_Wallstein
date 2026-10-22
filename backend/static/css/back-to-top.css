@@ -1,0 +1,29 @@
+.back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 72%);
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-dark);
+  box-shadow: 0 5px 18px rgb(10 14 18 / 25%);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+.back-to-top:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+@media (max-width: 40rem) {
+  .back-to-top {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 52px;
+    height: 52px;
+  }
+}

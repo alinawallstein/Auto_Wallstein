@@ -1,13 +1,14 @@
 :root {
-  --color-bg: #f5f4f1;
+  --color-bg: #f6f6fa;
   --color-surface: #ffffff;
-  --color-surface-dark: #16191c;
-  --color-text: #202428;
-  --color-text-muted: #60666b;
-  --color-on-dark: #f5f4f1;
-  --color-border: #d5d7d8;
-  --color-accent: #343e47;
-  --color-accent-hover: #1c252d;
+  --color-surface-dark: #171a27;
+  --color-text: #252638;
+  --color-text-muted: #636477;
+  --color-on-dark: #f5f5fa;
+  --color-border: #dedee9;
+  --color-accent: #292c51;
+  --color-accent-hover: #1e203d;
+  --color-accent-soft: #eeeef5;
   --color-error: #a32323;
   --container-width: min(1160px, calc(100% - 32px));
   --content-width: 760px;
@@ -17,9 +18,10 @@
   --space-4: 32px;
   --space-5: 48px;
   --space-6: clamp(48px, 7vw, 88px);
-  --radius-1: 2px;
-  --radius-2: 4px;
-  --shadow-soft: 0 4px 16px rgb(0 0 0 / 6%);
+  --radius-1: 14px;
+  --radius-2: 24px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 12px 36px rgb(41 44 81 / 7%);
   --fs-display: clamp(2.4rem, 5.5vw, 4.8rem);
   --fs-h1: clamp(2rem, 4vw, 3.4rem);
   --fs-h2: clamp(1.6rem, 3vw, 2.4rem);

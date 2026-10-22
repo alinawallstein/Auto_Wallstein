@@ -1,0 +1,101 @@
+:root { color-scheme: light; }
+html[data-theme="dark"]:not(.aw-high-contrast) {
+  color-scheme: dark;
+  --color-bg: #0e0f18;
+  --color-surface: #222538;
+  --color-surface-dark: #151625;
+  --color-text: #fafaff;
+  --color-text-muted: #d0d3e3;
+  --color-on-dark: #f5f5fa;
+  --color-border: #777e9f;
+  --color-accent: #565e9c;
+  --color-accent-hover: #454d87;
+  --color-accent-soft: #30354e;
+  --color-error: #ffaaaa;
+  --shadow-soft: 0 12px 36px rgb(0 0 0 / 18%);
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid rgb(255 255 255 / 40%);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-on-dark);
+  white-space: nowrap;
+}
+.theme-toggle:hover { background: rgb(255 255 255 / 12%); }
+html[data-theme="dark"]:not(.aw-high-contrast) .site-header {
+  background: #353a60;
+  border: 1px solid #777e9f;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-result {
+  background: var(--color-accent-soft);
+  border-color: var(--color-border);
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-form input,
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-result .result-row,
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-wrap {
+  border-color: var(--color-border);
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .aw-accessibility__option {
+  background: var(--color-accent-soft);
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .news-type { color: #c6caff; }
+@media (min-width: 60.001rem) {
+  .site-nav { flex-wrap: wrap; }
+  .site-menu { flex-wrap: wrap; }
+}
+@media (max-width: 60rem) {
+  .theme-toggle { margin: 8px 0; }
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .about-eyebrow,
+html[data-theme="dark"]:not(.aw-high-contrast) .about-origin,
+html[data-theme="dark"]:not(.aw-high-contrast) .about-text-link,
+html[data-theme="dark"]:not(.aw-high-contrast) .about-number,
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-result .result-row strong {
+  color: #c6caff;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .about-visit .about-eyebrow { color: inherit; }
+html[data-theme="dark"]:not(.aw-high-contrast) .calculator-error { background: var(--color-surface); }
+
+/* Bright foreground accents are separate from filled button backgrounds. */
+html[data-theme="dark"]:not(.aw-high-contrast) {
+  --color-accent-foreground: #d0d5ff;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :is(.aw-button--outline, .aw-input, .calculator-form input) {
+  border-color: #9ca5d2;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .aw-button--outline:hover {
+  background: #d0d5ff;
+  color: #171a30;
+  border-color: #d0d5ff;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :is(.about-visit, .service-contact) .aw-button {
+  background: #f0f1ff;
+  border-color: #f0f1ff;
+  color: #292c51;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :is(.about-visit, .service-contact) .aw-button:hover {
+  background: #d0d5ff;
+  border-color: #d0d5ff;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :is(.service-eyebrow, .year-label),
+html[data-theme="dark"]:not(.aw-high-contrast) .vehicle-equipment__list li::before {
+  color: var(--color-accent-foreground);
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :is(input, textarea)::placeholder {
+  color: #bfc5dd;
+  opacity: 1;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) :focus-visible {
+  outline-color: #d0d5ff;
+  box-shadow: 0 0 0 5px #0e0f18;
+}
+html[data-theme="dark"]:not(.aw-high-contrast) .aw-accessibility__panel button:is(:hover, [aria-pressed="true"]) {
+  background: var(--color-accent-soft);
+  border-color: #d0d5ff;
+  color: var(--color-text);
+}

@@ -3,12 +3,12 @@
 {% block title %}Fahrzeuge | Auto Wallstein{% endblock %}
 
 {% load static %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}">{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/vehicles.css' %}?v=vehicle-title-5">{% endblock %}
 
 {% block content %}
 <div class="page-section">
         <div class="section-heading">
-            <h1 class="section-title">Unsere Fahrzeuge</h1>
+            <h1 class="section-title vehicle-list-title">Unsere Fahrzeuge</h1>
         </div>
 
         <details class="filter-panel"{% if filter_form.errors %} open{% endif %}>

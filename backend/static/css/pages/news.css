@@ -104,7 +104,7 @@
 .news-type--vehicle { color: #315d7a; }
 .news-type--event { color: #67518a; }
 .news-type--notice { color: #9a3838; }
-.news-type--company { color: #426b53; }
+.news-type--company { color: var(--color-accent); }
 
 .news-detail {
   max-width: 860px;

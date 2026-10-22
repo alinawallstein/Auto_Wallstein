@@ -13,10 +13,10 @@
 .contact-success {
   margin-top: var(--space-3);
   padding: var(--space-4);
-  border: 2px solid #287342;
+  border: 2px solid var(--color-accent);
   border-radius: 8px;
-  background: #f0f8f2;
-  color: #183e25;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
   scroll-margin-top: 8rem;
 }
 .contact-form[aria-busy="true"] button:disabled {

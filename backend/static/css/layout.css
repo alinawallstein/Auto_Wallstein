@@ -89,6 +89,9 @@ independent of Bootstrap component names. */
   align-items: center;
   justify-content: center;
 }
+.footer-ctas .icon-svg {
+  filter: brightness(0) invert(1);
+}
 .icon-svg {
   width: 24px;
   height: 24px;

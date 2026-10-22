@@ -5,17 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Auto Wallstein{% endblock %}</title>
+    <script src="{% static 'js/theme.js' %}?v=system-2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;900&display=swap" rel="stylesheet">
     {% block extra_head %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components.css' %}">
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=palette-indigo-3">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=palette-indigo-3">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=palette-indigo-3">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}?v=footer-icons-4">
     <link rel="stylesheet" href="{% static 'css/accessibility-widget.css' %}">
     {% block page_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/rounded-theme.css' %}?v=palette-indigo-3">
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}?v=contrast-3">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}?v=1">
     <script src="{% static 'js/nav.js' %}" defer></script>
     <script src="{% static 'js/form-error-focus.js' %}" defer></script>
     <script src="{% static 'js/accessibility-widget.js' %}" defer></script>
+    <script src="{% static 'js/back-to-top.js' %}?v=1" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Zum Inhalt</a>
@@ -27,5 +32,8 @@
 
     {% include 'partials/footer.html' %}
     {% include 'partials/accessibility_widget.html' %}
+    <button class="back-to-top" type="button" aria-label="Ganz nach oben scrollen" title="Nach oben" hidden>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 7-7 7 7M12 5v14"/></svg>
+    </button>
 </body>
 </html>

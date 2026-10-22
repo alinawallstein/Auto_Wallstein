@@ -2,23 +2,48 @@
 {% load static %}
 
 {% block title %}Über uns | Auto Wallstein{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/about.css' %}">{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/about.css' %}?v=about-images-7">{% endblock %}
 
 {% block content %}
 <div class="page-section about-page">
-    <header class="about-intro">
+    <section class="about-history" aria-labelledby="history-title">
+        <div class="about-history-copy">
+            <p class="about-eyebrow">Unsere Geschichte</p>
+            <h1 id="history-title">Unsere Geschichte.<br>Seit 1970.</h1>
+            <p class="about-origin">Die Anfänge in Düsseldorf.</p>
+            <p class="about-lead">Automobile und die Menschen, die sie bewegen, stehen bei Auto Wallstein im Mittelpunkt. Unsere historischen Aufnahmen geben einen Einblick in die Anfänge.</p>
+            <p class="about-history-note">Damals wie heute zählt für uns die persönliche Verbindung zu unseren Kunden.</p>
+        </div>
+        <div class="about-archive">
+            <figure><img fetchpriority="high" src="{% static 'images/1955.jpg' %}" alt="Historische Aufnahme aus den Anfängen von Auto Wallstein"><figcaption>Ein Blick in unser Archiv</figcaption></figure>
+            <figure><img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Historisches Auto-Wallstein-Gebäude"><figcaption>Erinnerungen an frühere Zeiten</figcaption></figure>
+        </div>
+    </section>
+
+    <section class="about-location-section" aria-labelledby="location-title">
+        <div class="about-location-copy">
+            <p class="about-eyebrow">Heute in Heusenstamm</p>
+            <h2 id="location-title">Unsere Geschichte geht weiter.<br>Hier sind wir zu Hause.</h2>
+            <p>Bei Frankfurt am Main begrüßen wir Sie heute persönlich bei Auto Wallstein. Entdecken Sie unsere Fahrzeuge und besprechen Sie Ihre Wünsche direkt mit uns.</p>
+            <address>{{ site_content.business_name }}<br>{{ site_content.street }}<br>{{ site_content.city }}</address>
+            <a href="{% url 'oeffnungszeiten' %}" class="about-text-link">Öffnungszeiten ansehen <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="about-location">
+            <img src="{% static 'images/vonoben.jpg' %}" alt="Auto Wallstein in Heusenstamm aus der Luft" loading="lazy">
+            <figcaption><span>Auto Wallstein heute</span> Heusenstamm bei Frankfurt am Main</figcaption>
+        </figure>
+    </section>
+
+    <section class="about-intro" aria-labelledby="intro-title">
         <div class="about-intro-copy">
             <p class="about-eyebrow">Auto Wallstein · Heusenstamm</p>
-            <h1>Automobile mit Charakter.<br>Beratung mit Persönlichkeit.</h1>
+            <h2 id="intro-title">Automobile mit Charakter.<br>Beratung mit Persönlichkeit.</h2>
             <p class="about-lead">Ein gutes Fahrzeug ist der Anfang. Das Vertrauen in die Menschen dahinter macht den Unterschied.</p>
             <p>Als familiengeführter Mercedes-Benz Fachhandel begleiten wir Sie von der Fahrzeugauswahl über die Finanzierung bis zur Übergabe. Persönlich, verständlich und mit einem offenen Ohr für Ihre Wünsche.</p>
             <a href="{% url 'kontakt' %}?inquiry_type=general_request" class="aw-button">Lernen wir uns kennen</a>
         </div>
-        <figure class="about-location">
-            <img src="{% static 'images/vonoben.jpg' %}" alt="Auto Wallstein in Heusenstamm aus der Luft" fetchpriority="high">
-            <figcaption><span>Hier sind wir zu Hause.</span> Heusenstamm bei Frankfurt am Main</figcaption>
-        </figure>
-    </header>
+
+    </section>
 
     <section class="about-values" aria-labelledby="values-title">
         <div class="about-section-heading">
@@ -29,19 +54,6 @@
             <article><span class="about-number" aria-hidden="true">01</span><h3>Persönlich beraten</h3><p>Wir hören zu und nehmen uns Zeit. Gemeinsam schauen wir, welches Fahrzeug zu Ihren Vorstellungen und Ihrem Alltag passt.</p></article>
             <article><span class="about-number" aria-hidden="true">02</span><h3>Klar kommunizieren</h3><p>Fahrzeug, Ausstattung und Finanzierung: Wir besprechen die Details verständlich, damit Sie Ihre Entscheidung gut informiert treffen können.</p></article>
             <article><span class="about-number" aria-hidden="true">03</span><h3>Weiter begleiten</h3><p>Auch bei Zulassung, Überführung und Export sind wir an Ihrer Seite. Die nächsten Schritte stimmen wir direkt mit Ihnen ab.</p></article>
-        </div>
-    </section>
-
-    <section class="about-history" aria-labelledby="history-title">
-        <div class="about-history-copy">
-            <p class="about-eyebrow">Unsere Geschichte</p>
-            <h2 id="history-title">Seit 1970 in Düsseldorf.</h2>
-            <p>Automobile und die Menschen, die sie bewegen, stehen bei Auto Wallstein im Mittelpunkt. Unsere historischen Aufnahmen geben einen Einblick in die Anfänge.</p>
-            <p class="about-history-note">Damals wie heute zählt für uns die persönliche Verbindung zu unseren Kunden.</p>
-        </div>
-        <div class="about-archive">
-            <figure><img loading="lazy" src="{% static 'images/1955.jpg' %}" alt="Historische Aufnahme aus den Anfängen von Auto Wallstein"><figcaption>Ein Blick in unser Archiv</figcaption></figure>
-            <figure><img loading="lazy" src="{% static 'images/1955.1.JPG' %}" alt="Historisches Auto-Wallstein-Gebäude"><figcaption>Erinnerungen an frühere Zeiten</figcaption></figure>
         </div>
     </section>
 
