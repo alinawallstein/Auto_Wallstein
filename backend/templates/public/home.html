@@ -1,7 +1,7 @@
 {% extends "public/base.html" %}
 {% load static %}
 {% block title %}{{ site_content.page_title }}{% endblock %}
-{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=icon-shortcuts-5"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-11"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}?v=palette-indigo-3"><script src="{% static 'js/hero-slider.js' %}?v=slider-7" defer></script>{% endblock %}
+{% block page_css %}<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v=route-centered-8"><link rel="stylesheet" href="{% static 'css/hero-slider.css' %}?v=slider-11"><link rel="stylesheet" href="{% static 'css/pages/news.css' %}?v=palette-indigo-3"><script src="{% static 'js/hero-slider.js' %}?v=slider-7" defer></script>{% endblock %}
 {% block content %}
     {% if content_preview %}<aside class="notice">Entwurfsvorschau – nicht öffentlich. <a href="{% url 'homepage_edit' %}">Zur Bearbeitung</a></aside>{% endif %}
     <h1 class="hero-slider__sr-only">{{ site_content.hero_title }}</h1>
@@ -49,6 +49,9 @@
                 <p> {{ site_content.finance_text }} </p>
                 <p> {{ site_content.finance_more }} </p>
                 <p class="finance-highlights"> {{ site_content.finance_benefits }} </p>
+                <div class="action-row finance-intro__actions">
+                    <a href="{% url 'finanzierung' %}" class="aw-button">Zur Finanzierung</a>
+                </div>
             </div>
         </section>
 
@@ -86,11 +89,6 @@
                 </div>
             </div>
 
-            <div class="hours-footer">
-                <h3> {{ site_content.appointment_title }} </h3>
-                <p> {{ site_content.appointment_text }} </p>
-                <a href="{% url 'kontakt' %}?inquiry_type=appointment" class="aw-button"> {{ site_content.appointment_button }} </a>
-            </div>
         </section>
 
         <section class="contact-cards-section" id="kontakt">

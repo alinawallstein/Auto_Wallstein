@@ -1,6 +1,18 @@
 #welcome {
   text-align: center;
 }
+.route-button-container {
+  text-align: center;
+}
+.finance-intro__actions {
+  justify-content: center;
+}
+.finance-intro {
+  text-align: center;
+}
+.finance-intro p {
+  margin-inline: auto;
+}
 #welcome > h2,
 #welcome > p {
   margin-inline: auto;
